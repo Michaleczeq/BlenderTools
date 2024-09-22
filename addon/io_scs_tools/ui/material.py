@@ -297,6 +297,7 @@ class SCS_TOOLS_PT_Material(_shared.HeaderIconPanel, _MaterialPanelBlDefs, Panel
             is_aliasable = ('textures' in shader_data and
                             (
                                     len(shader_data["textures"]) == 1 or
+                                    (len(shader_data["textures"]) == 2 and "tsnmap" in mat.scs_props.mat_effect_name) or
                                     (len(shader_data["textures"]) == 2 and "dif.spec.weight.mult2" in mat.scs_props.mat_effect_name)
                             ))
 
@@ -499,6 +500,8 @@ class SCS_TOOLS_PT_MaterialAttributes(_MaterialPanelBlDefs, Panel):
             value_layout.prop(mat.scs_props, 'shader_attribute_env_factor', text="")
         elif tag == 'fresnel':
             value_layout.column().prop(mat.scs_props, 'shader_attribute_fresnel', text="")
+        elif tag == 'amod_decal_blending_factors':
+            value_layout.column().prop(mat.scs_props, 'shader_attribute_amod_decal_blending_factors', text="")
         elif tag == 'tint':
             value_layout.prop(mat.scs_props, 'shader_attribute_tint', text="")
         elif tag == 'tint_opacity':

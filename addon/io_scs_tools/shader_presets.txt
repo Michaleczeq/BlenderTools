@@ -858,7 +858,7 @@ Shader {
 Shader {
     PresetName: "dif.spec.over.dif.opac"
     Effect: "eut2.dif.spec.over.dif.opac"
-    Flavors: ( "SHADOW" "PAINT" "TEXGEN0" "TEXGEN1" "ALPHA" "DEPTH" "BLEND_OVER|BLEND_ADD" )
+    Flavors: ( "SHADOW" "PAINT" "TEXGEN0" "TEXGEN1" "ALPHA" "DEPTH" "BLEND_OVER|BLEND_ADD|ENVMAP" )
     Flags: 0
     Attribute {
         Format: FLOAT3
@@ -1776,6 +1776,58 @@ Shader {
         TexCoord: ( 1 )
     }
 }
+Shader {
+    PresetName: "dif.spec.amod.dif.spec"
+    Effect: "eut2.dif.spec.amod.dif.spec"
+    Flavors: ( "NMAP_TS|NMAP_TS_UV|NMAP_TS_16|NMAP_TS_UV_16" "SHADOW" "ASAFEWA" )
+    Flags: 0
+    Attribute {
+        Format: FLOAT3
+        Tag: "diffuse"
+        Value: ( 1.0 1.0 1.0 )
+    }
+    Attribute {
+        Format: FLOAT3
+        Tag: "specular"
+        Value: ( 1.0 1.0 1.0 )
+    }
+    Attribute {
+        Format: FLOAT2
+        Tag: "amod_decal_blending_factors"
+        Value: ( 1.0  1.0 )
+        Hide: "True"
+    }
+    Attribute {
+        Format: FLOAT
+        Tag: "shininess"
+        Value: ( 20.0 )
+    }
+    Attribute {
+        Format: FLOAT
+        Tag: "add_ambient"
+        Value: ( 0.0 )
+    }
+    Attribute {
+        Format: FLOAT
+        Tag: "reflection"
+        Value: ( 1.0 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_base"
+        Value: ""
+        TexCoord: ( 0 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_mask"
+        Value: ""
+        TexCoord: ( 1 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_over"
+        Value: ""
+        TexCoord: ( 1 )
+    }
+}
 Flavor {
     Type: "AIRBRUSH"
     Name: "airbrush"
@@ -1802,6 +1854,10 @@ Flavor {
 Flavor {
     Type: "ASAFEW"
     Name: "asafew"
+}
+Flavor {
+    Type: "ASAFEWA"
+    Name: "asafew.a"
 }
 Flavor {
     Type: "AWHITE"
@@ -2098,19 +2154,19 @@ Flavor {
     Type: "TEXGEN0"
     Name: "tg0"
     Attribute {
-        Format: FLOAT2
+        Format: FLOAT4
         Tag: "aux[0]"
-        FriendlyTag: "TexGen0 Scale (X,Z)"
-        Value: ( 10.0 10.0 )
+        FriendlyTag: "TexGen0 Scale (X,Z,ROT_BASE,ROT_NMAP)"
+        Value: ( 10.0 10.0 0.0 0.0 )
     }
 }
 Flavor {
     Type: "TEXGEN1"
     Name: "tg1"
     Attribute {
-        Format: FLOAT2
+        Format: FLOAT4
         Tag: "aux[1]"
-        FriendlyTag: "TexGen1 Scale (X,Z)"
-        Value: ( 8.0 8.0 )
+        FriendlyTag: "TexGen1 Scale (X,Z,ROT_BASE,ROT_NMAP)"
+        Value: ( 8.0 8.0 0.0 0.0 )
     }
 }
