@@ -749,6 +749,9 @@ def load(filepath, terrain_points_trans):
             else:
                 spawn_name = _name_utils.get_unique(spawn_name,  spawn_points_data.keys())
 
+            if spawn_flags is None:
+                spawn_flags = int(0)
+
             spawn_points_data[spawn_name] = (
                 spawn_index,
                 spawn_position,
