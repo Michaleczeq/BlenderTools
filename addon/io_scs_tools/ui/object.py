@@ -366,7 +366,20 @@ class SCS_TOOLS_PT_Locator(_ObjectPanelBlDefs, Panel):
         layout.use_property_split = True
         layout.use_property_decorate = False
 
+        # spawn type
         layout.prop(obj.scs_props, 'locator_prefab_spawn_type')
+
+        # check if Spawn Type = Custom (9)
+        if obj.scs_props.locator_prefab_spawn_type == str(_PL_consts.PSP.CUSTOM):
+            # parking difficulty
+            layout.prop(obj.scs_props, 'locator_prefab_custom_parking_difficulty')
+
+            # lenght
+            layout.prop(obj.scs_props, 'locator_prefab_custom_lenght')
+
+            # rule (trailer type)
+            layout.prop(obj.scs_props, 'locator_prefab_custom_rule')
+
 
     @staticmethod
     def draw_prefab_semaphore(layout, obj):

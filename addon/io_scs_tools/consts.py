@@ -444,6 +444,46 @@ class PrefabLocators:
         TYPE_END = 0x00020000
         TYPE_CROSS_SHARP = 0x00040000
 
+    class PSPCF:
+        """Constants represetning spawn point custom flags.
+        """
+        # Difficulties
+        RAIL_MASK = 0x0000000F
+        RAIL_NONE = 0x00000000
+        RAIL_EASY = 0x00000001
+        RAIL_MEDIUM = 0x00000002
+        RAIL_HARD = 0x00000003
+        RAIL_RIGID = 0x00000004   # ?? idk
+        RAIL_LOAD = 0x00000005
+
+        # Lenght
+        LENGHT_MASK = 0x000000F0
+        LENGHT_14 = 0x00000000
+        LENGHT_15 = 0x00000010
+        LENGHT_16 = 0x00000020
+        LENGHT_17 = 0x00000030
+        LENGHT_18 = 0x00000040
+        LENGHT_19 = 0x00000050
+        LENGHT_20 = 0x00000060
+        LENGHT_21 = 0x00000070
+        LENGHT_22 = 0x00000080
+        LENGHT_23 = 0x00000090
+        LENGHT_24 = 0x000000A0
+        LENGHT_25 = 0x000000B0
+        LENGHT_26 = 0x000000C0
+        LENGHT_27 = 0x000000D0
+        LENGHT_28 = 0x000000E0
+        UNLIMITED = 0x000000F0
+
+        # Rule
+        TRAILER_MASK = 0x000F0000
+        TRAILER_ANY = 0x00000000
+        TRAILER_BOX = 0x00010000
+        TRAILER_TANK = 0x00020000
+        TRAILER_DUMP_BULK = 0x00030000
+        TRAILER_PLATFORM_LOG_CONT = 0x00040000
+        TRAILER_LIVESTOCK = 0x00050000
+        TRAILER_LOG = 0x00060000
 
 class Bones:
     init_scale_key = "scs_init_scale"

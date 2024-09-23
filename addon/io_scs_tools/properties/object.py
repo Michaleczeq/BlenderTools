@@ -850,7 +850,7 @@ class ObjectSCSTools(bpy.types.PropertyGroup):
         (_PL_consts.PSP.CAMERA_POINT, (str(_PL_consts.PSP.CAMERA_POINT), "Camera Point", "")),
         (_PL_consts.PSP.COMPANY_POS, (str(_PL_consts.PSP.COMPANY_POS), "Company Point", "")),
         (_PL_consts.PSP.COMPANY_UNLOAD_POS, (str(_PL_consts.PSP.COMPANY_UNLOAD_POS), "Company Unload Point", "")),
-        # (_PL_consts.PSP.CUSTOM, (str(_PL_consts.PSP.CUSTOM), "Custom", "")),
+        (_PL_consts.PSP.CUSTOM, (str(_PL_consts.PSP.CUSTOM), "Custom", "")),
         (_PL_consts.PSP.GARAGE_POS, (str(_PL_consts.PSP.GARAGE_POS), "Garage Point", "")),
         (_PL_consts.PSP.GAS_POS, (str(_PL_consts.PSP.GAS_POS), "Gas Station", "")),
         # (_PL_consts.PSP.HOTEL, (str(_PL_consts.PSP.HOTEL), "Hotel", "")),
@@ -877,6 +877,62 @@ class ObjectSCSTools(bpy.types.PropertyGroup):
         description="Spawn type",
         items=enum_spawn_type_items.values(),
         default=str(_PL_consts.PSP.NONE),
+    )
+    enum_custom_parking_difficulty_items = OrderedDict([
+        (_PL_consts.PSPCF.RAIL_NONE, (str(_PL_consts.PSPCF.RAIL_NONE), "None", "")),
+        (_PL_consts.PSPCF.RAIL_EASY, (str(_PL_consts.PSPCF.RAIL_EASY), "Unload (Easy)", "")),
+        (_PL_consts.PSPCF.RAIL_MEDIUM, (str(_PL_consts.PSPCF.RAIL_MEDIUM), "Unload (Medium)", "")),
+        (_PL_consts.PSPCF.RAIL_HARD, (str(_PL_consts.PSPCF.RAIL_HARD), "Unload (Hard)", "")),
+        (_PL_consts.PSPCF.RAIL_RIGID, (str(_PL_consts.PSPCF.RAIL_RIGID), "Unload (Rigid?)", "")),
+        (_PL_consts.PSPCF.RAIL_LOAD, (str(_PL_consts.PSPCF.RAIL_LOAD), "Load", "")),
+    ])
+    # LOCATORS - PREFAB - SPAWN POINTS (CUSTOM)
+    locator_prefab_custom_parking_difficulty: EnumProperty(
+        name="Parking Difficulty",
+        description="Current parking difficulty",
+        items=enum_custom_parking_difficulty_items.values(),
+        default=str(_PL_consts.PSPCF.RAIL_NONE),
+    )
+    enum_custom_lenght_items = OrderedDict([
+        (_PL_consts.PSPCF.LENGHT_14, (str(_PL_consts.PSPCF.LENGHT_14), "14 m", "")),
+        (_PL_consts.PSPCF.LENGHT_15, (str(_PL_consts.PSPCF.LENGHT_15), "15 m", "")),
+        (_PL_consts.PSPCF.LENGHT_16, (str(_PL_consts.PSPCF.LENGHT_16), "16 m", "")),
+        (_PL_consts.PSPCF.LENGHT_17, (str(_PL_consts.PSPCF.LENGHT_17), "17 m", "")),
+        (_PL_consts.PSPCF.LENGHT_18, (str(_PL_consts.PSPCF.LENGHT_18), "18 m", "")),
+        (_PL_consts.PSPCF.LENGHT_19, (str(_PL_consts.PSPCF.LENGHT_19), "19 m", "")),
+        (_PL_consts.PSPCF.LENGHT_20, (str(_PL_consts.PSPCF.LENGHT_20), "20 m", "")),
+        (_PL_consts.PSPCF.LENGHT_21, (str(_PL_consts.PSPCF.LENGHT_21), "21 m", "")),
+        (_PL_consts.PSPCF.LENGHT_22, (str(_PL_consts.PSPCF.LENGHT_22), "22 m", "")),
+        (_PL_consts.PSPCF.LENGHT_23, (str(_PL_consts.PSPCF.LENGHT_23), "23 m", "")),
+        (_PL_consts.PSPCF.LENGHT_24, (str(_PL_consts.PSPCF.LENGHT_24), "24 m", "")),
+        (_PL_consts.PSPCF.LENGHT_25, (str(_PL_consts.PSPCF.LENGHT_25), "25 m", "")),
+        (_PL_consts.PSPCF.LENGHT_26, (str(_PL_consts.PSPCF.LENGHT_26), "26 m", "")),
+        (_PL_consts.PSPCF.LENGHT_27, (str(_PL_consts.PSPCF.LENGHT_27), "27 m", "")),
+        (_PL_consts.PSPCF.LENGHT_28, (str(_PL_consts.PSPCF.LENGHT_28), "28 m", "")),
+        (_PL_consts.PSPCF.UNLIMITED, (str(_PL_consts.PSPCF.UNLIMITED), "Unlimited", "")),
+    ])
+    locator_prefab_custom_lenght: EnumProperty(
+        name="Trailer Lenght",
+        description="Max trailer lenght",
+        options={'HIDDEN'},
+        items=enum_custom_lenght_items.values(),
+        default=str(_PL_consts.PSPCF.LENGHT_14),
+    )
+    enum_custom_rule_items = OrderedDict([
+        (_PL_consts.PSPCF.TRAILER_ANY, (str(_PL_consts.PSPCF.TRAILER_ANY), "Any Trailer", "")),
+        (_PL_consts.PSPCF.TRAILER_BOX, (str(_PL_consts.PSPCF.TRAILER_BOX), "Box Trailer", "")),
+        (_PL_consts.PSPCF.TRAILER_TANK, (str(_PL_consts.PSPCF.TRAILER_TANK), "Tank Trailer", "")),
+        (_PL_consts.PSPCF.TRAILER_DUMP_BULK, (str(_PL_consts.PSPCF.TRAILER_DUMP_BULK), "Dump & Bulk", "")),
+        (_PL_consts.PSPCF.TRAILER_PLATFORM_LOG_CONT, (str(_PL_consts.PSPCF.TRAILER_PLATFORM_LOG_CONT), "Platform, Log & Container", "")),
+        (_PL_consts.PSPCF.TRAILER_LIVESTOCK, (str(_PL_consts.PSPCF.TRAILER_LIVESTOCK), "Livestock", "")),
+        (_PL_consts.PSPCF.TRAILER_LOG, (str(_PL_consts.PSPCF.TRAILER_LOG), "Log Trailer", "")),
+    ])
+    locator_prefab_custom_rule: EnumProperty(
+        name="Trailer Type",
+        description="Trailer type",
+        options={'HIDDEN'},
+        items=enum_custom_rule_items.values(),
+        default=str(_PL_consts.PSPCF.TRAILER_ANY),
     )
     # LOCATORS - PREFAB - TRAFFIC LIGHTS (SEMAPHORES)
     enum_tsem_id_items = OrderedDict([(-1, ('-1', "None", ""))])
