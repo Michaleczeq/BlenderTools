@@ -99,6 +99,84 @@ def draw_shape_spawn_point(mat, scs_globals):
     _primitive.append_line_vertex((mat @ Vector((0.0, 0.1299, 0.525))), color)
     _primitive.append_line_vertex((mat @ Vector((0.0, -0.1299, 0.675))), color)
 
+def draw_shape_spawn_point_custom(mat, scs_globals, obj):
+    """
+    Draws shape for "Custom" type "Locator" of "Spawn Point" type.
+    :param mat:
+    :param scs_globals:
+    :param obj:
+    :return:
+    """
+
+    color = (
+        scs_globals.locator_prefab_wire_color.r,
+        scs_globals.locator_prefab_wire_color.g,
+        scs_globals.locator_prefab_wire_color.b,
+        1.0
+    )
+
+    # Load
+    if (int(obj.scs_props.locator_prefab_custom_depot_type) / 4) == 1:
+        match obj.scs_props.locator_prefab_custom_parking_difficulty:
+            case "1":   # Easy
+                difficulty_color = (0.0, 1.0, 1.0, 1.0)
+            case "2":   # Medium
+                difficulty_color = (0.0, 0.471, 1.0, 1.0)
+            case "3":   # Hard
+                difficulty_color = (0.0, 0.0, 0.784, 1.0)
+            case _:
+                difficulty_color = (0.0, 1.0, 1.0, 1.0)
+    # Unload
+    else:
+        match obj.scs_props.locator_prefab_custom_parking_difficulty:
+            case "1":   # Easy
+                difficulty_color = (1.0, 1.0, 0.0, 1.0)
+            case "2":   # Medium
+                difficulty_color = (0.706, 0.471, 0.0, 1.0)
+            case "3":   # Hard
+                difficulty_color = (1.0, 0.0, 0.0, 1.0)
+            case _:
+                difficulty_color = (1.0, 1.0, 0.0, 1.0)
+
+    # Matrix without "Locator Size"
+    mat_orig = obj.matrix_world
+
+    width = 3.4
+    height = 0.05 # Height above ground to prevent z-fight
+    lenght = (int(obj.scs_props.locator_prefab_custom_lenght) / 16) + 14
+
+    # Set diffrent shape for "Unlimited" lenght (max size of last fixed lenght)
+    if lenght == 29.0:
+        lenght = 20.0
+
+        _primitive.append_line_vertex((mat_orig @ Vector((0.0, lenght + 3.0, height))), difficulty_color)
+        _primitive.append_line_vertex((mat_orig @ Vector((width/2, lenght + 1.0, height))), difficulty_color, is_strip=True)
+        _primitive.append_line_vertex((mat_orig @ Vector((width/2, lenght + 8.0, height))), difficulty_color, is_strip=True)
+        _primitive.append_line_vertex((mat_orig @ Vector((0.0, lenght + 10.0, height))), difficulty_color, is_strip=True)
+        _primitive.append_line_vertex((mat_orig @ Vector((-width/2, lenght + 8.0, height))), difficulty_color, is_strip=True)
+        _primitive.append_line_vertex((mat_orig @ Vector((-width/2, lenght + 1.0, height))), difficulty_color, is_strip=True)
+        _primitive.append_line_vertex((mat_orig @ Vector((0.0, lenght + 3.0, height))), difficulty_color)
+
+    # Locator
+    _primitive.append_line_vertex((mat @ Vector((0.0, 0.0, scs_globals.locator_empty_size))), color) # , color
+    _primitive.append_line_vertex((mat @ Vector((0.0, 0.0, 0.75))), color)
+    _primitive.append_line_vertex((mat @ Vector((-0.1299, 0.0, 0.525))), color)
+    _primitive.append_line_vertex((mat @ Vector((0.1299, 0.0, 0.675))), color)
+    _primitive.append_line_vertex((mat @ Vector((0.1299, 0.0, 0.525))), color)
+    _primitive.append_line_vertex((mat @ Vector((-0.1299, 0.0, 0.675))), color)
+    _primitive.append_line_vertex((mat @ Vector((0.0, -0.1299, 0.525))), color)
+    _primitive.append_line_vertex((mat @ Vector((0.0, 0.1299, 0.675))), color)
+    _primitive.append_line_vertex((mat @ Vector((0.0, 0.1299, 0.525))), color)
+    _primitive.append_line_vertex((mat @ Vector((0.0, -0.1299, 0.675))), color)
+
+    # Depot
+    _primitive.append_line_vertex((mat_orig @ Vector((width/2, 0.0, height))), difficulty_color)
+    _primitive.append_line_vertex((mat_orig @ Vector((-width/2, 0.0, height))), difficulty_color, is_strip=True)
+    _primitive.append_line_vertex((mat_orig @ Vector((-width/2, lenght, height))), difficulty_color, is_strip=True)
+    _primitive.append_line_vertex((mat_orig @ Vector((0.0, lenght + 2.0, height))), difficulty_color, is_strip=True)
+    _primitive.append_line_vertex((mat_orig @ Vector((width/2, lenght, height))), difficulty_color, is_strip=True)
+    _primitive.append_line_vertex((mat_orig @ Vector((width/2, 0.0, height))), difficulty_color)
+
 
 def draw_shape_traffic_light(mat, scs_globals):
     """
@@ -211,7 +289,10 @@ def draw_prefab_locator(obj, scs_globals):
         _primitive.draw_shape_y_axis(mat, empty_size)
         _primitive.draw_shape_z_axis_neg(mat, empty_size)
         if not obj.scs_props.locator_preview_model_present or not scs_globals.show_preview_models:
-            draw_shape_spawn_point(mat, scs_globals)
+            if obj.scs_props.locator_prefab_spawn_type == str(_PL_consts.PSP.CUSTOM):
+                draw_shape_spawn_point_custom(mat, scs_globals, obj)
+            else:
+                draw_shape_spawn_point(mat, scs_globals)
 
     elif obj.scs_props.locator_prefab_type == 'Traffic Semaphore':
         _primitive.draw_shape_x_axis(mat, empty_size)
@@ -259,6 +340,16 @@ def get_prefab_locator_comprehensive_info(obj):
 
         spawn_type_i = int(obj.scs_props.locator_prefab_spawn_type)
         textlines.append("Type: %s" % obj.scs_props.enum_spawn_type_items[spawn_type_i][1])
+        if obj.scs_props.locator_prefab_spawn_type == str(_PL_consts.PSP.CUSTOM):
+            depot_type_i = int(obj.scs_props.locator_prefab_custom_depot_type)
+            difficulty_i = int(obj.scs_props.locator_prefab_custom_parking_difficulty)
+            lenght_i = int(obj.scs_props.locator_prefab_custom_lenght)
+            trailer_i = int(obj.scs_props.locator_prefab_custom_rule)
+
+            textlines.append("Difficulty: %s (%s)" % (obj.scs_props.enum_custom_depot_type_items[depot_type_i][1],
+                                                       obj.scs_props.enum_custom_parking_difficulty_items[difficulty_i][1]))
+            textlines.append("Lenght: %s" % obj.scs_props.enum_custom_lenght_items[lenght_i][1])
+            textlines.append("Trailer: %s" % obj.scs_props.enum_custom_rule_items[trailer_i][1])
 
     elif obj.scs_props.locator_prefab_type == 'Traffic Semaphore':
 

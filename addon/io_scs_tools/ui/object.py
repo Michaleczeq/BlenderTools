@@ -371,6 +371,10 @@ class SCS_TOOLS_PT_Locator(_ObjectPanelBlDefs, Panel):
 
         # check if Spawn Type = Custom (9)
         if obj.scs_props.locator_prefab_spawn_type == str(_PL_consts.PSP.CUSTOM):
+
+            # depot type (load/unload)
+            layout.prop(obj.scs_props, 'locator_prefab_custom_depot_type', expand=True, toggle=True)
+
             # parking difficulty
             layout.prop(obj.scs_props, 'locator_prefab_custom_parking_difficulty')
 
@@ -379,7 +383,6 @@ class SCS_TOOLS_PT_Locator(_ObjectPanelBlDefs, Panel):
 
             # rule (trailer type)
             layout.prop(obj.scs_props, 'locator_prefab_custom_rule')
-
 
     @staticmethod
     def draw_prefab_semaphore(layout, obj):

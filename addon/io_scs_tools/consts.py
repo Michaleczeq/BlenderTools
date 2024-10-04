@@ -447,14 +447,17 @@ class PrefabLocators:
     class PSPCF:
         """Constants represetning spawn point custom flags.
         """
+        # Depot Types
+        DEPOT_TYPE_MASK = 0x00000004
+        DEPOT_TYPE_UNLOAD = 0x00000000
+        DEPOT_TYPE_LOAD = 0x00000004
+
         # Difficulties
-        RAIL_MASK = 0x0000000F
-        RAIL_NONE = 0x00000000
-        RAIL_EASY = 0x00000001
-        RAIL_MEDIUM = 0x00000002
-        RAIL_HARD = 0x00000003
-        RAIL_RIGID = 0x00000004   # ?? idk
-        RAIL_LOAD = 0x00000005
+        DIFFICULTY_MASK = 0x00000003
+        DIFFICULTY_NONE = 0x00000000
+        DIFFICULTY_EASY = 0x00000001
+        DIFFICULTY_MEDIUM = 0x00000002
+        DIFFICULTY_HARD = 0x00000003
 
         # Lenght
         LENGHT_MASK = 0x000000F0

@@ -85,6 +85,9 @@ class SpawnPoint:
         :type sp_flags: int
         """
 
+        # depot type
+        self.__flags |= int(sp_flags.locator_prefab_custom_depot_type)
+
         # parking difficulty
         self.__flags |= int(sp_flags.locator_prefab_custom_parking_difficulty)
 

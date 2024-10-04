@@ -460,10 +460,14 @@ def _create_spawn_locator(
         locator.scs_props.locator_prefab_type = 'Spawn Point'
         locator.scs_props.locator_prefab_spawn_type = str(spawn_type)
 
-        # flags
-        locator.scs_props.locator_prefab_custom_parking_difficulty = str(spawn_flags & _PL_consts.PSPCF.RAIL_MASK)
-        locator.scs_props.locator_prefab_custom_lenght = str(spawn_flags & _PL_consts.PSPCF.LENGHT_MASK)
-        locator.scs_props.locator_prefab_custom_rule = str(spawn_flags & _PL_consts.PSPCF.TRAILER_MASK)
+        # flags for custom spawn type
+
+        # check if Spawn Type = Custom (9)
+        if locator.scs_props.locator_prefab_spawn_type == str(_PL_consts.PSP.CUSTOM):
+            locator.scs_props.locator_prefab_custom_depot_type = str(spawn_flags & _PL_consts.PSPCF.DEPOT_TYPE_MASK)
+            locator.scs_props.locator_prefab_custom_parking_difficulty = str(spawn_flags & _PL_consts.PSPCF.DIFFICULTY_MASK)
+            locator.scs_props.locator_prefab_custom_lenght = str(spawn_flags & _PL_consts.PSPCF.LENGHT_MASK)
+            locator.scs_props.locator_prefab_custom_rule = str(spawn_flags & _PL_consts.PSPCF.TRAILER_MASK)
 
     return locator
 

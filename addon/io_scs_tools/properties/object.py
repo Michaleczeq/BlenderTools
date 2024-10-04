@@ -878,20 +878,28 @@ class ObjectSCSTools(bpy.types.PropertyGroup):
         items=enum_spawn_type_items.values(),
         default=str(_PL_consts.PSP.NONE),
     )
-    enum_custom_parking_difficulty_items = OrderedDict([
-        (_PL_consts.PSPCF.RAIL_NONE, (str(_PL_consts.PSPCF.RAIL_NONE), "None", "")),
-        (_PL_consts.PSPCF.RAIL_EASY, (str(_PL_consts.PSPCF.RAIL_EASY), "Unload (Easy)", "")),
-        (_PL_consts.PSPCF.RAIL_MEDIUM, (str(_PL_consts.PSPCF.RAIL_MEDIUM), "Unload (Medium)", "")),
-        (_PL_consts.PSPCF.RAIL_HARD, (str(_PL_consts.PSPCF.RAIL_HARD), "Unload (Hard)", "")),
-        (_PL_consts.PSPCF.RAIL_RIGID, (str(_PL_consts.PSPCF.RAIL_RIGID), "Unload (Rigid?)", "")),
-        (_PL_consts.PSPCF.RAIL_LOAD, (str(_PL_consts.PSPCF.RAIL_LOAD), "Load", "")),
-    ])
     # LOCATORS - PREFAB - SPAWN POINTS (CUSTOM)
+    enum_custom_depot_type_items = OrderedDict([
+        (_PL_consts.PSPCF.DEPOT_TYPE_UNLOAD, (str(_PL_consts.PSPCF.DEPOT_TYPE_UNLOAD), "Unload", "")),
+        (_PL_consts.PSPCF.DEPOT_TYPE_LOAD, (str(_PL_consts.PSPCF.DEPOT_TYPE_LOAD), "Load", "")),
+    ])
+    locator_prefab_custom_depot_type: EnumProperty(
+        name="Depot Type",
+        description="Depot Type",
+        items=enum_custom_depot_type_items.values(),
+        default=str(_PL_consts.PSPCF.DEPOT_TYPE_UNLOAD),
+    )
+    enum_custom_parking_difficulty_items = OrderedDict([
+        (_PL_consts.PSPCF.DIFFICULTY_NONE, (str(_PL_consts.PSPCF.DIFFICULTY_NONE), "None", "")),
+        (_PL_consts.PSPCF.DIFFICULTY_EASY, (str(_PL_consts.PSPCF.DIFFICULTY_EASY), "Easy", "")),
+        (_PL_consts.PSPCF.DIFFICULTY_MEDIUM, (str(_PL_consts.PSPCF.DIFFICULTY_MEDIUM), "Medium", "")),
+        (_PL_consts.PSPCF.DIFFICULTY_HARD, (str(_PL_consts.PSPCF.DIFFICULTY_HARD), "Hard", "")),
+    ])
     locator_prefab_custom_parking_difficulty: EnumProperty(
         name="Parking Difficulty",
         description="Current parking difficulty",
         items=enum_custom_parking_difficulty_items.values(),
-        default=str(_PL_consts.PSPCF.RAIL_NONE),
+        default=str(_PL_consts.PSPCF.DIFFICULTY_EASY),
     )
     enum_custom_lenght_items = OrderedDict([
         (_PL_consts.PSPCF.LENGHT_14, (str(_PL_consts.PSPCF.LENGHT_14), "14 m", "")),

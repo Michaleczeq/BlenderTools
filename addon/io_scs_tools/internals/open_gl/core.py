@@ -20,7 +20,7 @@
 
 import bpy
 import blf
-import bgl
+import gpu
 from mathutils import Vector
 from gpu_extras.presets import draw_texture_2d
 from io_scs_tools.consts import Operators as _OP_consts
@@ -139,15 +139,14 @@ def _draw_3dview_report(window, area, region):
     # draw BT banner
     (bindcode, width, height) = _Show3DViewReport.get_scs_banner_img_data(window)
 
-    bgl.glEnable(bgl.GL_BLEND)
-    bgl.glBlendFunc(bgl.GL_SRC_ALPHA, bgl.GL_ONE_MINUS_SRC_ALPHA)
+    gpu.state.blend_set("ALPHA")
     draw_texture_2d(bindcode, (pos_x - 5, pos_y), width, height)
-    bgl.glDisable(bgl.GL_BLEND)
+    gpu.state.blend_set("NONE")
 
     # draw control buttons, if controls are enabled
     if _Show3DViewReport.has_controls(window):
 
-        blf.size(0, 20, 72)
+        blf.size(0, 20)
         blf.color(0, .8, .8, .8, 1)
 
         # set x and y offsets to report operator, so that area calculations for buttons can be calculated properly
@@ -187,7 +186,7 @@ def _draw_3dview_report(window, area, region):
         # draw scroll controls
         if _Show3DViewReport.is_scrolled() and _Show3DViewReport.is_shown():
 
-            blf.size(0, 16, 72)
+            blf.size(0, 16)
 
             # draw scroll up button
             scroll_up_pos = (
@@ -243,7 +242,7 @@ def _draw_3dview_report(window, area, region):
 
     # draw version string
     pos_y -= 12
-    blf.size(0, 11, 72)
+    blf.size(0, 11)
     blf.color(0, 0.909803921568627, .631372549019608, .0627450980392157, 1)
     blf.shadow(0, 0, 0, 0, 0, 1)
     blf.position(0, pos_x, pos_y, 0)
@@ -253,7 +252,7 @@ def _draw_3dview_report(window, area, region):
     # draw actual operator title and message if shown
     if _Show3DViewReport.is_shown():
 
-        blf.size(0, 12, 72)
+        blf.size(0, 12)
         blf.color(0, 1, 1, 1, 1)
         blf.shadow(0, 0, 0, 0, 0, 1)
 
@@ -322,7 +321,7 @@ def _draw_3dview_immediate_report(region):
     )
 
     # set size of the immidete text
-    blf.size(0, 18, 72)
+    blf.size(0, 18)
     blf.color(0, .952, .635, .062, 1)
 
     # draw on center of the region
@@ -457,16 +456,15 @@ def draw_custom_3d_elements(mode):
         return
 
     if mode == "Normal":
-        bgl.glEnable(bgl.GL_DEPTH_TEST)
-        bgl.glEnable(bgl.GL_BLEND)
-        bgl.glBlendFunc(bgl.GL_SRC_ALPHA, bgl.GL_ONE_MINUS_SRC_ALPHA)
+        gpu.state.depth_test_set("LESS")
+        gpu.state.blend_set("ALPHA")
 
     # draw buffers
     _primitive.draw_buffers(bpy.context.space_data)
 
     if mode == "Normal":
-        bgl.glDisable(bgl.GL_DEPTH_TEST)
-        bgl.glDisable(bgl.GL_BLEND)
+        gpu.state.depth_test_set("NONE")
+        gpu.state.blend_set("NONE")
 
 
 def draw_custom_2d_elements():
@@ -495,7 +493,7 @@ def draw_custom_2d_elements():
         return
 
     font_id = 0  # default font
-    blf.size(font_id, 12, 72)
+    blf.size(font_id, 12)
     blf.color(font_id, scs_globals.info_text_color[0], scs_globals.info_text_color[1], scs_globals.info_text_color[2], 1.0)
     blf.word_wrap(font_id, 999)
     blf.enable(font_id, blf.WORD_WRAP)
