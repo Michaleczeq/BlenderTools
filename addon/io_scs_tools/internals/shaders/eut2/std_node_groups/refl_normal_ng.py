@@ -61,7 +61,7 @@ def __create_refl_normal_group__():
     view_vector_n = refl_normal_g.nodes.new("ShaderNodeVectorMath")
     view_vector_n.location = (185, 250)
     view_vector_n.operation = "MULTIPLY"
-    view_vector_n.inputs[1].default_value = (-1,) * 3
+    view_vector_n.inputs[1].default_value = (-1,1,1)
 
     view_vector_norm_n = refl_normal_g.nodes.new("ShaderNodeVectorMath")
     view_vector_norm_n.location = (185 * 2, 250)
