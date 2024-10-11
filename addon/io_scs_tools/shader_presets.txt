@@ -1828,6 +1828,179 @@ Shader {
         TexCoord: ( 1 )
     }
 }
+Shader {
+    PresetName: "interior.lit"
+    Effect: "eut2.interior.lit"
+    Flags: 0
+    Attribute {
+        Format: FLOAT3
+        Tag: "diffuse"
+        Value: ( 1.0 1.0 1.0 )
+    }
+    Attribute {
+        Format: FLOAT3
+        Tag: "specular"
+        Value: ( 1.0 1.0 1.0 )
+    }
+    Attribute {
+        Format: FLOAT
+        Tag: "shininess"
+        Value: ( 65.0 )
+    }
+    Attribute {
+        Format: FLOAT2
+        Tag: "fresnel"
+        Value: ( 0.200000003 0.8999999762 )
+    }
+    Attribute {
+        Format: FLOAT3
+        Tag: "env_factor"
+        Value: ( 1.0 1.0 1.0 )
+    }
+    Attribute {
+        Format: FLOAT2
+        Tag: "aux[5]"
+        FriendlyTag: "Luminance Output (Day, Night) (nit)"
+        Value: ( 1700.0 17.0 )
+    }
+    Attribute {
+        Format: FLOAT2
+        Tag: "aux[1]"
+        FriendlyTag: "Atlas Dimensions (X,Z)"
+        Value: ( 8.0 4.0 )
+    }
+    Attribute {
+        Format: FLOAT4
+        Tag: "aux[2]"
+        FriendlyTag: "Glass Color (R,G,B,Factor)"
+        Value: ( 1.0 1.0 1.0 0.0 )
+    }
+    Attribute {
+        Format: FLOAT2
+        Tag: "aux[0]"
+        FriendlyTag: "Room Dimensions (X,Z)"
+        Value: ( 3.5 3.5 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_base"
+        Value: ""
+        TexCoord: ( 0 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_layer0"
+        Value: ""
+        TexCoord: ( 0 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_layer1"
+        Value: ""
+        TexCoord: ( 0 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_mask"
+        Value: ""
+        TexCoord: ( 0 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_nmap_detail"
+        Value: ""
+        TexCoord: ( 0 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_reflection"
+        Value: "/material/environment/building_reflection/building_ref"
+        TexCoord: ( -1 )
+    }
+}
+Shader {
+    PresetName: "interior.curtain.lit"
+    Effect: "eut2.interior.curtain.lit"
+    Flags: 0
+    Attribute {
+        Format: FLOAT3
+        Tag: "diffuse"
+        Value: ( 1.0 1.0 1.0 )
+    }
+    Attribute {
+        Format: FLOAT3
+        Tag: "specular"
+        Value: ( 1.0 1.0 1.0 )
+    }
+    Attribute {
+        Format: FLOAT
+        Tag: "shininess"
+        Value: ( 65.0 )
+    }
+    Attribute {
+        Format: FLOAT2
+        Tag: "fresnel"
+        Value: ( 0.200000003 0.8999999762 )
+    }
+    Attribute {
+        Format: FLOAT3
+        Tag: "env_factor"
+        Value: ( 1.0 1.0 1.0 )
+    }
+    Attribute {
+        Format: FLOAT2
+        Tag: "aux[5]"
+        FriendlyTag: "Luminance Output (Day, Night) (nit)"
+        Value: ( 1700.0 17.0 )
+    }
+    Attribute {
+        Format: FLOAT2
+        Tag: "aux[1]"
+        FriendlyTag: "Atlas Dimensions (X,Z)"
+        Value: ( 8.0 4.0 )
+    }
+    Attribute {
+        Format: FLOAT4
+        Tag: "aux[2]"
+        FriendlyTag: "Glass Color (R,G,B,Factor)"
+        Value: ( 1.0 1.0 1.0 0.0 )
+    }
+    Attribute {
+        Format: FLOAT2
+        Tag: "aux[0]"
+        FriendlyTag: "Room Dimensions (X,Z)"
+        Value: ( 3.5 3.5 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_base"
+        Value: ""
+        TexCoord: ( 0 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_over"
+        Value: ""
+        TexCoord: ( 2 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_layer0"
+        Value: ""
+        TexCoord: ( 0 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_layer1"
+        Value: ""
+        TexCoord: ( 0 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_mask"
+        Value: ""
+        TexCoord: ( 0 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_nmap_detail"
+        Value: ""
+        TexCoord: ( 0 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_reflection"
+        Value: "/material/environment/building_reflection/building_ref"
+        TexCoord: ( -1 )
+    }
+}
 Flavor {
     Type: "AIRBRUSH"
     Name: "airbrush"
