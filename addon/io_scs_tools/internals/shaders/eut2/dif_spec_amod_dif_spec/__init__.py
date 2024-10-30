@@ -20,19 +20,19 @@
 
 from io_scs_tools.consts import Mesh as _MESH_consts
 from io_scs_tools.internals.shaders.eut2.dif_spec import DifSpec
+from io_scs_tools.internals.shaders.eut2.dif_spec_amod_dif_spec import decal_blend_factor_ng
 from io_scs_tools.utils import material as _material_utils
 
 class DifSpecAmodDifSpec(DifSpec):
     SEC_UVMAP_NODE = "SecondUVMap"
-    VCOLOR_SCALE_NODE = "VertexColorScale"
-    VCOLOR_SUBTRACT_NODE = "VertexColorSubtract"
-    VCOLOR_ABS_NODE = "VertexColorAbsolute"
-    VCOLOR_INVERT_NODE = "VertexColorInvert"
     MASK_TEX_NODE = "MaskTex"
     OVER_TEX_NODE = "OverTex"
-    MASK_COLOR_INVERT_NODE = "MaskColorInvert"
+    BLENDING_FACTOR_1 = "BlendingFactor1"
+    BLENDING_FACTOR_2 = "BlendingFactor2"
+    DECAL_BLEND_FACTOR_NODE = "DecalBlendFactorGNode"
     MASK_VCOLOR_MIX_NODE = "MaskVertexColorMix"
     MASK_COLOR_MIX_NODE = "MaskColorMix"
+
     
     @staticmethod
     def get_name():
@@ -58,22 +58,34 @@ class DifSpecAmodDifSpec(DifSpec):
         base_tex_n = node_tree.nodes[DifSpec.BASE_TEX_NODE]
         vcol_multi_n = node_tree.nodes[DifSpec.VCOLOR_MULT_NODE]
         vcol_group_n = node_tree.nodes[DifSpec.VCOL_GROUP_NODE]
+
+        # delete existing
+        node_tree.nodes.remove(node_tree.nodes[DifSpec.OPACITY_NODE])
         
         # node creation
         # - column -1 -
+        blending_factor_1_n = node_tree.nodes.new("ShaderNodeValue")
+        blending_factor_1_n.name = DifSpecAmodDifSpec.BLENDING_FACTOR_1
+        blending_factor_1_n.label = DifSpecAmodDifSpec.BLENDING_FACTOR_1
+        blending_factor_1_n.location = (start_pos_x - pos_x_shift, start_pos_y + 1100)
+
+        blending_factor_2_n = node_tree.nodes.new("ShaderNodeValue")
+        blending_factor_2_n.name = DifSpecAmodDifSpec.BLENDING_FACTOR_2
+        blending_factor_2_n.label = DifSpecAmodDifSpec.BLENDING_FACTOR_2
+        blending_factor_2_n.location = (start_pos_x - pos_x_shift, start_pos_y + 1000)
+
         sec_uvmap_n = node_tree.nodes.new("ShaderNodeUVMap")
         sec_uvmap_n.name = DifSpecAmodDifSpec.SEC_UVMAP_NODE
         sec_uvmap_n.label = DifSpecAmodDifSpec.SEC_UVMAP_NODE
-        sec_uvmap_n.location = (start_pos_x - pos_x_shift, start_pos_y + 1000)
+        sec_uvmap_n.location = (start_pos_x - pos_x_shift, start_pos_y + 900)
         sec_uvmap_n.uv_map = _MESH_consts.none_uv
         
         # - column 1 -
-        vcol_scale_n = node_tree.nodes.new("ShaderNodeVectorMath")
-        vcol_scale_n.name = DifSpecAmodDifSpec.VCOLOR_SCALE_NODE
-        vcol_scale_n.label = DifSpecAmodDifSpec.VCOLOR_SCALE_NODE
-        vcol_scale_n.location = (start_pos_x + pos_x_shift, start_pos_y + 1200)
-        vcol_scale_n.operation = "MULTIPLY"
-        vcol_scale_n.inputs[1].default_value = (2,) * 3
+        deacl_blend_fac_gn = node_tree.nodes.new("ShaderNodeGroup")
+        deacl_blend_fac_gn.name = DifSpecAmodDifSpec.DECAL_BLEND_FACTOR_NODE
+        deacl_blend_fac_gn.label = DifSpecAmodDifSpec.DECAL_BLEND_FACTOR_NODE
+        deacl_blend_fac_gn.location = (start_pos_x + pos_x_shift, start_pos_y + 1200)
+        deacl_blend_fac_gn.node_tree = decal_blend_factor_ng.get_node_group()
         
         mask_tex_n = node_tree.nodes.new("ShaderNodeTexImage")
         mask_tex_n.name = DifSpecAmodDifSpec.MASK_TEX_NODE
@@ -88,94 +100,56 @@ class DifSpecAmodDifSpec(DifSpec):
         over_tex_n.width = 140
 
         # - column 2 -
-        vcol_subtract_n = node_tree.nodes.new("ShaderNodeVectorMath")
-        vcol_subtract_n.name = DifSpecAmodDifSpec.VCOLOR_SUBTRACT_NODE
-        vcol_subtract_n.label = DifSpecAmodDifSpec.VCOLOR_SUBTRACT_NODE
-        vcol_subtract_n.location = (start_pos_x + pos_x_shift * 2, start_pos_y + 1200)
-        vcol_subtract_n.operation = "SUBTRACT"
-        vcol_subtract_n.inputs[1].default_value = (1,) * 3
-
-        mask_invert_n = node_tree.nodes.new("ShaderNodeInvert")
-        mask_invert_n.name = DifSpecAmodDifSpec.MASK_COLOR_INVERT_NODE
-        mask_invert_n.label = DifSpecAmodDifSpec.MASK_COLOR_INVERT_NODE
-        mask_invert_n.location = (start_pos_x + pos_x_shift * 2, start_pos_y + 1000)
-        mask_invert_n.inputs[0].default_value = 1
-        
-        # - column 3 -
-        vcol_abs_n = node_tree.nodes.new("ShaderNodeVectorMath")
-        vcol_abs_n.name = DifSpecAmodDifSpec.VCOLOR_ABS_NODE
-        vcol_abs_n.label = DifSpecAmodDifSpec.VCOLOR_ABS_NODE
-        vcol_abs_n.location = (start_pos_x + pos_x_shift * 3, start_pos_y + 1100)
-        vcol_abs_n.operation = "ABSOLUTE"
-
-        # - column 4 -
-        vcol_invert_n = node_tree.nodes.new("ShaderNodeInvert")
-        vcol_invert_n.name = DifSpecAmodDifSpec.VCOLOR_INVERT_NODE
-        vcol_invert_n.label = DifSpecAmodDifSpec.VCOLOR_INVERT_NODE
-        vcol_invert_n.location = (start_pos_x + pos_x_shift * 4, start_pos_y + 1100)
-        vcol_invert_n.inputs[0].default_value = 1
-
-        # - column 5 -
         mask_vcol_mix_n = node_tree.nodes.new("ShaderNodeMixRGB")
         mask_vcol_mix_n.name = DifSpecAmodDifSpec.MASK_VCOLOR_MIX_NODE
         mask_vcol_mix_n.label = DifSpecAmodDifSpec.MASK_VCOLOR_MIX_NODE
-        mask_vcol_mix_n.location = (start_pos_x + pos_x_shift * 5, start_pos_y + 1100)
+        mask_vcol_mix_n.location = (start_pos_x + pos_x_shift * 2, start_pos_y + 1200)
         mask_vcol_mix_n.blend_type = "MIX"
-        mask_vcol_mix_n.inputs['Color2'].default_value = (1,) * 4
+        mask_vcol_mix_n.inputs['Color1'].default_value = (0,) * 3 + (1,)
 
-        # - column 6 -
+        # - column 3 -
         mask_color_mix_n = node_tree.nodes.new("ShaderNodeMixRGB")
         mask_color_mix_n.name = DifSpecAmodDifSpec.MASK_COLOR_MIX_NODE
         mask_color_mix_n.label = DifSpecAmodDifSpec.MASK_COLOR_MIX_NODE
-        mask_color_mix_n.location = (start_pos_x + pos_x_shift * 6, start_pos_y + 1050)
+        mask_color_mix_n.location = (start_pos_x + pos_x_shift * 3, start_pos_y + 1200)
         mask_color_mix_n.blend_type = "MIX"
 
 
         
         # links creation
         # - Column -1 -
-        node_tree.links.new(vcol_group_n.outputs[1], vcol_scale_n.inputs[0])
+        node_tree.links.new(vcol_group_n.outputs['Vertex Color Alpha'], deacl_blend_fac_gn.inputs['Vertex Alpha'])
+        node_tree.links.new(blending_factor_1_n.outputs['Value'], deacl_blend_fac_gn.inputs['Factor1'])
+        node_tree.links.new(blending_factor_2_n.outputs['Value'], deacl_blend_fac_gn.inputs['Factor2'])
         node_tree.links.new(sec_uvmap_n.outputs['UV'], mask_tex_n.inputs['Vector'])
         node_tree.links.new(sec_uvmap_n.outputs['UV'], over_tex_n.inputs['Vector'])
         
         # - Column 1 -
-        node_tree.links.new(base_tex_n.outputs['Color'], mask_color_mix_n.inputs['Color2'])
-        node_tree.links.new(vcol_scale_n.outputs['Vector'], vcol_subtract_n.inputs[0])
-        node_tree.links.new(mask_tex_n.outputs['Color'], mask_invert_n.inputs['Color'])
-        node_tree.links.new(over_tex_n.outputs['Color'], mask_color_mix_n.inputs['Color1'])
+        node_tree.links.new(base_tex_n.outputs['Color'], mask_color_mix_n.inputs['Color1'])
+        node_tree.links.new(mask_tex_n.outputs['Color'], mask_vcol_mix_n.inputs['Color2'])
+        node_tree.links.new(over_tex_n.outputs['Color'], mask_color_mix_n.inputs['Color2'])
+        node_tree.links.new(deacl_blend_fac_gn.outputs['Factor'], mask_vcol_mix_n.inputs['Fac'])
         
         # - Column 2 -
-        node_tree.links.new(vcol_subtract_n.outputs['Vector'], vcol_abs_n.inputs[0])
-        node_tree.links.new(mask_invert_n.outputs['Color'], mask_vcol_mix_n.inputs['Color1'])
-
-        # - Column 3 -
-        node_tree.links.new(vcol_abs_n.outputs['Vector'], vcol_invert_n.inputs['Color'])
-
-        # - Column 4 -
-        node_tree.links.new(vcol_invert_n.outputs['Color'], mask_vcol_mix_n.inputs['Fac'])
-        
-        # - Column 5 -
         node_tree.links.new(mask_vcol_mix_n.outputs['Color'], mask_color_mix_n.inputs['Fac'])
         
-        # - Column 6 -
+        # - Column 3 -
         node_tree.links.new(mask_color_mix_n.outputs['Color'], vcol_multi_n.inputs[1])
         
 
     @staticmethod
-    def set_over_uv(node_tree, uv_layer):
-        """Set UV layer to overlying texture in shader.
+    def set_aux0(node_tree, aux_property):
+        """Set decal blending factors to shader.
 
         :param node_tree: node tree of current shader
         :type node_tree: bpy.types.NodeTree
-        :param uv_layer: uv layer string used for over texture
-        :type uv_layer: str
+        :param aux_property: decal blending factors represented with property group
+        :type aux_property: bpy.types.IDPropertyGroup
         """
 
-        if uv_layer is None or uv_layer == "":
-            uv_layer = _MESH_consts.none_uv
-
-        node_tree.nodes[DifSpecAmodDifSpec.SEC_UVMAP_NODE].uv_map = uv_layer
-        
+        node_tree.nodes[DifSpecAmodDifSpec.BLENDING_FACTOR_1].outputs["Value"].default_value = aux_property[0]['value']
+        node_tree.nodes[DifSpecAmodDifSpec.BLENDING_FACTOR_2].outputs["Value"].default_value = aux_property[1]['value']
+    
     @staticmethod
     def set_mask_texture(node_tree, image):
         """Set mask texture to shader.
@@ -197,9 +171,29 @@ class DifSpecAmodDifSpec(DifSpec):
         :param settings: binary string of TOBJ settings gotten from tobj import
         :type settings: str
         """
-        # Commented because of texture linear colorspace problems in render
-        # _material_utils.set_texture_settings_to_node(node_tree.nodes[DifSpecAmodDifSpec.MASK_TEX_NODE], settings)
-        
+        _material_utils.set_texture_settings_to_node(node_tree.nodes[DifSpecAmodDifSpec.MASK_TEX_NODE], settings)
+
+        # due the fact uvs get clamped in vertex shader, we have to manually switch repeat on, for effect to work correctly
+        node_tree.nodes[DifSpecAmodDifSpec.MASK_TEX_NODE].extension = "REPEAT"
+
+        # due the fact uvs colorspace linear, we have to manually switch to sRGB, for effect to work correctly
+        node_tree.nodes[DifSpecAmodDifSpec.MASK_TEX_NODE].image.colorspace_settings.name = 'sRGB'
+
+    @staticmethod
+    def set_over_uv(node_tree, uv_layer):
+        """Set UV layer to overlying texture in shader.
+
+        :param node_tree: node tree of current shader
+        :type node_tree: bpy.types.NodeTree
+        :param uv_layer: uv layer string used for over texture
+        :type uv_layer: str
+        """
+
+        if uv_layer is None or uv_layer == "":
+            uv_layer = _MESH_consts.none_uv
+
+        node_tree.nodes[DifSpecAmodDifSpec.SEC_UVMAP_NODE].uv_map = uv_layer
+
     @staticmethod
     def set_over_texture(node_tree, image):
         """Set over texture to shader.

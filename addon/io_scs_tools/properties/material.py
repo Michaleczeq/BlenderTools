@@ -342,9 +342,6 @@ class MaterialSCSTools(bpy.types.PropertyGroup):
 
     def update_shader_attribute_tint_opacity(self, context):
         __update_shader_attribute__(self, context, "tint_opacity")
-        
-    def update_shader_attribute_amod_decal_blending_factors(self, context):
-        __update_shader_attribute__(self, context, "amod_decal_blending_factors")
 
     def update_shader_texture_base(self, context):
         __update_shader_texture__(self, context, "base")
@@ -714,18 +711,6 @@ class MaterialSCSTools(bpy.types.PropertyGroup):
         precision=2,
         options={'HIDDEN'},
         update=update_shader_attribute_tint_opacity
-    )
-    
-    shader_attribute_amod_decal_blending_factors: FloatVectorProperty(
-        name="Amod Decal Blending Factors",
-        description="SCS shader 'Amod Blending' value",
-        default=(1.0, 1.0),
-        min=0, max=1,
-        step=1, precision=2,
-        options={'HIDDEN'},
-        subtype='NONE',
-        size=2,
-        update=update_shader_attribute_amod_decal_blending_factors,
     )
 
     shader_attribute_queue_bias: IntProperty(

@@ -1473,7 +1473,7 @@ Shader {
 Shader {
     PresetName: "shadowonly"
     Effect: "eut2.shadowonly"
-    Flavors: ( "NOCULL" )
+    Flavors: ( "NOCULL" "SHDW_ALPHA" )
     Flags: 0
     Attribute {
         Format: FLOAT
@@ -1793,9 +1793,9 @@ Shader {
     }
     Attribute {
         Format: FLOAT2
-        Tag: "amod_decal_blending_factors"
+        Tag: "aux[0]"
+        FriendlyTag: "Decal blending factors"
         Value: ( 1.0  1.0 )
-        Hide: "True"
     }
     Attribute {
         Format: FLOAT
@@ -2019,6 +2019,15 @@ Flavor {
 Flavor {
     Type: "ALPHA"
     Name: "a"
+}
+Flavor {
+    Type: "SHDW_ALPHA"
+    Name: "a"
+    Texture {
+        Tag: "texture[X]:texture_base"
+        Value: ""
+        TexCoord: ( 0 )
+    }
 }
 Flavor {
     Type: "ALTUV"
@@ -2329,7 +2338,7 @@ Flavor {
     Attribute {
         Format: FLOAT4
         Tag: "aux[0]"
-        FriendlyTag: "TexGen0 Scale (X,Z,ROT_BASE,ROT_NMAP)"
+        FriendlyTag: "TexGen0 (ScaleX, ScaleZ, Rotation, Unk)"
         Value: ( 10.0 10.0 0.0 0.0 )
     }
 }
@@ -2339,7 +2348,7 @@ Flavor {
     Attribute {
         Format: FLOAT4
         Tag: "aux[1]"
-        FriendlyTag: "TexGen1 Scale (X,Z,ROT_BASE,ROT_NMAP)"
+        FriendlyTag: "TexGen1 (ScaleX, ScaleZ, Rotation, Unk)"
         Value: ( 8.0 8.0 0.0 0.0 )
     }
 }

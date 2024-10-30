@@ -20,12 +20,19 @@
 
 from io_scs_tools.internals.shaders.eut2.parameters import get_fresnel_window
 from io_scs_tools.internals.shaders.eut2.dif_spec_add_env import DifSpecAddEnv
+from io_scs_tools.utils import material as _material_utils
 
 class InteriorLit(DifSpecAddEnv):
     VGCOLOR_MULT_NODE = "VertexGlassColorMultiplier"
     GLASS_COL_NODE = "GlassColor"
     GLASS_COL_MIX_NODE = "GlassColorMix"
     GLASS_COL_FAC_NODE = "GlassColorFactor"
+    LAYER0_TEX_NODE = "Layer0Tex"
+    LAYER1_TEX_NODE = "Layer1Tex"
+    MASK_TEX_NODE = "MaskTex"
+    NMAP_TEX_NODE = "NmapTex"
+    ENV_SEP_XYZ_NODE = "EnvSepXYZ"
+    ENV_CHECK_XYZ_NODE = "EnvCheckXYZ"
     
 
     @staticmethod
@@ -50,11 +57,16 @@ class InteriorLit(DifSpecAddEnv):
         DifSpecAddEnv.init(node_tree)
 
         base_tex_n = node_tree.nodes[DifSpecAddEnv.BASE_TEX_NODE]
+        uvmap_n = node_tree.nodes[DifSpecAddEnv.UVMAP_NODE]
         vcol_mult_n = node_tree.nodes[DifSpecAddEnv.VCOLOR_MULT_NODE]
         diff_mult_n = node_tree.nodes[DifSpecAddEnv.DIFF_MULT_NODE]
+        add_env_group_n = node_tree.nodes[DifSpecAddEnv.ADD_ENV_GROUP_NODE]
 
         # set fresnel type to schlick
-        node_tree.nodes[DifSpecAddEnv.ADD_ENV_GROUP_NODE].inputs['Fresnel Type'].default_value = 1.0
+        add_env_group_n.inputs['Fresnel Type'].default_value = 1.0
+
+        # Doesn't work...
+        # node_tree.nodes[DifSpecAddEnv.BASE_TEX_NODE].extension = 'REPEAT'
 
         # delete existing
         node_tree.nodes.remove(node_tree.nodes[DifSpecAddEnv.OPACITY_NODE])
@@ -64,10 +76,41 @@ class InteriorLit(DifSpecAddEnv):
         vcol_mult_n.location.x += pos_x_shift
 
         # node creation
+        # - column 0 -
+        env_sep_xyz_n = node_tree.nodes.new("ShaderNodeSeparateXYZ")
+        env_sep_xyz_n.name = env_sep_xyz_n.label = InteriorLit.ENV_SEP_XYZ_NODE
+        env_sep_xyz_n.location = (start_pos_x, start_pos_y + 1800)
+
+        env_check_xyz_n = node_tree.nodes.new("ShaderNodeMath")
+        env_check_xyz_n.name = env_check_xyz_n.label = InteriorLit.ENV_CHECK_XYZ_NODE
+        env_check_xyz_n.location = (start_pos_x, start_pos_y + 2000)
+        env_check_xyz_n.operation = "LESS_THAN"
+        env_check_xyz_n.inputs[1].default_value = 1.0
+
         # - column 1 -
         glass_col_n = node_tree.nodes.new("ShaderNodeRGB")
         glass_col_n.name = glass_col_n.label = InteriorLit.GLASS_COL_NODE
         glass_col_n.location = (start_pos_x + pos_x_shift, start_pos_y + 900)
+
+        layer0_tex_n = node_tree.nodes.new("ShaderNodeTexImage")
+        layer0_tex_n.name = layer0_tex_n.label = InteriorLit.LAYER0_TEX_NODE
+        layer0_tex_n.location = (start_pos_x + pos_x_shift, start_pos_y + 700)
+        layer0_tex_n.width = 140
+
+        layer1_tex_n = node_tree.nodes.new("ShaderNodeTexImage")
+        layer1_tex_n.name = layer1_tex_n.label = InteriorLit.LAYER1_TEX_NODE
+        layer1_tex_n.location = (start_pos_x + pos_x_shift, start_pos_y + 450)
+        layer1_tex_n.width = 140
+
+        mask_tex_n = node_tree.nodes.new("ShaderNodeTexImage")
+        mask_tex_n.name = mask_tex_n.label = InteriorLit.MASK_TEX_NODE
+        mask_tex_n.location = (start_pos_x + pos_x_shift, start_pos_y + 200)
+        mask_tex_n.width = 140
+
+        nmap_tex_n = node_tree.nodes.new("ShaderNodeTexImage")
+        nmap_tex_n.name = nmap_tex_n.label = InteriorLit.NMAP_TEX_NODE
+        nmap_tex_n.location = (start_pos_x + pos_x_shift, start_pos_y - 50)
+        nmap_tex_n.width = 140
 
         # - column 2 -
         glass_col_fac_n = node_tree.nodes.new("ShaderNodeValue")
@@ -87,6 +130,13 @@ class InteriorLit(DifSpecAddEnv):
 
 
         # links creation
+        # - column -1 -
+        node_tree.links.new(uvmap_n.outputs['UV'], env_sep_xyz_n.inputs['Vector'])
+
+        # - column 0 -
+        node_tree.links.new(env_sep_xyz_n.outputs['Y'], env_check_xyz_n.inputs[0])
+        node_tree.links.new(env_check_xyz_n.outputs['Value'], add_env_group_n.inputs['Weighted Color'])
+
         # - column 1 -
         node_tree.links.new(base_tex_n.outputs['Color'], vgcol_mult_n.inputs[0])
 
@@ -102,6 +152,31 @@ class InteriorLit(DifSpecAddEnv):
         # - column 4 -
         node_tree.links.new(glass_col_mix_n.outputs['Color'], vcol_mult_n.inputs[1])
 
+    ### TEXTURES ###
+    @staticmethod
+    def set_nmap_texture(node_tree, image):
+        """Set nmap texture to shader.
+
+        :param node_tree: node tree of current shader
+        :type node_tree: bpy.types.NodeTree
+        :param image: texture image which should be assigned to nmap texture node
+        :type image: bpy.types.Texture
+        """
+
+        node_tree.nodes[InteriorLit.NMAP_TEX_NODE].image = image
+
+    @staticmethod
+    def set_nmap_texture_settings(node_tree, settings):
+        """Set nmap texture settings to shader.
+
+        :param node_tree: node tree of current shader
+        :type node_tree: bpy.types.NodeTree
+        :param settings: binary string of TOBJ settings gotten from tobj import
+        :type settings: str
+        """
+        _material_utils.set_texture_settings_to_node(node_tree.nodes[InteriorLit.NMAP_TEX_NODE], settings)
+    
+    ### ATTRIBUTES ###
     @staticmethod
     def set_fresnel(node_tree, bias_scale):
         """Set fresnel bias and scale value to shader.
@@ -125,7 +200,8 @@ class InteriorLit(DifSpecAddEnv):
         :param aux_property: TBA
         :type aux_property: bpy.types.IDPropertyGroup
         """
-        pass  # NOTE: TBA?
+        # NOTE: TBA?
+        pass  # NOTE: aux doesn't change anything in rendered material, so pass it
 
     @staticmethod
     def set_aux1(node_tree, aux_property):
@@ -136,7 +212,8 @@ class InteriorLit(DifSpecAddEnv):
         :param aux_property: TBA
         :type aux_property: bpy.types.IDPropertyGroup
         """
-        pass  # NOTE: TBA?
+        # NOTE: TBA?
+        pass  # NOTE: aux doesn't change anything in rendered material, so pass it
 
     @staticmethod
     def set_aux2(node_tree, aux_property):
@@ -164,3 +241,17 @@ class InteriorLit(DifSpecAddEnv):
         :type aux_property: bpy.types.IDPropertyGroup
         """
         pass  # NOTE: as this variant doesn't use luminance effect we just ignore this factor
+
+
+    # def made to override base texture settings, because overwriting "extension" in init doesn't work
+    @staticmethod
+    def set_base_texture_settings(node_tree, settings):
+        """Set base texture settings to shader.
+
+        :param node_tree: node tree of current shader
+        :type node_tree: bpy.types.NodeTree
+        :param settings: binary string of TOBJ settings gotten from tobj import
+        :type settings: str
+        """
+
+        node_tree.nodes[DifSpecAddEnv.BASE_TEX_NODE].extension = 'REPEAT'
