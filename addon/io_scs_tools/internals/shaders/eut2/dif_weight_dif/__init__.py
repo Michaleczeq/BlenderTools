@@ -222,7 +222,7 @@ class DifWeightDif(Dif):
 
     @staticmethod
     def set_aux1(node_tree, aux_property):
-        """Set second texture generation scale.
+        """Set second texture generation scale and rotation.
 
         :param node_tree: node tree of current shader
         :type node_tree: bpy.types.NodeTree
@@ -231,5 +231,8 @@ class DifWeightDif(Dif):
         """
 
         if tg1.is_set(node_tree):
-
-            tg1.set_scale(node_tree, aux_property[0]['value'], aux_property[1]['value'])
+            # Fix for old float2 aux[1]
+            if (len(aux_property)) == 2:
+                tg1.set_scale(node_tree, aux_property[0]['value'], aux_property[1]['value'], 0)
+            else:
+                tg1.set_scale(node_tree, aux_property[0]['value'], aux_property[1]['value'], aux_property[2]['value'])
