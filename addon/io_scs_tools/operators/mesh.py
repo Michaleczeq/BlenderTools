@@ -26,6 +26,7 @@ from time import time
 from bpy.props import StringProperty, FloatProperty
 from io_scs_tools.consts import Mesh as _MESH_consts
 from io_scs_tools.consts import LampTools as _LT_consts
+from io_scs_tools.consts import InteriorWindowTools as _IWT_consts
 from io_scs_tools.consts import VertexColorTools as _VCT_consts
 from io_scs_tools.utils import mesh as _mesh_utils
 from io_scs_tools.utils import view3d as _view3d_utils
@@ -134,6 +135,78 @@ class LampTool:
                 changed_type = "INVALID"
 
             self.report({"INFO"}, "Lamp mask UV tool set %i faces to '%s'" % (polys_changed, changed_type))
+            return {'FINISHED'}
+
+class InteriorWindowTool:
+    """
+    Wrapper class for better navigation in file
+    """
+
+    class SCS_TOOLS_OT_SetGlassReflectionUV(bpy.types.Operator):
+        bl_label = "Set UV to glass"
+        bl_idname = "mesh.scs_tools_set_glassreflection_uv"
+        bl_description = "Sets offset for base interior UV according to given glass reflection state."
+
+        glass_state: StringProperty(
+            description="",
+            default="",
+            options={'HIDDEN'},
+        )
+
+        @classmethod
+        def poll(cls, context):
+            return context.object is not None and context.object.mode == "EDIT"
+
+        def execute(self, context):
+            mesh = context.object.data
+            bm = bmesh.from_edit_mesh(mesh)  # use bmesh module because we are working in edit mode
+
+            # decide which offset to use depending on glass reflection state
+            offset_x = 0
+            offset_y = 0
+            if _IWT_consts.GlassReflection.Enable.name == self.glass_state:  # glass reflection state checking
+                offset_y = 0
+            elif _IWT_consts.GlassReflection.Disable.name == self.glass_state:
+                offset_y = 1
+            else:
+                self.report({"ERROR"}, "Unsupported window glass state!")
+                return {"FINISHED"}
+
+            polys_changed = 0
+            for face in bm.faces:
+
+                if face.select and len(context.object.material_slots) > 0:
+                    material = context.object.material_slots[face.material_index].material
+                    if material and len(material.scs_props.shader_texture_mask_uv) > 0:
+
+                        # use first mapping from mask texture
+                        uv_lay_name = material.scs_props.shader_texture_mask_uv[0].value
+
+                        # if mask uv layer specified by current material doesn't exists
+                        # move to next face
+                        if uv_lay_name not in mesh.uv_layers:
+                            self.report({"ERROR"}, "UV layer: '%s' not found in this object!" % uv_lay_name)
+                            break
+
+                        uv_lay = bm.loops.layers.uv[uv_lay_name]
+                        for loop in face.loops:
+
+                            uv = loop[uv_lay].uv
+                            uv = (offset_x + (uv[0] - int(uv[0])), offset_y + (uv[1] - int(uv[1])))
+                            loop[uv_lay].uv = uv
+
+                        polys_changed += 1
+
+            # write data back if modified
+            if polys_changed > 0:
+                bmesh.update_edit_mesh(mesh)
+
+            if self.glass_state != "":
+                changed_type = self.glass_state
+            else:
+                changed_type = "INVALID"
+
+            self.report({"INFO"}, "Interior Window Tool set %i faces to '%s'" % (polys_changed, changed_type))
             return {'FINISHED'}
 
 
@@ -657,6 +730,8 @@ class VertexColorTools:
 
 classes = (
     LampTool.SCS_TOOLS_OT_SetLampmaskUV,
+
+    InteriorWindowTool.SCS_TOOLS_OT_SetGlassReflectionUV,
 
     VertexColorTools.SCS_TOOLS_OT_AddVertexColorsToActive,
     VertexColorTools.SCS_TOOLS_OT_AddVertexColorsToAll,

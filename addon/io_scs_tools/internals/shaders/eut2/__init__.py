@@ -152,6 +152,10 @@ def get_shader(effect):
 
         from io_scs_tools.internals.shaders.eut2.dif_spec_mult_dif_spec_iamod_dif_spec import DifSpecMultDifSpecIamodDifSpec as Shader
 
+    elif effect.startswith("dif.spec.mult.dif.iamod.dif.add.env"):
+
+        from io_scs_tools.internals.shaders.eut2.dif_spec_mult_dif_iamod_dif_add_env import DifSpecMultDifIamodDifAddEnv as Shader
+
     elif effect.startswith("dif.spec.mult.dif.spec.add.env"):
 
         from io_scs_tools.internals.shaders.eut2.dif_spec_mult_dif_spec.add_env import DifSpecMultDifSpecAddEnv as Shader

@@ -227,6 +227,15 @@ class LampTools:
         Yellow = 1
         Green = 2
 
+class InteriorWindowTools:
+    """Constants related to interior window tools
+    """
+
+    class GlassReflection(Enum):
+        """Defined states of glass reflection.
+        """
+        Enable = 0
+        Disable = 1
 
 class VertexColorTools:
     """Constants related to vertex color tools

@@ -18,6 +18,7 @@
 
 # Copyright (C) 2015-2024: SCS Software
 
+from io_scs_tools.consts import Mesh as _MESH_consts
 from io_scs_tools.internals.shaders.eut2.parameters import get_fresnel_window
 from io_scs_tools.internals.shaders.eut2.dif_spec_add_env import DifSpecAddEnv
 from io_scs_tools.utils import material as _material_utils
@@ -33,6 +34,7 @@ class InteriorLit(DifSpecAddEnv):
     NMAP_TEX_NODE = "NmapTex"
     ENV_SEP_XYZ_NODE = "EnvSepXYZ"
     ENV_CHECK_XYZ_NODE = "EnvCheckXYZ"
+    PERTURBATION_UVMAP_NODE = "PerturbationUVMap"
     
 
     @staticmethod
@@ -65,9 +67,6 @@ class InteriorLit(DifSpecAddEnv):
         # set fresnel type to schlick
         add_env_group_n.inputs['Fresnel Type'].default_value = 1.0
 
-        # Doesn't work...
-        # node_tree.nodes[DifSpecAddEnv.BASE_TEX_NODE].extension = 'REPEAT'
-
         # delete existing
         node_tree.nodes.remove(node_tree.nodes[DifSpecAddEnv.OPACITY_NODE])
 
@@ -76,6 +75,12 @@ class InteriorLit(DifSpecAddEnv):
         vcol_mult_n.location.x += pos_x_shift
 
         # node creation
+        # - column -1 -
+        pert_uv_n = node_tree.nodes.new("ShaderNodeUVMap")
+        pert_uv_n.name = pert_uv_n.label = InteriorLit.PERTURBATION_UVMAP_NODE
+        pert_uv_n.location = (start_pos_x - pos_x_shift, start_pos_y + 950)
+        pert_uv_n.uv_map = _MESH_consts.none_uv
+
         # - column 0 -
         env_sep_xyz_n = node_tree.nodes.new("ShaderNodeSeparateXYZ")
         env_sep_xyz_n.name = env_sep_xyz_n.label = InteriorLit.ENV_SEP_XYZ_NODE
@@ -92,6 +97,7 @@ class InteriorLit(DifSpecAddEnv):
         glass_col_n.name = glass_col_n.label = InteriorLit.GLASS_COL_NODE
         glass_col_n.location = (start_pos_x + pos_x_shift, start_pos_y + 900)
 
+        """
         layer0_tex_n = node_tree.nodes.new("ShaderNodeTexImage")
         layer0_tex_n.name = layer0_tex_n.label = InteriorLit.LAYER0_TEX_NODE
         layer0_tex_n.location = (start_pos_x + pos_x_shift, start_pos_y + 700)
@@ -111,6 +117,7 @@ class InteriorLit(DifSpecAddEnv):
         nmap_tex_n.name = nmap_tex_n.label = InteriorLit.NMAP_TEX_NODE
         nmap_tex_n.location = (start_pos_x + pos_x_shift, start_pos_y - 50)
         nmap_tex_n.width = 140
+        """
 
         # - column 2 -
         glass_col_fac_n = node_tree.nodes.new("ShaderNodeValue")
@@ -255,3 +262,18 @@ class InteriorLit(DifSpecAddEnv):
         """
 
         node_tree.nodes[DifSpecAddEnv.BASE_TEX_NODE].extension = 'REPEAT'
+
+    @staticmethod
+    def set_perturbation_mapping(node_tree, uv_layer):
+        """Set Perturbation UV layer to shader.
+
+        :param node_tree: node tree of current shader
+        :type node_tree: bpy.types.NodeTree
+        :param uv_layer: uv layer string used for base texture
+        :type uv_layer: str
+        """
+
+        if uv_layer is None or uv_layer == "":
+            uv_layer = _MESH_consts.none_uv
+
+        node_tree.nodes[InteriorLit.PERTURBATION_UVMAP_NODE].uv_map = uv_layer

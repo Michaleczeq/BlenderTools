@@ -500,8 +500,6 @@ class SCS_TOOLS_PT_MaterialAttributes(_MaterialPanelBlDefs, Panel):
             value_layout.prop(mat.scs_props, 'shader_attribute_env_factor', text="")
         elif tag == 'fresnel':
             value_layout.column().prop(mat.scs_props, 'shader_attribute_fresnel', text="")
-        elif tag == 'amod_decal_blending_factors':
-            value_layout.column().prop(mat.scs_props, 'shader_attribute_amod_decal_blending_factors', text="")
         elif tag == 'tint':
             value_layout.prop(mat.scs_props, 'shader_attribute_tint', text="")
         elif tag == 'tint_opacity':
@@ -775,6 +773,102 @@ class SCS_TOOLS_PT_MaterialTextures(_MaterialPanelBlDefs, Panel):
             self.draw_texture_item(col, mat, _UI_SPLIT_PERC, self.textures_data[texture_key], self.is_imported_shader)
 
 
+class SCS_TOOLS_PT_MaterialMappings(_MaterialPanelBlDefs, Panel):
+    """Draws additional mappings of current material in sub-panel."""
+    bl_parent_id = SCS_TOOLS_PT_Material.__name__
+    bl_label = "Material Mappings"
+
+    @classmethod
+    def poll(cls, context):
+        if not _MaterialPanelBlDefs.poll(context):
+            return False
+
+        mat = context.active_object.active_material
+        shader_data = mat.get("scs_shader_attributes", {})
+
+        if len(shader_data) == 0:
+            return False
+
+        if 'mappings' not in shader_data:
+            return False
+
+        if len(shader_data["mappings"]) == 0:
+            return False
+
+        if context.active_object.type != 'MESH':
+            return False
+
+        cls.mappings_data = shader_data['mappings']
+
+        return True
+
+    @staticmethod
+    def draw_mapping_item(layout, mat, split_perc, mapping):
+        """Draws mapping box with it's properties.
+
+        :param layout: layout to draw attribute to
+        :type layout: bpy.types.UILayout
+        :param mat: material from which data should be displayed
+        :type mat: bpy.types.Material
+        :param split_perc: split percentage for attribute name/value
+        :type split_perc: float
+        :param mapping: mapping data
+        :type mapping: dict
+        """
+
+        tag = mapping.get('Tag', None)
+        shader_mapping_id = str('shader_mapping_' + tag)
+
+        #lprint("D ----- Shader: %s", (shader_mapping_id,))
+
+        mapping_box = layout.box().column()  # create column for compact display with alignment
+        mapping_row = mapping_box.row(align=True)
+        item_space = mapping_row.split(factor=split_perc, align=True)
+        tag_layout = item_space.row()
+        tag_layout.label(text=tag.title(), icon='UV')
+
+        if hasattr(mat.scs_props, shader_mapping_id):
+            # UV LAYERS FOR MAPPING
+            uv_mappings = getattr(mat.scs_props, shader_mapping_id, [])
+
+            if len(uv_mappings) > 0:
+
+                layout_box_col = item_space.column(align=True)
+
+                for mapping in uv_mappings:
+
+                    item_space_row = layout_box_col.row(align=True)
+
+                    if mapping.value and mapping.value != "" and mapping.value in bpy.context.active_object.data.uv_layers:
+                        icon = 'GROUP_UVS'
+                    else:
+                        icon = 'ERROR'
+
+                    item_space_row.prop_search(
+                        data=mapping,
+                        property="value",
+                        search_data=bpy.context.active_object.data,
+                        search_property='uv_layers',
+                        text="",
+                        icon=icon,
+                    )
+
+        else:
+            layout_box_col = item_space.column(align=True)
+            mapping_row.label(text="Unsupported Shader Mapping Type!", icon='ERROR')
+
+    def draw(self, context):
+        mat = context.active_object.active_material
+
+        # DESYNCED LOOK!
+        if self.draw_desynced_look(self.layout, context):
+            return
+
+        col = self.layout.column(align=True)
+        for mapping_key in sorted(self.mappings_data.keys()):
+            self.draw_mapping_item(col, mat, _UI_SPLIT_PERC, self.mappings_data[mapping_key])
+
+
 class SCS_TOOLS_PT_LooksOnMaterial(_shared.HeaderIconPanel, _MaterialPanelBlDefs, Panel):
     """Draws SCS Looks panel on object tab."""
 
@@ -798,6 +892,7 @@ class SCS_TOOLS_PT_LooksOnMaterial(_shared.HeaderIconPanel, _MaterialPanelBlDefs
 classes = (
     SCS_TOOLS_PT_Material,
     SCS_TOOLS_PT_MaterialAttributes,
+    SCS_TOOLS_PT_MaterialMappings,
     SCS_TOOLS_PT_MaterialTextures,
     SCS_TOOLS_PT_LooksOnMaterial,
     SCS_TOOLS_UL_MaterialCustomMappingSlot,

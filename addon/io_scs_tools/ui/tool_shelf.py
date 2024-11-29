@@ -22,6 +22,7 @@ import bpy
 from bpy.types import Panel
 from io_scs_tools.consts import Icons as _ICONS_consts
 from io_scs_tools.consts import LampTools as _LT_consts
+from io_scs_tools.consts import InteriorWindowTools as _IWT_consts
 from io_scs_tools.consts import Operators as _OP_consts
 from io_scs_tools.consts import VertexColorTools as _VCT_consts
 from io_scs_tools.internals.icons import get_icon
@@ -502,6 +503,33 @@ class SCS_TOOLS_PT_LampTool(_ToolShelfBlDefs, Panel):
         props.traffic_light_color = _LT_consts.TrafficLightTypes.Green.name
         props.vehicle_side = props.aux_color = ""
 
+class SCS_TOOLS_PT_InteriorWindowTool(_ToolShelfBlDefs, Panel):
+    """
+    Creates Interior Window Tool panel for SCS Tools tab.
+    """
+    bl_label = "Interior Window Tool"
+    bl_context = "mesh_edit"
+
+    @classmethod
+    def poll(cls, context):
+        return context.mode == "EDIT_MESH"
+
+    def draw(self, context):
+        if not self.poll(context):
+            self.layout.label(text="Not in 'Edit Mode'!", icon="INFO")
+            return
+
+        layout = self.layout
+
+        body_col = layout.column(align=True)
+        body_row = body_col.row(align=True)
+        body_row.label(text="Glass Reflection", icon='MOD_LATTICE')
+
+        body_row = body_col.row(align=True)
+        props = body_row.operator("mesh.scs_tools_set_glassreflection_uv", text="Enable")
+        props.glass_state = _IWT_consts.GlassReflection.Enable.name
+        props = body_row.operator("mesh.scs_tools_set_glassreflection_uv", text="Disable")
+        props.glass_state = _IWT_consts.GlassReflection.Disable.name
 
 class SCS_TOOLS_PT_VColoring(_ToolShelfBlDefs, Panel):
     bl_label = "VColoring"
@@ -590,6 +618,7 @@ classes = (
     SCS_TOOLS_PT_DisplayMethods,
     SCS_TOOLS_PT_LampSwitcher,
     SCS_TOOLS_PT_LampTool,
+    SCS_TOOLS_PT_InteriorWindowTool,
     SCS_TOOLS_PT_VColoring,
     SCS_TOOLS_PT_VertexColorStatsTool,
     SCS_TOOLS_PT_VertexColorWrapTool,
@@ -607,6 +636,7 @@ def register():
     SCS_TOOLS_MT_MainMenu.append_sidebar_entry("Sidebar - Display Methods", SCS_TOOLS_PT_DisplayMethods.__name__)
     SCS_TOOLS_MT_MainMenu.append_sidebar_entry("Sidebar - Lamp Switcher", SCS_TOOLS_PT_LampSwitcher.__name__)
     SCS_TOOLS_MT_MainMenu.append_sidebar_entry("Sidebar - Lamp Tool", SCS_TOOLS_PT_LampTool.__name__)
+    SCS_TOOLS_MT_MainMenu.append_sidebar_entry("Sidebar - Interior Window Tool", SCS_TOOLS_PT_InteriorWindowTool.__name__)
     SCS_TOOLS_MT_MainMenu.append_sidebar_entry("Sidebar - VColoring", SCS_TOOLS_PT_VColoring.__name__)
     SCS_TOOLS_MT_MainMenu.append_sidebar_entry("Sidebar - VColor Stats", SCS_TOOLS_PT_VertexColorStatsTool.__name__)
     SCS_TOOLS_MT_MainMenu.append_sidebar_entry("Sidebar - VColor Wrap", SCS_TOOLS_PT_VertexColorWrapTool.__name__)
