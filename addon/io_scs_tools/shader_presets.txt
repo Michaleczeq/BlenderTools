@@ -190,10 +190,10 @@ Shader {
         Value: ( 0.0 )
     }
     Attribute {
-        Format: FLOAT
+        Format: FLOAT2
         Tag: "aux[5]"
-        FriendlyTag: "Luminance Boost"
-        Value: ( 0.0 )
+        FriendlyTag: "Luminance Output (Day, Night) (nit)"
+        Value: ( 0.0 0.0 )
     }
     Texture {
         Tag: "texture[X]:texture_base"
@@ -2070,6 +2070,66 @@ Shader {
         TexCoord: ( 1 )
     }
 }
+Shader {
+    PresetName: "baked"
+    Effect: "eut2.baked"
+    # Shader use also NIGHT flavor, but it's not used in shader (only "day") - probably game changing it depending on day time, like in other shaders with day/night in name
+    Flavors: ( "NMAP_TS" "SHADOW" "DAY" )
+    Flags: 0
+    Texture {
+        Tag: "texture[X]:texture_base"
+        Value: ""
+        TexCoord: ( 0 )
+    }
+}
+Shader {
+    PresetName: "baked.spec"
+    Effect: "eut2.baked.spec"
+    # Shader use also NIGHT flavor, but it's not used in shader (only "day") - probably game changing it depending on day time, like in other shaders with day/night in name
+    Flavors: ( "NMAP_TS" "SHADOW" "DAY" )
+    Flags: 0
+    Texture {
+        Tag: "texture[X]:texture_base"
+        Value: ""
+        TexCoord: ( 0 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_over"
+        Value: ""
+        TexCoord: ( 0 )
+    }
+}
+Shader {
+    PresetName: "baked.spec.add.env"
+    Effect: "eut2.baked.spec.add.env"
+    # Shader use also NIGHT flavor, but it's not used in shader (only "day") - probably game changing it depending on day time, like in other shaders with day/night in name
+    Flavors: ( "NMAP_TS" "PAINT" "SHADOW" "DAY" )
+    Flags: 0
+    Attribute {
+        Format: FLOAT2
+        Tag: "fresnel"
+        Value: ( 0.2 0.9 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_base"
+        Value: ""
+        TexCoord: ( 0 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_over"
+        Value: ""
+        TexCoord: ( 0 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_mask"
+        Value: ""
+        TexCoord: ( 0 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_reflection"
+        Value: "/material/environment/vehicle_reflection"
+        TexCoord: ( -1 )
+    }
 }
 Flavor {
     Type: "AIRBRUSH"
@@ -2181,25 +2241,6 @@ Flavor {
         Format: FLOAT2
         Tag: "fresnel"
         Value: ( 0.2 0.9 )
-    }
-    Texture {
-        Tag: "texture[X]:texture_reflection"
-        Value: "/material/environment/vehicle_reflection"
-        TexCoord: ( -1 )
-    }
-}
-Flavor {
-    Type: "ENVMAP_NOFAC"
-    Name: "add.env"
-    Attribute {
-        Format: FLOAT2
-        Tag: "fresnel"
-        Value: ( 0.2 0.9 )
-    }
-    Texture {
-        Tag: "texture[X]:texture_mask"
-        Value: ""
-        TexCoord: ( 0 )
     }
     Texture {
         Tag: "texture[X]:texture_reflection"
@@ -2475,5 +2516,23 @@ Flavor {
         Tag: "aux[1]"
         FriendlyTag: "TexGen1 (ScaleX, ScaleZ, Rotation, Unk)"
         Value: ( 8.0 8.0 0.0 0.0 )
+    }
+}
+Flavor {
+    Type: "DAY"
+    Name: "day"
+    Texture {
+        Tag: "texture[X]:texture_lightmap"
+        Value: ""
+        TexCoord: ( 0 )
+    }
+}
+Flavor {
+    Type: "NIGHT"
+    Name: "night"
+    Texture {
+        Tag: "texture[X]:texture_lightmap"
+        Value: ""
+        TexCoord: ( 0 )
     }
 }

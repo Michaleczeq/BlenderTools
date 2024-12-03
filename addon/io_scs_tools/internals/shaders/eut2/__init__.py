@@ -244,6 +244,20 @@ def get_shader(effect):
 
         from io_scs_tools.internals.shaders.eut2.dif import Dif as Shader
 
+    elif effect.startswith("baked.spec"):
+
+        if ".add.env" in effect:
+
+            from io_scs_tools.internals.shaders.eut2.baked.add_env import BakedSpecAddEnv as Shader
+
+        else:
+
+            from io_scs_tools.internals.shaders.eut2.baked.spec import BakedSpec as Shader
+
+    elif effect.startswith("baked"):
+
+        from io_scs_tools.internals.shaders.eut2.baked import Baked as Shader
+
     else:
 
         return None
