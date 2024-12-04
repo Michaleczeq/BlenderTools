@@ -9,6 +9,58 @@ Header {
 Shader {
     PresetName: "building.add.env.day"
     Effect: "eut2.building.add.env.day"
+    Flavors: ( "SHADOW" )
+    Flags: 0
+    Attribute {
+        Format: FLOAT3
+        Tag: "diffuse"
+        Value: ( 1.0 1.0 1.0 )
+    }
+    Attribute {
+        Format: FLOAT3
+        Tag: "specular"
+        Value: ( 0.9 0.9 0.9 )
+    }
+    Attribute {
+        Format: FLOAT
+        Tag: "shininess"
+        Value: ( 60.0 )
+    }
+    Attribute {
+        Format: FLOAT
+        Tag: "add_ambient"
+        Value: ( 0.0 )
+    }
+    Attribute {
+        Format: FLOAT3
+        Tag: "env_factor"
+        Value: ( 0.9 0.9 0.9 )
+    }
+    Attribute {
+        Format: FLOAT2
+        Tag: "fresnel"
+        Value: ( 0.2 0.9 )
+    }
+    Attribute {
+        Format: FLOAT2
+        Tag: "aux[5]"
+        FriendlyTag: "Luminance Output (Day, Night) (nit)"
+        Value: ( 0.0 0.0 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_base"
+        Value: ""
+        TexCoord: ( 0 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_reflection"
+        Value: "/material/environment/building_reflection/building_ref"
+        TexCoord: ( -1 )
+    }
+}
+Shader {
+    PresetName: "building.add.env.lvcol.day"
+    Effect: "eut2.building.add.env.lvcol.day"
     Flags: 0
     Attribute {
         Format: FLOAT3
@@ -60,6 +112,7 @@ Shader {
 Shader {
     PresetName: "building.day"
     Effect: "eut2.building.day"
+    Flavors: ( "SHADOW" )
     Flags: 0
     Attribute {
         Format: FLOAT3
@@ -2073,8 +2126,7 @@ Shader {
 Shader {
     PresetName: "baked"
     Effect: "eut2.baked"
-    # Shader use also NIGHT flavor, but it's not used in shader (only "day") - probably game changing it depending on day time, like in other shaders with day/night in name
-    Flavors: ( "NMAP_TS" "SHADOW" "DAY" )
+    Flavors: ( "NMAP_TS" "SHADOW" "DAY_TEX" )
     Flags: 0
     Texture {
         Tag: "texture[X]:texture_base"
@@ -2085,8 +2137,7 @@ Shader {
 Shader {
     PresetName: "baked.spec"
     Effect: "eut2.baked.spec"
-    # Shader use also NIGHT flavor, but it's not used in shader (only "day") - probably game changing it depending on day time, like in other shaders with day/night in name
-    Flavors: ( "NMAP_TS" "SHADOW" "DAY" )
+    Flavors: ( "NMAP_TS" "SHADOW" "DAY_TEX" )
     Flags: 0
     Texture {
         Tag: "texture[X]:texture_base"
@@ -2102,8 +2153,7 @@ Shader {
 Shader {
     PresetName: "baked.spec.add.env"
     Effect: "eut2.baked.spec.add.env"
-    # Shader use also NIGHT flavor, but it's not used in shader (only "day") - probably game changing it depending on day time, like in other shaders with day/night in name
-    Flavors: ( "NMAP_TS" "PAINT" "SHADOW" "DAY" )
+    Flavors: ( "NMAP_TS" "PAINT" "SHADOW" "DAY_TEX" )
     Flags: 0
     Attribute {
         Format: FLOAT2
@@ -2519,17 +2569,8 @@ Flavor {
     }
 }
 Flavor {
-    Type: "DAY"
+    Type: "DAY_TEX"
     Name: "day"
-    Texture {
-        Tag: "texture[X]:texture_lightmap"
-        Value: ""
-        TexCoord: ( 0 )
-    }
-}
-Flavor {
-    Type: "NIGHT"
-    Name: "night"
     Texture {
         Tag: "texture[X]:texture_lightmap"
         Value: ""

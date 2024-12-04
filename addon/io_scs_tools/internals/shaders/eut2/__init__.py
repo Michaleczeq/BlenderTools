@@ -168,15 +168,21 @@ def get_shader(effect):
 
         from io_scs_tools.internals.shaders.eut2.dif_spec_add_env.nofresnel import DifSpecAddEnvNoFresnel as Shader
 
-    elif effect.startswith("building.add.env.day"):
+    # Changed because of "lvcol.day" variant (all "buildings.add.env" use this same shader)
+    #
+    # elif effect.startswith("building.add.env.day"):
+    elif effect.startswith("building.add.env"):
 
         from io_scs_tools.internals.shaders.eut2.building.add_env_day import BuildingAddEnvDay as Shader
 
-    elif effect.startswith("building.lvcol.day"):
+    # Changed because of "asafew.(...).day" variant (all non add.env "buildings" use this same shader)
+    #
+    # elif effect.startswith("building.lvcol.day"):
+    # 
+    #    from io_scs_tools.internals.shaders.eut2.building.lvcol_day import BuildingLvcolDay as Shader
 
-        from io_scs_tools.internals.shaders.eut2.building.lvcol_day import BuildingLvcolDay as Shader
-
-    elif effect.startswith("building.day"):
+    # elif effect.startswith("building.day"):
+    elif effect.startswith("building"):
 
         from io_scs_tools.internals.shaders.eut2.building.day import BuildingDay as Shader
 

@@ -189,6 +189,13 @@ def _get_look(section):
                 mat_effect = mat_effect.replace(".night", ".day")
                 lprint("W Night version of building shader detected in material %r, switching it to day!", (mat_alias,))
 
+            # If day/night version of "window" shader is detected, switch it to "lit".
+            if mat_effect.startswith("eut2.window") and mat_effect.endswith((".day", ".night")):
+
+                mat_effect = mat_effect.replace(".day", ".lit").replace(".night", ".lit")
+
+                lprint("W Outdated Day or Night version of window shader detected in material %r, switching it to lit!", (mat_alias,))
+
             look_mat_settings[mat_alias] = (mat_effect, mat_flags, attributes, textures, sec)
 
     return look_name, look_mat_settings
