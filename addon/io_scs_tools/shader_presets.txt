@@ -1587,7 +1587,7 @@ Shader {
 Shader {
     PresetName: "shadowonly"
     Effect: "eut2.shadowonly"
-    Flavors: ( "NOCULL" "SHDW_ALPHA" )
+    Flavors: ( "NOCULL" "ALPHA_MASK" )
     Flags: 0
     Attribute {
         Format: FLOAT
@@ -1682,7 +1682,7 @@ Shader {
 Shader {
     PresetName: "truckpaint"
     Effect: "eut2.truckpaint"
-    Flavors: ( "NMAP_TS|NMAP_TS_UV|NMAP_TS_16|NMAP_TS_UV_16" "SHADOW" "COLORMASK|AIRBRUSH" "FLIPFLAKE" "ALTUV" )
+    Flavors: ( "NMAP_TS|NMAP_TS_UV|NMAP_TS_16|NMAP_TS_UV_16" "SHADOW" "COLORMASK|AIRBRUSH" "FLIPFLAKE" "ALTUV" "ASAFEWA" )
     Flags: 0
     Attribute {
         Format: FLOAT3
@@ -2126,7 +2126,7 @@ Shader {
 Shader {
     PresetName: "baked"
     Effect: "eut2.baked"
-    Flavors: ( "NMAP_TS" "SHADOW" "DAY_TEX" )
+    Flavors: ( "NMAP_TS" "SHADOW" "DAY_MASK" )
     Flags: 0
     Texture {
         Tag: "texture[X]:texture_base"
@@ -2137,7 +2137,7 @@ Shader {
 Shader {
     PresetName: "baked.spec"
     Effect: "eut2.baked.spec"
-    Flavors: ( "NMAP_TS" "SHADOW" "DAY_TEX" )
+    Flavors: ( "NMAP_TS" "SHADOW" "DAY_MASK" )
     Flags: 0
     Texture {
         Tag: "texture[X]:texture_base"
@@ -2153,7 +2153,7 @@ Shader {
 Shader {
     PresetName: "baked.spec.add.env"
     Effect: "eut2.baked.spec.add.env"
-    Flavors: ( "NMAP_TS" "PAINT" "SHADOW" "DAY_TEX" )
+    Flavors: ( "NMAP_TS" "PAINT_MASK" "SHADOW" "DAY_MASK" )
     Flags: 0
     Attribute {
         Format: FLOAT2
@@ -2201,7 +2201,7 @@ Flavor {
     Name: "a"
 }
 Flavor {
-    Type: "SHDW_ALPHA"
+    Type: "ALPHA_MASK"
     Name: "a"
     Texture {
         Tag: "texture[X]:texture_base"
@@ -2212,6 +2212,42 @@ Flavor {
 Flavor {
     Type: "ALTUV"
     Name: "altuv"
+}
+Flavor {
+    Type: "ANIM"
+    Name: "anim"
+    Attribute {
+        Format: FLOAT4
+        Tag: "aux[0]"
+        FriendlyTag: "Sheet frame size (R, G)"
+        Value: ( 1.0 1.0 1.0 1.0 )
+    }
+    Attribute {
+        Format: FLOAT4
+        Tag: "aux[1]"
+        FriendlyTag: "Sheet frame size (B, A)"
+        Value: ( 1.0 1.0 1.0 1.0 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_mask"
+        Value: ""
+        TexCoord: ( 1 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_mask_1"
+        Value: ""
+        TexCoord: ( 1 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_mask_2"
+        Value: ""
+        TexCoord: ( 1 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_mask_3"
+        Value: ""
+        TexCoord: ( 1 )
+    }
 }
 Flavor {
     Type: "ASAFEW"
@@ -2268,6 +2304,15 @@ Flavor {
         Tag: "texture[X]:texture_paintjob"
         Value: "/vehicle/truck/upgrade/paintjob/empty"
         TexCoord: ( 1 2 )
+    }
+}
+Flavor {
+    Type: "DAY_MASK"
+    Name: "day"
+    Texture {
+        Tag: "texture[X]:texture_lightmap"
+        Value: ""
+        TexCoord: ( 0 )
     }
 }
 Flavor {
@@ -2345,42 +2390,6 @@ Flavor {
     }
 }
 Flavor {
-    Type: "ANIM"
-    Name: "anim"
-    Attribute {
-        Format: FLOAT4
-        Tag: "aux[0]"
-        FriendlyTag: "Sheet frame size (R, G)"
-        Value: ( 1.0 1.0 1.0 1.0 )
-    }
-    Attribute {
-        Format: FLOAT4
-        Tag: "aux[1]"
-        FriendlyTag: "Sheet frame size (B, A)"
-        Value: ( 1.0 1.0 1.0 1.0 )
-    }
-    Texture {
-        Tag: "texture[X]:texture_mask"
-        Value: ""
-        TexCoord: ( 1 )
-    }
-    Texture {
-        Tag: "texture[X]:texture_mask_1"
-        Value: ""
-        TexCoord: ( 1 )
-    }
-    Texture {
-        Tag: "texture[X]:texture_mask_2"
-        Value: ""
-        TexCoord: ( 1 )
-    }
-    Texture {
-        Tag: "texture[X]:texture_mask_3"
-        Value: ""
-        TexCoord: ( 1 )
-    }
-}
-Flavor {
     Type: "FLAT"
     Name: "flat"
 }
@@ -2391,6 +2400,20 @@ Flavor {
 Flavor {
     Type: "LUMMULVCOL"
     Name: "lvcol"
+}
+Flavor {
+    Type: "NMAP_DETAIL"
+    Name: "tsnmap"
+    Texture {
+        Tag: "texture[X]:texture_nmap"
+        Value: ""
+        TexCoord: ( 0 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_nmap_detail"
+        Value: ""
+        TexCoord: ( 0 )
+    }
 }
 Flavor {
     Type: "NMAP_TS"
@@ -2408,52 +2431,6 @@ Flavor {
         Tag: "texture[X]:texture_nmap"
         Value: ""
         TexCoord: ( 0 )
-    }
-}
-Flavor {
-    Type: "NMAP_DETAIL"
-    Name: "tsnmap"
-    Texture {
-        Tag: "texture[X]:texture_nmap"
-        Value: ""
-        TexCoord: ( 0 )
-    }
-    Texture {
-        Tag: "texture[X]:texture_nmap_detail"
-        Value: ""
-        TexCoord: ( 0 )
-    }
-}
-Flavor {
-    Type: "NMAP_UV_DETAIL"
-    Name: "tsnmapuv"
-    Texture {
-        Tag: "texture[X]:texture_nmap"
-        Value: ""
-        TexCoord: ( 6 )
-    }
-    Texture {
-        Tag: "texture[X]:texture_nmap_detail"
-        Value: ""
-        TexCoord: ( 6 )
-    }
-}
-Flavor {
-    Type: "NMAP_TS_UV"
-    Name: "tsnmapuv"
-    Texture {
-        Tag: "texture[X]:texture_nmap"
-        Value: ""
-        TexCoord: ( 6 )
-    }
-}
-Flavor {
-    Type: "NMAP_TS_UV_16"
-    Name: "tsnmapuv16"
-    Texture {
-        Tag: "texture[X]:texture_nmap"
-        Value: ""
-        TexCoord: ( 6 )
     }
 }
 Flavor {
@@ -2480,8 +2457,65 @@ Flavor {
     }
 }
 Flavor {
+    Type: "NMAP_TS_UV"
+    Name: "tsnmapuv"
+    Texture {
+        Tag: "texture[X]:texture_nmap"
+        Value: ""
+        TexCoord: ( 6 )
+    }
+}
+Flavor {
+    Type: "NMAP_TS_UV_16"
+    Name: "tsnmapuv16"
+    Texture {
+        Tag: "texture[X]:texture_nmap"
+        Value: ""
+        TexCoord: ( 6 )
+    }
+}
+Flavor {
+    Type: "NMAP_UV_DETAIL"
+    Name: "tsnmapuv"
+    Texture {
+        Tag: "texture[X]:texture_nmap"
+        Value: ""
+        TexCoord: ( 6 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_nmap_detail"
+        Value: ""
+        TexCoord: ( 6 )
+    }
+}
+Flavor {
     Type: "NOCULL"
     Name: "nocull"
+}
+Flavor {
+    Type: "PAINT"
+    Name: "paint"
+}
+Flavor {
+    Type: "PAINT_MASK"
+    Name: "paint"
+    Texture {
+        Tag: "texture[X]:texture_mask_1"
+        Value: ""
+        TexCoord: ( 0 )
+    }
+}
+Flavor {
+    Type: "RETROREFLECTIVE_DECAL"
+    Name: "decal.over"
+}
+Flavor {
+    Type: "RETROREFLECTIVE_DIM_ALLDIR"
+    Name: "dim.alldir"
+}
+Flavor {
+    Type: "RETROREFLECTIVE_PIKO_ALLDIR"
+    Name: "piko.alldir"
 }
 Flavor {
     Type: "SHADOW"
@@ -2533,22 +2567,6 @@ Flavor {
     }
 }
 Flavor {
-    Type: "PAINT"
-    Name: "paint"
-}
-Flavor {
-    Type: "RETROREFLECTIVE_DECAL"
-    Name: "decal.over"
-}
-Flavor {
-    Type: "RETROREFLECTIVE_DIM_ALLDIR"
-    Name: "dim.alldir"
-}
-Flavor {
-    Type: "RETROREFLECTIVE_PIKO_ALLDIR"
-    Name: "piko.alldir"
-}
-Flavor {
     Type: "TEXGEN0"
     Name: "tg0"
     Attribute {
@@ -2566,14 +2584,5 @@ Flavor {
         Tag: "aux[1]"
         FriendlyTag: "TexGen1 (ScaleX, ScaleZ, Rotation, Unk)"
         Value: ( 8.0 8.0 0.0 0.0 )
-    }
-}
-Flavor {
-    Type: "DAY_TEX"
-    Name: "day"
-    Texture {
-        Tag: "texture[X]:texture_lightmap"
-        Value: ""
-        TexCoord: ( 0 )
     }
 }

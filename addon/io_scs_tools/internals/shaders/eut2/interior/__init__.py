@@ -34,7 +34,7 @@ class InteriorLit(DifSpecAddEnv):
     NMAP_TEX_NODE = "NmapTex"
     ENV_SEP_XYZ_NODE = "EnvSepXYZ"
     ENV_CHECK_XYZ_NODE = "EnvCheckXYZ"
-    PERTURBATION_UVMAP_NODE = "PerturbationUVMap"
+    PERT_UVMAP_NODE = "PerturbationUVMap"
     
 
     @staticmethod
@@ -77,7 +77,7 @@ class InteriorLit(DifSpecAddEnv):
         # node creation
         # - column -1 -
         pert_uv_n = node_tree.nodes.new("ShaderNodeUVMap")
-        pert_uv_n.name = pert_uv_n.label = InteriorLit.PERTURBATION_UVMAP_NODE
+        pert_uv_n.name = pert_uv_n.label = InteriorLit.PERT_UVMAP_NODE
         pert_uv_n.location = (start_pos_x - pos_x_shift, start_pos_y + 950)
         pert_uv_n.uv_map = _MESH_consts.none_uv
 
@@ -276,4 +276,4 @@ class InteriorLit(DifSpecAddEnv):
         if uv_layer is None or uv_layer == "":
             uv_layer = _MESH_consts.none_uv
 
-        node_tree.nodes[InteriorLit.PERTURBATION_UVMAP_NODE].uv_map = uv_layer
+        node_tree.nodes[InteriorLit.PERT_UVMAP_NODE].uv_map = uv_layer
