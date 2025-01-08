@@ -49,14 +49,32 @@ def __create_fresnel_group__():
     pos_x_shift = 185
 
     # inputs defining
-    fresnel_g.inputs.new("NodeSocketFloat", "Bias")
-    fresnel_g.inputs.new("NodeSocketVector", "Normal Vector")
-    fresnel_g.inputs.new("NodeSocketVector", "Reflection Normal Vector")
+    fresnel_g.interface.new_socket(
+        name = "Bias",
+        in_out = "INPUT",
+        socket_type = "NodeSocketFloat"
+    )
+    fresnel_g.interface.new_socket(
+        name = "Normal Vector",
+        in_out = "INPUT",
+        socket_type = "NodeSocketVector"
+    )
+    fresnel_g.interface.new_socket(
+        name = "Reflection Normal Vector",
+        in_out = "INPUT",
+        socket_type = "NodeSocketVector"
+    )
+
     input_n = fresnel_g.nodes.new("NodeGroupInput")
     input_n.location = (0, 0)
 
     # outputs defining
-    fresnel_g.outputs.new("NodeSocketFloat", "Fresnel Factor")
+    fresnel_g.interface.new_socket(
+        name = "Fresnel Factor",
+        in_out = "OUTPUT",
+        socket_type = "NodeSocketFloat"
+    )
+
     output_n = fresnel_g.nodes.new("NodeGroupOutput")
     output_n.location = (pos_x_shift * 6, 0)
 

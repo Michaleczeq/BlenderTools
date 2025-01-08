@@ -137,10 +137,10 @@ def _draw_3dview_report(window, area, region):
             break
 
     # draw BT banner
-    (bindcode, width, height) = _Show3DViewReport.get_scs_banner_img_data(window)
+    (texture, width, height) = _Show3DViewReport.get_scs_banner_img_data(window)
 
     gpu.state.blend_set("ALPHA")
-    draw_texture_2d(bindcode, (pos_x - 5, pos_y), width, height)
+    draw_texture_2d(texture, (pos_x - 5, pos_y), width, height)
     gpu.state.blend_set("NONE")
 
     # draw control buttons, if controls are enabled

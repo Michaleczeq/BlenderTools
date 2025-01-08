@@ -58,20 +58,62 @@ def __create_node_group__():
     rescale_g = bpy.data.node_groups.new(type="ShaderNodeTree", name=SKY_UV_RESCALE_G)
 
     # inputs defining
-    rescale_g.inputs.new("NodeSocketFloat", "Rescale Enabled")
-    rescale_g.inputs.new("NodeSocketFloat", "V Scale Base A")
-    rescale_g.inputs.new("NodeSocketFloat", "V Scale Base B")
-    rescale_g.inputs.new("NodeSocketFloat", "V Scale Over A")
-    rescale_g.inputs.new("NodeSocketFloat", "V Scale Over B")
-    rescale_g.inputs.new("NodeSocketVector", "UV")
+    rescale_g.interface.new_socket(
+        name = "Rescale Enabled",
+        in_out = "INPUT",
+        socket_type = "NodeSocketFloat"
+    )
+    rescale_g.interface.new_socket(
+        name = "V Scale Base A",
+        in_out = "INPUT",
+        socket_type = "NodeSocketFloat"
+    )
+    rescale_g.interface.new_socket(
+        name = "V Scale Base B",
+        in_out = "INPUT",
+        socket_type = "NodeSocketFloat"
+    )
+    rescale_g.interface.new_socket(
+        name = "V Scale Over A",
+        in_out = "INPUT",
+        socket_type = "NodeSocketFloat"
+    )
+    rescale_g.interface.new_socket(
+        name = "V Scale Over B",
+        in_out = "INPUT",
+        socket_type = "NodeSocketFloat"
+    )
+    rescale_g.interface.new_socket(
+        name = "UV",
+        in_out = "INPUT",
+        socket_type = "NodeSocketVector"
+    )
+
     input_n = rescale_g.nodes.new("NodeGroupInput")
     input_n.location = (0, 0)
 
     # outputs defining
-    rescale_g.outputs.new("NodeSocketVector", "UV Base A")
-    rescale_g.outputs.new("NodeSocketVector", "UV Base B")
-    rescale_g.outputs.new("NodeSocketVector", "UV Over A")
-    rescale_g.outputs.new("NodeSocketVector", "UV Over B")
+    rescale_g.interface.new_socket(
+        name = "UV Base A",
+        in_out = "OUTPUT",
+        socket_type = "NodeSocketVector"
+    )
+    rescale_g.interface.new_socket(
+        name = "UV Base B",
+        in_out = "OUTPUT",
+        socket_type = "NodeSocketVector"
+    )
+    rescale_g.interface.new_socket(
+        name = "UV Over A",
+        in_out = "OUTPUT",
+        socket_type = "NodeSocketVector"
+    )
+    rescale_g.interface.new_socket(
+        name = "UV Over B",
+        in_out = "OUTPUT",
+        socket_type = "NodeSocketVector"
+    )
+
     output_n = rescale_g.nodes.new("NodeGroupOutput")
     output_n.location = (pos_x_shift * 9, 0)
 

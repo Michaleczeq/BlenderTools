@@ -124,21 +124,74 @@ def __create_node_group__():
         add_env_g.nodes.clear()
 
     # inputs defining
-    add_env_g.inputs.new("NodeSocketFloat", "Fresnel Type")
-    add_env_g.inputs.new("NodeSocketFloat", "Fresnel Scale")
-    add_env_g.inputs.new("NodeSocketFloat", "Fresnel Bias")
-    add_env_g.inputs.new("NodeSocketVector", "Normal Vector")
-    add_env_g.inputs.new("NodeSocketVector", "Reflection Normal Vector")
-    add_env_g.inputs.new("NodeSocketFloat", "Apply Fresnel")
-    add_env_g.inputs.new("NodeSocketColor", "Reflection Texture Color")
-    add_env_g.inputs.new("NodeSocketFloat", "Base Texture Alpha")
-    add_env_g.inputs.new("NodeSocketColor", "Env Factor Color")
-    add_env_g.inputs.new("NodeSocketColor", "Specular Color")
-    add_env_g.inputs.new("NodeSocketColor", "Weighted Color")
-    add_env_g.inputs.new("NodeSocketFloat", "Strength Multiplier")
+    add_env_g.interface.new_socket(
+        name = "Fresnel Type",
+        in_out = "INPUT",
+        socket_type = "NodeSocketFloat"
+    )
+    add_env_g.interface.new_socket(
+        name = "Fresnel Scale",
+        in_out = "INPUT",
+        socket_type = "NodeSocketFloat"
+    )
+    add_env_g.interface.new_socket(
+        name = "Fresnel Bias",
+        in_out = "INPUT",
+        socket_type = "NodeSocketFloat"
+    )
+    add_env_g.interface.new_socket(
+        name = "Normal Vector",
+        in_out = "INPUT",
+        socket_type = "NodeSocketVector"
+    )
+    add_env_g.interface.new_socket(
+        name = "Reflection Normal Vector",
+        in_out = "INPUT",
+        socket_type = "NodeSocketVector"
+    )
+    add_env_g.interface.new_socket(
+        name = "Apply Fresnel",
+        in_out = "INPUT",
+        socket_type = "NodeSocketFloat"
+    )
+    add_env_g.interface.new_socket(
+        name = "Reflection Texture Color",
+        in_out = "INPUT",
+        socket_type = "NodeSocketColor"
+    )
+    add_env_g.interface.new_socket(
+        name = "Base Texture Alpha",
+        in_out = "INPUT",
+        socket_type = "NodeSocketFloat"
+    )
+    add_env_g.interface.new_socket(
+        name = "Env Factor Color",
+        in_out = "INPUT",
+        socket_type = "NodeSocketColor"
+    )
+    add_env_g.interface.new_socket(
+        name = "Specular Color",
+        in_out = "INPUT",
+        socket_type = "NodeSocketColor"
+    )
+    add_env_g.interface.new_socket(
+        name = "Weighted Color",
+        in_out = "INPUT",
+        socket_type = "NodeSocketColor"
+    )
+    add_env_g.interface.new_socket(
+        name = "Strength Multiplier",
+        in_out = "INPUT",
+        socket_type = "NodeSocketFloat"
+    )
+
 
     # outputs defining
-    add_env_g.outputs.new("NodeSocketColor", "Environment Addition Color")
+    add_env_g.interface.new_socket(
+        name = "Environment Addition Color",
+        in_out = "OUTPUT",
+        socket_type = "NodeSocketColor"
+    )
 
     # node creation
     input_n = add_env_g.nodes.new("NodeGroupInput")

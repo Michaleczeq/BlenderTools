@@ -58,15 +58,32 @@ def __create_node_group__():
     dec_blend_fac_g = bpy.data.node_groups.new(type="ShaderNodeTree", name=DECAL_BLEND_FACTOR_G)
 
     # inputs defining
-    dec_blend_fac_g.inputs.new("NodeSocketFloat", "Vertex Alpha")
-    dec_blend_fac_g.inputs.new("NodeSocketFloat", "Factor1")
-    dec_blend_fac_g.inputs.new("NodeSocketFloat", "Factor2")
+    dec_blend_fac_g.interface.new_socket(
+        name = "Vertex Alpha",
+        in_out = "INPUT",
+        socket_type = "NodeSocketFloat"
+    )
+    dec_blend_fac_g.interface.new_socket(
+        name = "Factor1",
+        in_out = "INPUT",
+        socket_type = "NodeSocketFloat"
+    )
+    dec_blend_fac_g.interface.new_socket(
+        name = "Factor2",
+        in_out = "INPUT",
+        socket_type = "NodeSocketFloat"
+    )
 
     input_n = dec_blend_fac_g.nodes.new("NodeGroupInput")
     input_n.location = (0, 0)
 
     # outputs defining
-    dec_blend_fac_g.outputs.new("NodeSocketColor", "Factor")
+    dec_blend_fac_g.interface.new_socket(
+        name = "Factor",
+        in_out = "OUTPUT",
+        socket_type = "NodeSocketColor"
+    )
+
     output_n = dec_blend_fac_g.nodes.new("NodeGroupOutput")
     output_n.location = (pos_x_shift * 6, 0)
 

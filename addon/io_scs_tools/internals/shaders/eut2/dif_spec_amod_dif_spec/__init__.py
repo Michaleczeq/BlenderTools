@@ -176,9 +176,6 @@ class DifSpecAmodDifSpec(DifSpec):
         # due the fact uvs get clamped in vertex shader, we have to manually switch repeat on, for effect to work correctly
         node_tree.nodes[DifSpecAmodDifSpec.MASK_TEX_NODE].extension = "REPEAT"
 
-        # due the fact uvs colorspace linear, we have to manually switch to sRGB, for effect to work correctly
-        node_tree.nodes[DifSpecAmodDifSpec.MASK_TEX_NODE].image.colorspace_settings.name = 'sRGB'
-
     @staticmethod
     def set_over_uv(node_tree, uv_layer):
         """Set UV layer to overlying texture in shader.

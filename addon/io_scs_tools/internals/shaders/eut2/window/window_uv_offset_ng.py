@@ -56,14 +56,32 @@ def __create_node_group__():
     uv_offset_g = bpy.data.node_groups.new(type="ShaderNodeTree", name=WINDOW_UV_OFFSET_G)
 
     # inputs defining
-    uv_offset_g.inputs.new("NodeSocketVector", "UV")
-    uv_offset_g.inputs.new("NodeSocketVector", "Normal")
-    uv_offset_g.inputs.new("NodeSocketVector", "Incoming")
+    uv_offset_g.interface.new_socket(
+        name = "UV",
+        in_out = "INPUT",
+        socket_type = "NodeSocketVector"
+    )
+    uv_offset_g.interface.new_socket(
+        name = "Normal",
+        in_out = "INPUT",
+        socket_type = "NodeSocketVector"
+    )
+    uv_offset_g.interface.new_socket(
+        name = "Incoming",
+        in_out = "INPUT",
+        socket_type = "NodeSocketVector"
+    )
+
     input_n = uv_offset_g.nodes.new("NodeGroupInput")
     input_n.location = (0, 0)
 
     # outputs defining
-    uv_offset_g.outputs.new("NodeSocketVector", "UV Final")
+    uv_offset_g.interface.new_socket(
+        name = "UV Final",
+        in_out = "OUTPUT",
+        socket_type = "NodeSocketVector"
+    )
+
     output_n = uv_offset_g.nodes.new("NodeGroupOutput")
     output_n.location = (pos_x_shift * 12, 0)
 

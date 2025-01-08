@@ -475,12 +475,11 @@ def _create_piece(
     # NORMALS - has to be applied after bmesh creation as they are set directly to mesh
     if _get_scs_globals().import_use_normals:
 
-        mesh.create_normals_split()
-
         # first set normals directly to loops
+        clnors = []
         for loop in mesh.loops:
             curr_n = _convert_utils.scs_to_blend_matrix() @ Vector(mesh_normals[loop.vertex_index])
-            loop.normal[:] = curr_n
+            clnors.extend(curr_n)
 
         # then we have to go trough very important step they say,
         # as without validation we get wrong result for some normals
@@ -490,13 +489,8 @@ def _create_piece(
         mesh.polygons.foreach_set("use_smooth", [True] * len(mesh.polygons))
 
         # finally fill clnors from loops normals and apply them (taken from official Blenders scripts)
-        clnors = array.array('f', [0.0] * (len(mesh.loops) * 3))
-        mesh.loops.foreach_get("normal", clnors)
         mesh.normals_split_custom_set(tuple(zip(*(iter(clnors),) * 3)))
-        mesh.use_auto_smooth = True
-        mesh.auto_smooth_angle = 3.14
 
-        mesh.free_normals_split()
     else:
         # set polygons to use smooth representation only
         mesh.polygons.foreach_set("use_smooth", [True] * len(mesh.polygons))
@@ -645,10 +639,10 @@ def visualise_normals(name, transformed_mesh_vertices, mesh_normals, import_scal
     :return:
     """
     if mesh_normals:
-        transformed_mesh_normals = [io_utils.change_to_scs_xyz_coordinates(vec, import_scale) for vec in mesh_normals]
+        transformed_mesh_normals = [_convert_utils.change_to_scs_xyz_coordinates(vec, import_scale) for vec in mesh_normals]
         mesh_norm_vizu = bpy.data.meshes.new(str(name + "_norm_vizu"))
         object_norm_vizu = bpy.data.objects.new(str(name + "_norm_vizu"), mesh_norm_vizu)
-        bpy.context.scene.objects.link(object_norm_vizu)
+        bpy.context.collection.objects.link(object_norm_vizu)
         mesh_norm_vizu.vertices.add(len(transformed_mesh_vertices) * 2)
         mesh_norm_vizu.edges.add(len(transformed_mesh_vertices))
         vert_i = edge_i = 0
@@ -670,7 +664,7 @@ def visualise_normals(name, transformed_mesh_vertices, mesh_normals, import_scal
         # mesh_norm_vizu.validate()
         mesh_norm_vizu.update()
         # object_norm_vizu.select = True
-        # bpy.context.scene.objects.active = object_norm_vizu
+        # bpy.context.collection.objects.active = object_norm_vizu
     else:
         print("WARNING! 'visualise_normals' - NO MESH NORMALS PROVIDED!")
 '''

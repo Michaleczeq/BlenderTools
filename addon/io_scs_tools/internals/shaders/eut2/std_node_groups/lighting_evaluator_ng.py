@@ -155,15 +155,50 @@ def __create_group__():
         lighting_eval_g = bpy.data.node_groups.new(type="ShaderNodeTree", name=LIGHTING_EVALUATOR_G)
 
         # inputs defining
-        lighting_eval_g.inputs.new("NodeSocketVector", "Normal Vector")  # n_normal
-        lighting_eval_g.inputs.new("NodeSocketVector", "Incoming Vector")  # n_eye
-        lighting_eval_g.inputs.new("NodeSocketFloat", "Shininess")  # specular_exponent
-        lighting_eval_g.inputs.new("NodeSocketFloat", "Flat Lighting")  # flat lighting switch, should be 0 or 1
+        lighting_eval_g.interface.new_socket(
+            name = "Normal Vector",
+            description = "n_normal",
+            in_out = "INPUT",
+            socket_type = "NodeSocketVector"
+        )
+        lighting_eval_g.interface.new_socket(
+            name = "Incoming Vector",
+            description = "n_eye",
+            in_out = "INPUT",
+            socket_type = "NodeSocketVector"
+        )
+        lighting_eval_g.interface.new_socket(
+            name = "Shininess",
+            description = "specular_exponent",
+            in_out = "INPUT",
+            socket_type = "NodeSocketFloat"
+        )
+        lighting_eval_g.interface.new_socket(
+            name = "Flat Lighting",
+            description = "Flat lighting switch, should be 0 or 1",
+            in_out = "INPUT",
+            socket_type = "NodeSocketFloat"
+        )
 
         # outputs defining
-        lighting_eval_g.outputs.new("NodeSocketColor", "Diffuse Lighting")  # final diffuse lighting
-        lighting_eval_g.outputs.new("NodeSocketColor", "Specular Lighting")  # final specular lighting
-        lighting_eval_g.outputs.new("NodeSocketVector", "Normal")  # bypassed normal, to have one access point to final normal
+        lighting_eval_g.interface.new_socket(
+            name = "Diffuse Lighting",
+            description = "Final Diffuse Lighting",
+            in_out = "OUTPUT",
+            socket_type = "NodeSocketColor"
+        )
+        lighting_eval_g.interface.new_socket(
+            name = "Specular Lighting",
+            description = "Final Specular Lighting",
+            in_out = "OUTPUT",
+            socket_type = "NodeSocketColor"
+        )
+        lighting_eval_g.interface.new_socket(
+            name = "Normal",
+            description = "Bypassed normal, to have one access point to final normal",
+            in_out = "OUTPUT",
+            socket_type = "NodeSocketVector"
+        )
 
     else:  # recreation
 

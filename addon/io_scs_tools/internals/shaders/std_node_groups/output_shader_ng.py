@@ -85,15 +85,28 @@ def __create_node_group__():
         output_shader_g.nodes.clear()
 
     # inputs defining
-    output_shader_g.inputs.new("NodeSocketColor", "Color")
-    output_shader_g.inputs.new("NodeSocketFloat", "Alpha")
+    output_shader_g.interface.new_socket(
+        name = "Color",
+        in_out = "INPUT",
+        socket_type = "NodeSocketColor"
+    )
+    output_shader_g.interface.new_socket(
+        name = "Alpha",
+        in_out = "INPUT",
+        socket_type = "NodeSocketFloat"
+    )
 
     # always set to full opaque by default since this behaviour is expected by shaders
     # since this behaviour is epxected by effects from before.
-    output_shader_g.inputs['Alpha'].default_value = 1
+    output_shader_g.interface.items_tree['Alpha'].default_value = 1
+
 
     # outputs defining
-    output_shader_g.outputs.new("NodeSocketShader", "Shader")
+    output_shader_g.interface.new_socket(
+        name = "Shader",
+        in_out = "OUTPUT",
+        socket_type = "NodeSocketShader"
+    )
 
     # node creation
     input_n = output_shader_g.nodes.new("NodeGroupInput")

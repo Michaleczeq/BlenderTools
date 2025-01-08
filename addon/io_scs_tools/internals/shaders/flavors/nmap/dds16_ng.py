@@ -59,13 +59,27 @@ def __create_node_group__():
     nmap_dds16_g = bpy.data.node_groups.new(type="ShaderNodeTree", name=TSNMAP_DDS16_G)
 
     # inputs defining
-    nmap_dds16_g.inputs.new("NodeSocketColor", "Color")
+    nmap_dds16_g.interface.new_socket(
+        name = "Color",
+        in_out = "INPUT",
+        socket_type = "NodeSocketColor"
+    )
+
     input_n = nmap_dds16_g.nodes.new("NodeGroupInput")
     input_n.location = (0, 0)
 
     # outputs defining
-    nmap_dds16_g.outputs.new("NodeSocketFloat", "Strength")
-    nmap_dds16_g.outputs.new("NodeSocketColor", "Color")
+    nmap_dds16_g.interface.new_socket(
+        name = "Strength",
+        in_out = "OUTPUT",
+        socket_type = "NodeSocketFloat"
+    )
+    nmap_dds16_g.interface.new_socket(
+        name = "Color",
+        in_out = "OUTPUT",
+        socket_type = "NodeSocketColor"
+    )
+
     output_n = nmap_dds16_g.nodes.new("NodeGroupOutput")
     output_n.location = (185 * 7, 0)
 

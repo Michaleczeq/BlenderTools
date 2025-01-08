@@ -28,76 +28,60 @@ _SHININESS_MULT = "ShininessMult"
 
 
 def get_node_group():
-    """Gets node group.
+    """Gets node group for specular and shininess calculation.
 
     :return: node group
     :rtype: bpy.types.NodeGroup
     """
 
-    if __group_needs_recreation__():
+    if SPEC_TEXTURE_CALC_G not in bpy.data.node_groups:
         __create_node_group__()
 
     return bpy.data.node_groups[SPEC_TEXTURE_CALC_G]
 
-def __group_needs_recreation__():
-    """Tells if group needs recreation.
-
-    :return: True group isn't up to date and has to be (re)created; False if group doesn't need to be (re)created
-    :rtype: bool
-    """
-    # current checks:
-    # 1. group existence in blender data block
-    return SPEC_TEXTURE_CALC_G not in bpy.data.node_groups
-
 def __create_node_group__():
-    """Creates group.
+    """Creates specular and shininess group.
 
     Inputs: Color
     Outputs: Shininess, Specular
     """
 
-    start_pos_x = 0
-    start_pos_y = 0
-
-    pos_x_shift = 185
-
-    if SPEC_TEXTURE_CALC_G not in bpy.data.node_groups:  # creation
-        
-        spec_txt_calc_n = bpy.data.node_groups.new(type="ShaderNodeTree", name=SPEC_TEXTURE_CALC_G)
-
-    else:  # recreation
-
-        spec_txt_calc_n = bpy.data.node_groups[SPEC_TEXTURE_CALC_G]
-
-        # delete all inputs and outputs
-        spec_txt_calc_n.inputs.clear()
-        spec_txt_calc_n.outputs.clear()
-
-        # delete all old nodes and links as they will be recreated now with actual version
-        spec_txt_calc_n.nodes.clear()
+    spec_txt_calc_n = bpy.data.node_groups.new(type="ShaderNodeTree", name=SPEC_TEXTURE_CALC_G)
 
     # inputs defining
-    spec_txt_calc_n.inputs.new("NodeSocketColor", "Color")
+    spec_txt_calc_n.interface.new_socket(
+        name = "Color",
+        in_out = "INPUT",
+        socket_type = "NodeSocketColor"
+    )
+
+    input_n = spec_txt_calc_n.nodes.new("NodeGroupInput")
+    input_n.location = (0, 0)
 
     # outputs defining
-    spec_txt_calc_n.outputs.new("NodeSocketVector", "Shininess")
-    spec_txt_calc_n.outputs.new("NodeSocketVector", "Specular")
-
-    # node creation
-    input_n = spec_txt_calc_n.nodes.new("NodeGroupInput")
-    input_n.location = (start_pos_x, start_pos_y)
+    spec_txt_calc_n.interface.new_socket(
+        name = "Shininess",
+        in_out = "OUTPUT",
+        socket_type = "NodeSocketVector"
+    )
+    spec_txt_calc_n.interface.new_socket(
+        name = "Specular",
+        in_out = "OUTPUT",
+        socket_type = "NodeSocketVector"
+    )
 
     output_n = spec_txt_calc_n.nodes.new("NodeGroupOutput")
-    output_n.location = (start_pos_x + pos_x_shift * 3, start_pos_y)
+    output_n.location = (185 * 3, 0)
 
+    # node creation
     color_to_rgb_n = spec_txt_calc_n.nodes.new("ShaderNodeSeparateColor")
     color_to_rgb_n.name = color_to_rgb_n.label = _COLOR_TO_RGB_NODE
-    color_to_rgb_n.location = (start_pos_x + pos_x_shift * 1, start_pos_y)
+    color_to_rgb_n.location = (185, 0)
     color_to_rgb_n.mode = "RGB"
 
     shininess_mult_n = spec_txt_calc_n.nodes.new("ShaderNodeVectorMath")
     shininess_mult_n.name = shininess_mult_n.label = _SHININESS_MULT
-    shininess_mult_n.location = (start_pos_x + pos_x_shift * 2, start_pos_y + 100)
+    shininess_mult_n.location = (185 * 2, 100)
     shininess_mult_n.operation = "MULTIPLY"
     shininess_mult_n.inputs[1].default_value = (255,) * 3
 

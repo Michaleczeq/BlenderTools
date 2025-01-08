@@ -69,12 +69,22 @@ def __create_node_group__():
     blend_fac_g = bpy.data.node_groups.new(type="ShaderNodeTree", name=BLEND_FACTOR_G)
 
     # inputs defining
-    blend_fac_g.inputs.new("NodeSocketFloat", "Speed")
+    blend_fac_g.interface.new_socket(
+        name = "Speed",
+        in_out = "INPUT",
+        socket_type = "NodeSocketFloat"
+    )
+
     input_n = blend_fac_g.nodes.new("NodeGroupInput")
     input_n.location = (start_pos_x - pos_x_shift, start_pos_y)
 
     # outputs defining
-    blend_fac_g.outputs.new("NodeSocketColor", "Factor")
+    blend_fac_g.interface.new_socket(
+        name = "Factor",
+        in_out = "OUTPUT",
+        socket_type = "NodeSocketColor"
+    )
+
     output_n = blend_fac_g.nodes.new("NodeGroupOutput")
     output_n.location = (start_pos_x + pos_x_shift * 9, start_pos_y)
 

@@ -72,14 +72,31 @@ def __create_nmap_scale_group__():
     nmap_scale_g = bpy.data.node_groups.new(type="ShaderNodeTree", name=TSNMAP_SCALE_G)
 
     # inputs defining
-    nmap_scale_g.inputs.new("NodeSocketColor", "NMap Tex Color")
-    nmap_scale_g.inputs.new("NodeSocketVector", "Original Normal")
-    nmap_scale_g.inputs.new("NodeSocketVector", "Modified Normal")
+    nmap_scale_g.interface.new_socket(
+        name = "NMap Tex Color",
+        in_out = "INPUT",
+        socket_type = "NodeSocketColor"
+    )
+    nmap_scale_g.interface.new_socket(
+        name = "Original Normal",
+        in_out = "INPUT",
+        socket_type = "NodeSocketVector"
+    )
+    nmap_scale_g.interface.new_socket(
+        name = "Modified Normal",
+        in_out = "INPUT",
+        socket_type = "NodeSocketVector"
+    )
+
     input_n = nmap_scale_g.nodes.new("NodeGroupInput")
     input_n.location = (0, 0)
 
     # outputs defining
-    nmap_scale_g.outputs.new("NodeSocketVector", "Normal")
+    nmap_scale_g.interface.new_socket(
+        name = "Normal",
+        in_out = "OUTPUT",
+        socket_type = "NodeSocketVector"
+    )
     output_n = nmap_scale_g.nodes.new("NodeGroupOutput")
     output_n.location = (185 * 7, 0)
 

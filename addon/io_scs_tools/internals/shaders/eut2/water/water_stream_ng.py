@@ -74,16 +74,42 @@ def __create_node_group__():
     water_stream_ng = bpy.data.node_groups.new(type="ShaderNodeTree", name=WATER_STREAM_G)
 
     # inputs defining
-    water_stream_ng.inputs.new("NodeSocketVector", "Yaw0")
-    water_stream_ng.inputs.new("NodeSocketFloat", "Speed0")
-    water_stream_ng.inputs.new("NodeSocketVector", "Yaw1")
-    water_stream_ng.inputs.new("NodeSocketFloat", "Speed1")
+    water_stream_ng.interface.new_socket(
+        name = "Yaw0",
+        in_out = "INPUT",
+        socket_type = "NodeSocketVector"
+    )
+    water_stream_ng.interface.new_socket(
+        name = "Speed0",
+        in_out = "INPUT",
+        socket_type = "NodeSocketFloat"
+    )
+    water_stream_ng.interface.new_socket(
+        name = "Yaw1",
+        in_out = "INPUT",
+        socket_type = "NodeSocketVector"
+    )
+    water_stream_ng.interface.new_socket(
+        name = "Speed1",
+        in_out = "INPUT",
+        socket_type = "NodeSocketFloat"
+    )
+
     input_n = water_stream_ng.nodes.new("NodeGroupInput")
     input_n.location = (start_pos_x - pos_x_shift, start_pos_y)
 
     # outputs defining
-    water_stream_ng.outputs.new("NodeSocketVector", "Stream0")
-    water_stream_ng.outputs.new("NodeSocketVector", "Stream1")
+    water_stream_ng.interface.new_socket(
+        name = "Stream0",
+        in_out = "OUTPUT",
+        socket_type = "NodeSocketVector"
+    )
+    water_stream_ng.interface.new_socket(
+        name = "Stream1",
+        in_out = "OUTPUT",
+        socket_type = "NodeSocketVector"
+    )
+
     output_n = water_stream_ng.nodes.new("NodeGroupOutput")
     output_n.location = (start_pos_x + pos_x_shift * 3, start_pos_y)
 

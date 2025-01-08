@@ -47,13 +47,27 @@ def __create_refl_normal_group__():
     refl_normal_g = bpy.data.node_groups.new(type="ShaderNodeTree", name=REFL_NORMAL_G)
 
     # inputs defining
-    refl_normal_g.inputs.new("NodeSocketVector", "Incoming")
-    refl_normal_g.inputs.new("NodeSocketVector", "Normal")
+    refl_normal_g.interface.new_socket(
+        name = "Incoming",
+        in_out = "INPUT",
+        socket_type = "NodeSocketVector"
+    )
+    refl_normal_g.interface.new_socket(
+        name = "Normal",
+        in_out = "INPUT",
+        socket_type = "NodeSocketVector"
+    )
+
     input_n = refl_normal_g.nodes.new("NodeGroupInput")
     input_n.location = (0, 0)
 
     # outputs defining
-    refl_normal_g.outputs.new("NodeSocketVector", "Reflection Normal")
+    refl_normal_g.interface.new_socket(
+        name = "Reflection Normal",
+        in_out = "OUTPUT",
+        socket_type = "NodeSocketVector"
+    )
+
     output_n = refl_normal_g.nodes.new("NodeGroupOutput")
     output_n.location = (185 * 7, 0)
 

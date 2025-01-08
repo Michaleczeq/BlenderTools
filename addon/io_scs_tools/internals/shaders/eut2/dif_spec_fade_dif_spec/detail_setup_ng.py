@@ -55,15 +55,37 @@ def __create_group__():
     detail_setup_g = bpy.data.node_groups.new(type="ShaderNodeTree", name=DETAIL_SETUP_G)
 
     # inputs defining
-    detail_setup_g.inputs.new("NodeSocketFloat", "Fade From")
-    detail_setup_g.inputs.new("NodeSocketFloat", "Fade Range")
-    detail_setup_g.inputs.new("NodeSocketFloat", "Blend Bias")
+    detail_setup_g.interface.new_socket(
+        name = "Fade From",
+        in_out = "INPUT",
+        socket_type = "NodeSocketFloat"
+    )
+    detail_setup_g.interface.new_socket(
+        name = "Fade Range",
+        in_out = "INPUT",
+        socket_type = "NodeSocketFloat"
+    )
+    detail_setup_g.interface.new_socket(
+        name = "Blend Bias",
+        in_out = "INPUT",
+        socket_type = "NodeSocketFloat"
+    )
+
     input_n = detail_setup_g.nodes.new("NodeGroupInput")
     input_n.location = (start_pos_x, start_pos_y)
 
     # outputs defining
-    detail_setup_g.outputs.new("NodeSocketFloat", "Detail Strength")
-    detail_setup_g.outputs.new("NodeSocketFloat", "Blend Factor")
+    detail_setup_g.interface.new_socket(
+        name = "Detail Strength",
+        in_out = "OUTPUT",
+        socket_type = "NodeSocketFloat"
+    )
+    detail_setup_g.interface.new_socket(
+        name = "Blend Factor",
+        in_out = "OUTPUT",
+        socket_type = "NodeSocketFloat"
+    )
+
     output_n = detail_setup_g.nodes.new("NodeGroupOutput")
     output_n.location = (start_pos_x + pos_x_shift * 6, start_pos_y)
 

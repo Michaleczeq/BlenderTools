@@ -55,15 +55,37 @@ def __create_group__():
     detail_setup_g = bpy.data.node_groups.new(type="ShaderNodeTree", name=MIX_FACTOR_G)
 
     # inputs defining
-    detail_setup_g.inputs.new("NodeSocketFloat", "Near Distance")
-    detail_setup_g.inputs.new("NodeSocketFloat", "Far Distance")
-    detail_setup_g.inputs.new("NodeSocketFloat", "Scramble Distance")
+    detail_setup_g.interface.new_socket(
+        name = "Near Distance",
+        in_out = "INPUT",
+        socket_type = "NodeSocketFloat"
+    )
+    detail_setup_g.interface.new_socket(
+        name = "Far Distance",
+        in_out = "INPUT",
+        socket_type = "NodeSocketFloat"
+    )
+    detail_setup_g.interface.new_socket(
+        name = "Scramble Distance",
+        in_out = "INPUT",
+        socket_type = "NodeSocketFloat"
+    )
+
     input_n = detail_setup_g.nodes.new("NodeGroupInput")
     input_n.location = (start_pos_x, start_pos_y)
 
     # outputs defining
-    detail_setup_g.outputs.new("NodeSocketFloat", "Mix Factor")
-    detail_setup_g.outputs.new("NodeSocketFloat", "Scramble Mix Factor")
+    detail_setup_g.interface.new_socket(
+        name = "Mix Factor",
+        in_out = "OUTPUT",
+        socket_type = "NodeSocketFloat"
+    )
+    detail_setup_g.interface.new_socket(
+        name = "Scramble Mix Factor",
+        in_out = "OUTPUT",
+        socket_type = "NodeSocketFloat"
+    )
+
     output_n = detail_setup_g.nodes.new("NodeGroupOutput")
     output_n.location = (start_pos_x + pos_x_shift * 7, start_pos_y)
 

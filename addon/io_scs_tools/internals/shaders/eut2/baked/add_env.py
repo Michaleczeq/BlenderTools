@@ -29,7 +29,6 @@ from io_scs_tools.utils import get_scs_globals as _get_scs_globals
 class BakedSpecAddEnv(BakedSpec, StdAddEnv):
     MASK_TEX_NODE = "MaskTex"
     MASK1_TEX_NODE = "Mask1Tex"
-    MASK_LIN_TO_SRGB_NODE = "MaskLinearToSRGB"
 
     BASE_PAINT_MULT_NODE = "BasePaintMult"
 
@@ -74,25 +73,16 @@ class BakedSpecAddEnv(BakedSpec, StdAddEnv):
         # set strength multiplier to 2 for better visualization in Blender
         node_tree.nodes[StdAddEnv.ADD_ENV_GROUP_NODE].inputs['Strength Multiplier'].default_value = 2.0
 
-
         # node creation
         mask_tex_n = node_tree.nodes.new("ShaderNodeTexImage")
         mask_tex_n.name = mask_tex_n.label = BakedSpecAddEnv.MASK_TEX_NODE
         mask_tex_n.location = (start_pos_x + pos_x_shift, start_pos_y + 2200)
         mask_tex_n.width = 140
 
-        mask_lin_to_srgb_n = node_tree.nodes.new("ShaderNodeGroup")
-        mask_lin_to_srgb_n.name = mask_lin_to_srgb_n.label = BakedSpecAddEnv.MASK_LIN_TO_SRGB_NODE
-        mask_lin_to_srgb_n.location = (start_pos_x + pos_x_shift * 2, start_pos_y + 2100)
-        mask_lin_to_srgb_n.node_tree = linear_to_srgb_ng.get_node_group()
-
-
         # links creation
         node_tree.links.new(uvmap_n.outputs['UV'], mask_tex_n.inputs['Vector'])
 
-        node_tree.links.new(mask_tex_n.outputs['Color'], mask_lin_to_srgb_n.inputs['Value'])
-
-        node_tree.links.new(mask_lin_to_srgb_n.outputs['Value'], add_env_gn.inputs['Env Factor Color'])
+        node_tree.links.new(mask_tex_n.outputs['Color'], add_env_gn.inputs['Env Factor Color'])
 
     @staticmethod
     def init_paint(node_tree):
@@ -132,7 +122,6 @@ class BakedSpecAddEnv(BakedSpec, StdAddEnv):
             node_tree.links.new(mask1_tex_n.outputs['Color'], base_paint_mult_n.inputs['Fac'])
             node_tree.links.new(vcol_mult_n.outputs['Vector'], base_paint_mult_n.inputs['Color1'])
             node_tree.links.new(base_paint_mult_n.outputs['Color'], compose_lighting_n.inputs['Diffuse Color'])
-   
 
 
     @staticmethod
@@ -157,9 +146,6 @@ class BakedSpecAddEnv(BakedSpec, StdAddEnv):
         :type settings: str
         """
         _material_utils.set_texture_settings_to_node(node_tree.nodes[BakedSpecAddEnv.MASK_TEX_NODE], settings)
-
-        # due the fact mask colorspace is linear, we have to manually switch to sRGB and then convert values by node, for effect to work correctly (blender don't like SCS format of linear DDS textures).
-        node_tree.nodes[BakedSpecAddEnv.MASK_TEX_NODE].image.colorspace_settings.name = 'sRGB'
 
     @staticmethod
     def set_mask_uv(node_tree, uv_layer):
@@ -195,9 +181,6 @@ class BakedSpecAddEnv(BakedSpec, StdAddEnv):
         :type settings: str
         """
         _material_utils.set_texture_settings_to_node(node_tree.nodes[BakedSpecAddEnv.MASK1_TEX_NODE], settings)
-
-        # due the fact mask colorspace is linear, we have to manually switch to sRGB and then convert values by node, for effect to work correctly (blender don't like SCS format of linear DDS textures).
-        node_tree.nodes[BakedSpecAddEnv.MASK1_TEX_NODE].image.colorspace_settings.name = 'sRGB'
 
     @staticmethod
     def set_mask_1_uv(node_tree, uv_layer):

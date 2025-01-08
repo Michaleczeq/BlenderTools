@@ -58,16 +58,42 @@ def __create_node_group__():
     mult2_mix_g = bpy.data.node_groups.new(type="ShaderNodeTree", name=MULT2_MIX_G)
 
     # inputs defining
-    mult2_mix_g.inputs.new("NodeSocketFloat", "Base Alpha")
-    mult2_mix_g.inputs.new("NodeSocketColor", "Base Color")
-    mult2_mix_g.inputs.new("NodeSocketFloat", "Mult Alpha")
-    mult2_mix_g.inputs.new("NodeSocketColor", "Mult Color")
+    mult2_mix_g.interface.new_socket(
+        name = "Base Alpha",
+        in_out = "INPUT",
+        socket_type = "NodeSocketFloat"
+    )
+    mult2_mix_g.interface.new_socket(
+        name = "Base Color",
+        in_out = "INPUT",
+        socket_type = "NodeSocketColor"
+    )
+    mult2_mix_g.interface.new_socket(
+        name = "Mult Alpha",
+        in_out = "INPUT",
+        socket_type = "NodeSocketFloat"
+    )
+    mult2_mix_g.interface.new_socket(
+        name = "Mult Color",
+        in_out = "INPUT",
+        socket_type = "NodeSocketColor"
+    )
+
     input_n = mult2_mix_g.nodes.new("NodeGroupInput")
     input_n.location = (start_pos_x - pos_x_shift, start_pos_y)
 
     # outputs defining
-    mult2_mix_g.outputs.new("NodeSocketFloat", "Mix Alpha")
-    mult2_mix_g.outputs.new("NodeSocketColor", "Mix Color")
+    mult2_mix_g.interface.new_socket(
+        name = "Mix Alpha",
+        in_out = "OUTPUT",
+        socket_type = "NodeSocketFloat"
+    )
+    mult2_mix_g.interface.new_socket(
+        name = "Mix Color",
+        in_out = "OUTPUT",
+        socket_type = "NodeSocketColor"
+    )
+
     output_n = mult2_mix_g.nodes.new("NodeGroupOutput")
     output_n.location = (start_pos_x + pos_x_shift * 6, start_pos_y)
 

@@ -308,11 +308,11 @@ def get_reflection_image(texture_path, report_invalid=False):
     camera.type = "PANO"
     camera.lens = 5
     camera.sensor_width = 32
-    camera.cycles.panorama_type = "EQUIRECTANGULAR"
-    camera.cycles.latitude_min = -pi * 0.5
-    camera.cycles.latitude_max = pi * 0.5
-    camera.cycles.longitude_min = pi
-    camera.cycles.longitude_max = -pi
+    camera.panorama_type = "EQUIRECTANGULAR"
+    camera.latitude_min = -pi * 0.5
+    camera.latitude_max = pi * 0.5
+    camera.longitude_min = pi
+    camera.longitude_max = -pi
 
     cam_obj = bpy.data.objects.new(camera.name, camera)
     cam_obj.location = (0,) * 3
@@ -896,7 +896,7 @@ def set_texture_settings_to_node(tex_node, settings):
 
     # linear colorspace
     if settings[0] == "1":
-        image.colorspace_settings.name = "Linear"
+        image.colorspace_settings.name = "Linear Rec.709"
     else:
         image.colorspace_settings.name = "sRGB"
 
@@ -905,7 +905,7 @@ def set_texture_settings_to_node(tex_node, settings):
         if image.filepath[-4:] in (".tga", ".dds"):
             image.colorspace_settings.name = "Non-Color"
         elif image.filepath[-4:] == ".png" and image.is_float:
-            image.colorspace_settings.name = "Linear"
+            image.colorspace_settings.name = "Linear Rec.709"
 
 
 def has_valid_color_management(scene):

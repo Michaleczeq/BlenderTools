@@ -316,15 +316,14 @@ def _create_piece(
     # NORMALS - has to be applied after bmesh creation as they are set directly to mesh
     if _get_scs_globals().import_use_normals:
 
-        mesh.create_normals_split()
-
         # first set normals directly to loops
+        clnors = []
         for poly_i, poly in enumerate(mesh.polygons):
 
             for poly_loop_i, loop_i in enumerate(poly.loop_indices):
 
                 curr_n = _convert_utils.scs_to_blend_matrix() @ Vector(mesh_normals[poly_i][poly_loop_i])
-                mesh.loops[loop_i].normal[:] = curr_n
+                clnors.extend(curr_n)
 
         # then we have to go trough very important step they say,
         # as without validation we get wrong result for some normals
@@ -334,13 +333,8 @@ def _create_piece(
         mesh.polygons.foreach_set("use_smooth", [True] * len(mesh.polygons))
 
         # finally fill clnors from loops normals and apply them (taken from official Blenders scripts)
-        clnors = array.array('f', [0.0] * (len(mesh.loops) * 3))
-        mesh.loops.foreach_get("normal", clnors)
         mesh.normals_split_custom_set(tuple(zip(*(iter(clnors),) * 3)))
-        mesh.use_auto_smooth = True
-        mesh.auto_smooth_angle = 3.14
 
-        mesh.free_normals_split()
     else:
         # set polygons to use smooth representation only
         mesh.polygons.foreach_set("use_smooth", [True] * len(mesh.polygons))
