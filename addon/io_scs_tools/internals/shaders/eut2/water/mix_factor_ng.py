@@ -55,41 +55,22 @@ def __create_group__():
     detail_setup_g = bpy.data.node_groups.new(type="ShaderNodeTree", name=MIX_FACTOR_G)
 
     # inputs defining
-    detail_setup_g.interface.new_socket(
-        name = "Near Distance",
-        in_out = "INPUT",
-        socket_type = "NodeSocketFloat"
-    )
-    detail_setup_g.interface.new_socket(
-        name = "Far Distance",
-        in_out = "INPUT",
-        socket_type = "NodeSocketFloat"
-    )
-    detail_setup_g.interface.new_socket(
-        name = "Scramble Distance",
-        in_out = "INPUT",
-        socket_type = "NodeSocketFloat"
-    )
-
-    input_n = detail_setup_g.nodes.new("NodeGroupInput")
-    input_n.location = (start_pos_x, start_pos_y)
+    detail_setup_g.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketFloat", name = "Near Distance")
+    detail_setup_g.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketFloat", name = "Far Distance")
+    detail_setup_g.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketFloat", name = "Scramble Distance")
 
     # outputs defining
-    detail_setup_g.interface.new_socket(
-        name = "Mix Factor",
-        in_out = "OUTPUT",
-        socket_type = "NodeSocketFloat"
-    )
-    detail_setup_g.interface.new_socket(
-        name = "Scramble Mix Factor",
-        in_out = "OUTPUT",
-        socket_type = "NodeSocketFloat"
-    )
+    detail_setup_g.interface.new_socket(in_out = "OUTPUT", socket_type = "NodeSocketFloat", name = "Mix Factor")
+    detail_setup_g.interface.new_socket(in_out = "OUTPUT", socket_type = "NodeSocketFloat", name = "Scramble Mix Factor")
+
+
+    # group nodes
+    input_n = detail_setup_g.nodes.new("NodeGroupInput")
+    input_n.location = (start_pos_x, start_pos_y)
 
     output_n = detail_setup_g.nodes.new("NodeGroupOutput")
     output_n.location = (start_pos_x + pos_x_shift * 7, start_pos_y)
 
-    # group nodes
     camera_data_n = detail_setup_g.nodes.new("ShaderNodeCameraData")
     camera_data_n.location = (start_pos_x, start_pos_y + 100)
 

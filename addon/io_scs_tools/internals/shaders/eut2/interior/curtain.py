@@ -66,9 +66,11 @@ class InteriorCurtain(InteriorLit):
         over_tex_n.width = 140
 
         # - column 2 -
-        base_over_mix_n = node_tree.nodes.new("ShaderNodeMixRGB")
+        base_over_mix_n = node_tree.nodes.new("ShaderNodeMix")
         base_over_mix_n.name = base_over_mix_n.label = InteriorCurtain.BASE_OVER_MIX_NODE
         base_over_mix_n.location = (start_pos_x + pos_x_shift * 2, start_pos_y + 1200)
+        base_over_mix_n.data_type = "RGBA"
+        base_over_mix_n.blend_type = "MIX"
         
 
         # links creation
@@ -76,12 +78,12 @@ class InteriorCurtain(InteriorLit):
         node_tree.links.new(sec_uv_n.outputs['UV'], over_tex_n.inputs['Vector'])
 
         # - column 1 -
-        node_tree.links.new(base_tex_n.outputs['Color'], base_over_mix_n.inputs['Color1'])
-        node_tree.links.new(over_tex_n.outputs['Color'], base_over_mix_n.inputs['Color2'])
-        node_tree.links.new(over_tex_n.outputs['Alpha'], base_over_mix_n.inputs['Fac'])
+        node_tree.links.new(base_tex_n.outputs['Color'], base_over_mix_n.inputs['A'])
+        node_tree.links.new(over_tex_n.outputs['Color'], base_over_mix_n.inputs['B'])
+        node_tree.links.new(over_tex_n.outputs['Alpha'], base_over_mix_n.inputs['Factor'])
 
         # - column 2 -
-        node_tree.links.new(base_over_mix_n.outputs['Color'], vgcol_mult_n.inputs[0])
+        node_tree.links.new(base_over_mix_n.outputs['Result'], vgcol_mult_n.inputs[0])
 
 
 

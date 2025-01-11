@@ -51,20 +51,22 @@ class Fakeshadow(BaseShader):
         wireframe_n.use_pixel_size = True
         wireframe_n.inputs['Size'].default_value = 2.0
 
-        mix_n = node_tree.nodes.new("ShaderNodeMixRGB")
+        mix_n = node_tree.nodes.new("ShaderNodeMix")
         mix_n.name = mix_n.label = Fakeshadow.MIX_NODE
         mix_n.location = (start_pos_x + pos_x_shift, start_pos_y)
-        mix_n.inputs['Color1'].default_value = (1, 1, 1, 1)  # fakeshadow color
-        mix_n.inputs['Color2'].default_value = (0, 0, 0, 1)  # wireframe color
+        mix_n.data_type = "RGBA"
+        mix_n.blend_type = "MIX"
+        mix_n.inputs['A'].default_value = (1, 1, 1, 1)  # fakeshadow color
+        mix_n.inputs['B'].default_value = (0, 0, 0, 1)  # wireframe color
 
         output_n = node_tree.nodes.new("ShaderNodeOutputMaterial")
         output_n.name = output_n.label = Fakeshadow.OUTPUT_NODE
         output_n.location = (start_pos_x + pos_x_shift * 2, start_pos_y)
 
         # links creation
-        node_tree.links.new(mix_n.inputs['Fac'], wireframe_n.outputs['Fac'])
+        node_tree.links.new(mix_n.inputs['Factor'], wireframe_n.outputs['Fac'])
 
-        node_tree.links.new(output_n.inputs['Surface'], mix_n.outputs['Color'])
+        node_tree.links.new(output_n.inputs['Surface'], mix_n.outputs['Result'])
 
     @staticmethod
     def set_shadow_bias(node_tree, value):

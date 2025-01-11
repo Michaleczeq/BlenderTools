@@ -84,14 +84,16 @@ class DifAnim(Dif):
         over_tex_n.location = (start_pos_x + pos_x_shift, start_pos_y + 1000)
         over_tex_n.width = 140
 
-        base_over_mix_n = node_tree.nodes.new("ShaderNodeMixRGB")
+        base_over_mix_n = node_tree.nodes.new("ShaderNodeMix")
         base_over_mix_n.name = base_over_mix_n.label = DifAnim.BASE_OVER_MIX_NODE
         base_over_mix_n.location = (start_pos_x + pos_x_shift * 3, start_pos_y + 1300)
+        base_over_mix_n.data_type = "RGBA"
         base_over_mix_n.blend_type = "MIX"
 
-        base_over_a_mix_n = node_tree.nodes.new("ShaderNodeMixRGB")
+        base_over_a_mix_n = node_tree.nodes.new("ShaderNodeMix")
         base_over_a_mix_n.name = base_over_a_mix_n.label = DifAnim.BASE_OVER_AMIX_NODE
-        base_over_a_mix_n.location = (start_pos_x + pos_x_shift * 3, start_pos_y + 1100)
+        base_over_a_mix_n.location = (start_pos_x + pos_x_shift * 3, start_pos_y + 1050)
+        base_over_a_mix_n.data_type = "RGBA"
         base_over_a_mix_n.blend_type = "MIX"
 
         # links creation
@@ -99,18 +101,18 @@ class DifAnim(Dif):
         node_tree.links.new(over_tex_n.inputs['Vector'], sec_uvmap_n.outputs['UV'])
 
         # pass 1
-        node_tree.links.new(base_over_mix_n.inputs['Fac'], blend_fac_gn.outputs['Factor'])
-        node_tree.links.new(base_over_mix_n.inputs['Color1'], base_tex_n.outputs['Color'])
-        node_tree.links.new(base_over_mix_n.inputs['Color2'], over_tex_n.outputs['Color'])
+        node_tree.links.new(base_over_mix_n.inputs['Factor'], blend_fac_gn.outputs['Factor'])
+        node_tree.links.new(base_over_mix_n.inputs['A'], base_tex_n.outputs['Color'])
+        node_tree.links.new(base_over_mix_n.inputs['B'], over_tex_n.outputs['Color'])
 
-        node_tree.links.new(base_over_a_mix_n.inputs['Fac'], blend_fac_gn.outputs['Factor'])
-        node_tree.links.new(base_over_a_mix_n.inputs['Color1'], base_tex_n.outputs['Alpha'])
-        node_tree.links.new(base_over_a_mix_n.inputs['Color2'], over_tex_n.outputs['Alpha'])
+        node_tree.links.new(base_over_a_mix_n.inputs['Factor'], blend_fac_gn.outputs['Factor'])
+        node_tree.links.new(base_over_a_mix_n.inputs['A'], base_tex_n.outputs['Alpha'])
+        node_tree.links.new(base_over_a_mix_n.inputs['B'], over_tex_n.outputs['Alpha'])
 
         # pass 2
-        node_tree.links.new(vcol_mult_n.inputs[1], base_over_mix_n.outputs['Color'])
+        node_tree.links.new(vcol_mult_n.inputs[1], base_over_mix_n.outputs['Result'])
 
-        node_tree.links.new(opacity_n.inputs[0], base_over_a_mix_n.outputs['Color'])
+        node_tree.links.new(opacity_n.inputs[0], base_over_a_mix_n.outputs['Result'])
 
     @staticmethod
     def finalize(node_tree, material):
@@ -300,8 +302,8 @@ class DifAnim(Dif):
                            uvmap_n.outputs['UV'],
                            base_tex_n.inputs[0],
                            over_tex_n.inputs[0],
-                           base_over_mix_n.inputs['Fac'],
-                           base_over_amix_n.inputs['Fac'])
+                           base_over_mix_n.inputs['Factor'],
+                           base_over_amix_n.inputs['Factor'])
 
         else:
             fadesheet.delete(node_tree)

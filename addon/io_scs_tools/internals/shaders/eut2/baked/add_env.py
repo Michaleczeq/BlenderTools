@@ -110,18 +110,19 @@ class BakedSpecAddEnv(BakedSpec, StdAddEnv):
             mask1_tex_n.location = (start_pos_x + pos_x_shift, start_pos_y + 1150)
             mask1_tex_n.width = 140
 
-            base_paint_mult_n = node_tree.nodes.new("ShaderNodeMixRGB")
+            base_paint_mult_n = node_tree.nodes.new("ShaderNodeMix")
             base_paint_mult_n.name = base_paint_mult_n.label = BakedSpecAddEnv.BASE_PAINT_MULT_NODE
             base_paint_mult_n.location = (start_pos_x + pos_x_shift * 5, start_pos_y + 1500)
+            base_paint_mult_n.data_type = "RGBA"
             base_paint_mult_n.blend_type = "MULTIPLY"
-            base_paint_mult_n.inputs['Fac'].default_value = 1
-            base_paint_mult_n.inputs['Color2'].default_value = _convert_utils.to_node_color(_get_scs_globals().base_paint_color)
+            base_paint_mult_n.inputs['Factor'].default_value = 1
+            base_paint_mult_n.inputs['B'].default_value = _convert_utils.to_node_color(_get_scs_globals().base_paint_color)
 
             # links creation
             node_tree.links.new(uvmap_n.outputs['UV'], mask1_tex_n.inputs['Vector'])
-            node_tree.links.new(mask1_tex_n.outputs['Color'], base_paint_mult_n.inputs['Fac'])
-            node_tree.links.new(vcol_mult_n.outputs['Vector'], base_paint_mult_n.inputs['Color1'])
-            node_tree.links.new(base_paint_mult_n.outputs['Color'], compose_lighting_n.inputs['Diffuse Color'])
+            node_tree.links.new(mask1_tex_n.outputs['Color'], base_paint_mult_n.inputs['Factor'])
+            node_tree.links.new(vcol_mult_n.outputs['Vector'], base_paint_mult_n.inputs['A'])
+            node_tree.links.new(base_paint_mult_n.outputs['Result'], compose_lighting_n.inputs['Diffuse Color'])
 
 
     @staticmethod

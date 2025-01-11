@@ -90,24 +90,29 @@ class DifSpecWeightWeightDifSpecWeight(DifSpec):
         over_tex_n.location = (start_pos_x + pos_x_shift, start_pos_y + 1200)
         over_tex_n.width = 140
 
-        sec_spec_mix_n = node_tree.nodes.new("ShaderNodeMixRGB")
+        sec_spec_mix_n = node_tree.nodes.new("ShaderNodeMix")
         sec_spec_mix_n.name = sec_spec_mix_n.label = DifSpecWeightWeightDifSpecWeight.SEC_SPEC_MIX_NODE
         sec_spec_mix_n.location = (start_pos_x + pos_x_shift * 3, start_pos_y + 2100)
+        sec_spec_mix_n.data_type = "RGBA"
         sec_spec_mix_n.blend_type = "MIX"
 
-        sec_shininess_mix_n = node_tree.nodes.new("ShaderNodeMixRGB")
+        sec_shininess_mix_n = node_tree.nodes.new("ShaderNodeMix")
         sec_shininess_mix_n.name = sec_shininess_mix_n.label = DifSpecWeightWeightDifSpecWeight.SEC_SHININESS_MIX_NODE
-        sec_shininess_mix_n.location = (start_pos_x + pos_x_shift * 3, start_pos_y + 2300)
+        sec_shininess_mix_n.location = (start_pos_x + pos_x_shift * 3, start_pos_y + 2350)
+        sec_shininess_mix_n.data_type = "RGBA"
         sec_shininess_mix_n.blend_type = "MIX"
 
-        base_over_a_mix_n = node_tree.nodes.new("ShaderNodeMixRGB")
+        base_over_a_mix_n = node_tree.nodes.new("ShaderNodeMix")
         base_over_a_mix_n.name = base_over_a_mix_n.label = DifSpecWeightWeightDifSpecWeight.BASE_OVER_A_MIX_NODE
-        base_over_a_mix_n.location = (start_pos_x + pos_x_shift * 3, start_pos_y + 1900)
+        base_over_a_mix_n.location = (start_pos_x + pos_x_shift * 3, start_pos_y + 1850)
+        base_over_a_mix_n.data_type = "RGBA"
         base_over_a_mix_n.blend_type = "MIX"
 
-        base_over_mix_n = node_tree.nodes.new("ShaderNodeMixRGB")
+        base_over_mix_n = node_tree.nodes.new("ShaderNodeMix")
         base_over_mix_n.name = base_over_mix_n.label = DifSpecWeightWeightDifSpecWeight.BASE_OVER_MIX_NODE
         base_over_mix_n.location = (start_pos_x + pos_x_shift * 3, start_pos_y + 1350)
+        base_over_mix_n.data_type = "RGBA"
+        base_over_mix_n.blend_type = "MIX"
 
         vcol_spec_mul_n = node_tree.nodes.new("ShaderNodeVectorMath")
         vcol_spec_mul_n.name = vcol_spec_mul_n.label = DifSpecWeightWeightDifSpecWeight.VCOL_SPEC_MULT_NODE
@@ -118,32 +123,32 @@ class DifSpecWeightWeightDifSpecWeight(DifSpec):
         node_tree.links.new(over_tex_n.inputs["Vector"], sec_geom_n.outputs["UV"])
 
         # pass 1
-        node_tree.links.new(sec_shininess_mix_n.inputs["Fac"], vcol_group_n.outputs["Vertex Color Alpha"])
+        node_tree.links.new(sec_shininess_mix_n.inputs["Factor"], vcol_group_n.outputs["Vertex Color Alpha"])
 
-        node_tree.links.new(sec_spec_mix_n.inputs["Fac"], vcol_group_n.outputs["Vertex Color Alpha"])
-        node_tree.links.new(sec_spec_mix_n.inputs["Color1"], spec_col_n.outputs["Color"])
-        node_tree.links.new(sec_spec_mix_n.inputs["Color2"], sec_spec_col_n.outputs["Color"])
+        node_tree.links.new(sec_spec_mix_n.inputs["Factor"], vcol_group_n.outputs["Vertex Color Alpha"])
+        node_tree.links.new(sec_spec_mix_n.inputs["A"], spec_col_n.outputs["Color"])
+        node_tree.links.new(sec_spec_mix_n.inputs["B"], sec_spec_col_n.outputs["Color"])
 
-        node_tree.links.new(base_over_a_mix_n.inputs["Fac"], vcol_group_n.outputs["Vertex Color Alpha"])
-        node_tree.links.new(base_over_a_mix_n.inputs["Color1"], base_tex_n.outputs["Alpha"])
-        node_tree.links.new(base_over_a_mix_n.inputs["Color2"], over_tex_n.outputs["Alpha"])
+        node_tree.links.new(base_over_a_mix_n.inputs["Factor"], vcol_group_n.outputs["Vertex Color Alpha"])
+        node_tree.links.new(base_over_a_mix_n.inputs["A"], base_tex_n.outputs["Alpha"])
+        node_tree.links.new(base_over_a_mix_n.inputs["B"], over_tex_n.outputs["Alpha"])
 
-        node_tree.links.new(base_over_mix_n.inputs["Fac"], vcol_group_n.outputs["Vertex Color Alpha"])
-        node_tree.links.new(base_over_mix_n.inputs["Color1"], base_tex_n.outputs["Color"])
-        node_tree.links.new(base_over_mix_n.inputs["Color2"], over_tex_n.outputs["Color"])
+        node_tree.links.new(base_over_mix_n.inputs["Factor"], vcol_group_n.outputs["Vertex Color Alpha"])
+        node_tree.links.new(base_over_mix_n.inputs["A"], base_tex_n.outputs["Color"])
+        node_tree.links.new(base_over_mix_n.inputs["B"], over_tex_n.outputs["Color"])
 
         # pass 2
-        node_tree.links.new(spec_multi_n.inputs[0], sec_spec_mix_n.outputs["Color"])
-        node_tree.links.new(spec_multi_n.inputs[1], base_over_a_mix_n.outputs["Color"])
+        node_tree.links.new(spec_multi_n.inputs[0], sec_spec_mix_n.outputs["Result"])
+        node_tree.links.new(spec_multi_n.inputs[1], base_over_a_mix_n.outputs["Result"])
 
-        node_tree.links.new(vcol_multi_n.inputs[1], base_over_mix_n.outputs["Color"])
+        node_tree.links.new(vcol_multi_n.inputs[1], base_over_mix_n.outputs["Result"])
 
         # pass 3
         node_tree.links.new(vcol_spec_mul_n.inputs[0], spec_multi_n.outputs[0])
         node_tree.links.new(vcol_spec_mul_n.inputs[1], vcol_scale_n.outputs[0])
 
         # pass 4
-        node_tree.links.new(lighting_eval_n.inputs["Shininess"], sec_shininess_mix_n.outputs["Color"])
+        node_tree.links.new(lighting_eval_n.inputs["Shininess"], sec_shininess_mix_n.outputs["Result"])
 
         # pass 5
         node_tree.links.new(compose_lighting_n.inputs["Specular Color"], vcol_spec_mul_n.outputs[0])
@@ -159,7 +164,7 @@ class DifSpecWeightWeightDifSpecWeight(DifSpec):
         :type factor: float
         """
 
-        node_tree.nodes[DifSpecWeightWeightDifSpecWeight.SEC_SHININESS_MIX_NODE].inputs["Color1"].default_value = (factor,) * 4
+        node_tree.nodes[DifSpecWeightWeightDifSpecWeight.SEC_SHININESS_MIX_NODE].inputs["A"].default_value = (factor,) * 4
 
     @staticmethod
     def set_over_texture(node_tree, image):
@@ -210,7 +215,7 @@ class DifSpecWeightWeightDifSpecWeight(DifSpec):
         node_tree.nodes[DifSpecWeightWeightDifSpecWeight.SEC_SPEC_COL_NODE].outputs["Color"].default_value = color
 
         factor = aux_property[3]["value"]
-        node_tree.nodes[DifSpecWeightWeightDifSpecWeight.SEC_SHININESS_MIX_NODE].inputs["Color2"].default_value = (factor,) * 4
+        node_tree.nodes[DifSpecWeightWeightDifSpecWeight.SEC_SHININESS_MIX_NODE].inputs["B"].default_value = (factor,) * 4
 
     @staticmethod
     def set_reflection2(node_tree, value):

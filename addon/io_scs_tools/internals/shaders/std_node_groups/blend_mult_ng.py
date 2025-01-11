@@ -81,18 +81,11 @@ def __create_node_group__():
         blend_mult_g.nodes.clear()
 
     # inputs defining
-    blend_mult_g.interface.new_socket(
-        name = "Shader",
-        in_out = "INPUT",
-        socket_type = "NodeSocketShader"
-    )
+    blend_mult_g.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketShader", name = "Shader")
 
     # outputs defining
-    blend_mult_g.interface.new_socket(
-        name = "Shader",
-        in_out = "OUTPUT",
-        socket_type = "NodeSocketShader"
-    )
+    blend_mult_g.interface.new_socket(in_out = "OUTPUT", socket_type = "NodeSocketShader", name = "Shader")
+
 
     # node creation
     input_n = blend_mult_g.nodes.new("NodeGroupInput")

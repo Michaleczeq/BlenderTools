@@ -85,23 +85,12 @@ def __create_node_group__():
         animsheet_loop_frame_g.nodes.clear()
 
     # inputs defining
-    animsheet_loop_frame_g.interface.new_socket(
-        name = "FPS",
-        in_out = "INPUT",
-        socket_type = "NodeSocketFloat"
-    )
-    animsheet_loop_frame_g.interface.new_socket(
-        name = "FramesTotal",
-        in_out = "INPUT",
-        socket_type = "NodeSocketFloat"
-    )
+    animsheet_loop_frame_g.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketFloat", name = "FPS")
+    animsheet_loop_frame_g.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketFloat", name = "FramesTotal")
 
     # outputs defining
-    animsheet_loop_frame_g.interface.new_socket(
-        name = "LoopFrame",
-        in_out = "OUTPUT",
-        socket_type = "NodeSocketFloat"
-    )
+    animsheet_loop_frame_g.interface.new_socket(in_out = "OUTPUT", socket_type = "NodeSocketFloat", name = "LoopFrame")
+
 
     # node creation
     input_n = animsheet_loop_frame_g.nodes.new("NodeGroupInput")

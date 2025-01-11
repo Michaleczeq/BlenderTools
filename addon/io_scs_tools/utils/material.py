@@ -392,8 +392,8 @@ def get_material_info(obj):
         for slot in obj.material_slots:
 
             if slot.material:
-
-                if obj.scs_props.scs_part.startswith(("coll", "_col")):
+                # "_col..." used in additional parts, "..._c" used in curve models
+                if obj.scs_props.scs_part.startswith(("coll", "_col")) or obj.scs_props.scs_part.endswith(("_c")):
                     has_static_collision = True
 
                 effect_name = slot.material.scs_props.mat_effect_name.lower()

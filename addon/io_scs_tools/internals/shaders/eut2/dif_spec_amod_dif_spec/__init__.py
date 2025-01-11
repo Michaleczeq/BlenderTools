@@ -27,8 +27,6 @@ class DifSpecAmodDifSpec(DifSpec):
     SEC_UVMAP_NODE = "SecondUVMap"
     MASK_TEX_NODE = "MaskTex"
     OVER_TEX_NODE = "OverTex"
-    BLENDING_FACTOR_1 = "BlendingFactor1"
-    BLENDING_FACTOR_2 = "BlendingFactor2"
     DECAL_BLEND_FACTOR_NODE = "DecalBlendFactorGNode"
     MASK_VCOLOR_MIX_NODE = "MaskVertexColorMix"
     MASK_COLOR_MIX_NODE = "MaskColorMix"
@@ -64,16 +62,6 @@ class DifSpecAmodDifSpec(DifSpec):
         
         # node creation
         # - column -1 -
-        blending_factor_1_n = node_tree.nodes.new("ShaderNodeValue")
-        blending_factor_1_n.name = DifSpecAmodDifSpec.BLENDING_FACTOR_1
-        blending_factor_1_n.label = DifSpecAmodDifSpec.BLENDING_FACTOR_1
-        blending_factor_1_n.location = (start_pos_x - pos_x_shift, start_pos_y + 1100)
-
-        blending_factor_2_n = node_tree.nodes.new("ShaderNodeValue")
-        blending_factor_2_n.name = DifSpecAmodDifSpec.BLENDING_FACTOR_2
-        blending_factor_2_n.label = DifSpecAmodDifSpec.BLENDING_FACTOR_2
-        blending_factor_2_n.location = (start_pos_x - pos_x_shift, start_pos_y + 1000)
-
         sec_uvmap_n = node_tree.nodes.new("ShaderNodeUVMap")
         sec_uvmap_n.name = DifSpecAmodDifSpec.SEC_UVMAP_NODE
         sec_uvmap_n.label = DifSpecAmodDifSpec.SEC_UVMAP_NODE
@@ -100,18 +88,20 @@ class DifSpecAmodDifSpec(DifSpec):
         over_tex_n.width = 140
 
         # - column 2 -
-        mask_vcol_mix_n = node_tree.nodes.new("ShaderNodeMixRGB")
+        mask_vcol_mix_n = node_tree.nodes.new("ShaderNodeMix")
         mask_vcol_mix_n.name = DifSpecAmodDifSpec.MASK_VCOLOR_MIX_NODE
         mask_vcol_mix_n.label = DifSpecAmodDifSpec.MASK_VCOLOR_MIX_NODE
         mask_vcol_mix_n.location = (start_pos_x + pos_x_shift * 2, start_pos_y + 1200)
+        mask_vcol_mix_n.data_type = "RGBA"
         mask_vcol_mix_n.blend_type = "MIX"
-        mask_vcol_mix_n.inputs['Color1'].default_value = (0,) * 3 + (1,)
+        mask_vcol_mix_n.inputs['A'].default_value = (0,) * 3 + (1,)
 
         # - column 3 -
-        mask_color_mix_n = node_tree.nodes.new("ShaderNodeMixRGB")
+        mask_color_mix_n = node_tree.nodes.new("ShaderNodeMix")
         mask_color_mix_n.name = DifSpecAmodDifSpec.MASK_COLOR_MIX_NODE
         mask_color_mix_n.label = DifSpecAmodDifSpec.MASK_COLOR_MIX_NODE
         mask_color_mix_n.location = (start_pos_x + pos_x_shift * 3, start_pos_y + 1200)
+        mask_color_mix_n.data_type = "RGBA"
         mask_color_mix_n.blend_type = "MIX"
 
 
@@ -119,22 +109,20 @@ class DifSpecAmodDifSpec(DifSpec):
         # links creation
         # - Column -1 -
         node_tree.links.new(vcol_group_n.outputs['Vertex Color Alpha'], deacl_blend_fac_gn.inputs['Vertex Alpha'])
-        node_tree.links.new(blending_factor_1_n.outputs['Value'], deacl_blend_fac_gn.inputs['Factor1'])
-        node_tree.links.new(blending_factor_2_n.outputs['Value'], deacl_blend_fac_gn.inputs['Factor2'])
         node_tree.links.new(sec_uvmap_n.outputs['UV'], mask_tex_n.inputs['Vector'])
         node_tree.links.new(sec_uvmap_n.outputs['UV'], over_tex_n.inputs['Vector'])
         
         # - Column 1 -
-        node_tree.links.new(base_tex_n.outputs['Color'], mask_color_mix_n.inputs['Color1'])
-        node_tree.links.new(mask_tex_n.outputs['Color'], mask_vcol_mix_n.inputs['Color2'])
-        node_tree.links.new(over_tex_n.outputs['Color'], mask_color_mix_n.inputs['Color2'])
-        node_tree.links.new(deacl_blend_fac_gn.outputs['Factor'], mask_vcol_mix_n.inputs['Fac'])
+        node_tree.links.new(base_tex_n.outputs['Color'], mask_color_mix_n.inputs['A'])
+        node_tree.links.new(mask_tex_n.outputs['Color'], mask_vcol_mix_n.inputs['B'])
+        node_tree.links.new(over_tex_n.outputs['Color'], mask_color_mix_n.inputs['B'])
+        node_tree.links.new(deacl_blend_fac_gn.outputs['Factor'], mask_vcol_mix_n.inputs['Factor'])
         
         # - Column 2 -
-        node_tree.links.new(mask_vcol_mix_n.outputs['Color'], mask_color_mix_n.inputs['Fac'])
+        node_tree.links.new(mask_vcol_mix_n.outputs['Result'], mask_color_mix_n.inputs['Factor'])
         
         # - Column 3 -
-        node_tree.links.new(mask_color_mix_n.outputs['Color'], vcol_multi_n.inputs[1])
+        node_tree.links.new(mask_color_mix_n.outputs['Result'], vcol_multi_n.inputs[1])
         
 
     @staticmethod
@@ -147,8 +135,8 @@ class DifSpecAmodDifSpec(DifSpec):
         :type aux_property: bpy.types.IDPropertyGroup
         """
 
-        node_tree.nodes[DifSpecAmodDifSpec.BLENDING_FACTOR_1].outputs["Value"].default_value = aux_property[0]['value']
-        node_tree.nodes[DifSpecAmodDifSpec.BLENDING_FACTOR_2].outputs["Value"].default_value = aux_property[1]['value']
+        node_tree.nodes[DifSpecAmodDifSpec.DECAL_BLEND_FACTOR_NODE].inputs["Factor1"].default_value = aux_property[0]['value']
+        node_tree.nodes[DifSpecAmodDifSpec.DECAL_BLEND_FACTOR_NODE].inputs["Factor2"].default_value = aux_property[1]['value']
     
     @staticmethod
     def set_mask_texture(node_tree, image):

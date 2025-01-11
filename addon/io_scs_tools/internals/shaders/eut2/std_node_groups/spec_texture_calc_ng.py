@@ -49,31 +49,20 @@ def __create_node_group__():
     spec_txt_calc_n = bpy.data.node_groups.new(type="ShaderNodeTree", name=SPEC_TEXTURE_CALC_G)
 
     # inputs defining
-    spec_txt_calc_n.interface.new_socket(
-        name = "Color",
-        in_out = "INPUT",
-        socket_type = "NodeSocketColor"
-    )
-
-    input_n = spec_txt_calc_n.nodes.new("NodeGroupInput")
-    input_n.location = (0, 0)
+    spec_txt_calc_n.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketColor", name = "Color")
 
     # outputs defining
-    spec_txt_calc_n.interface.new_socket(
-        name = "Shininess",
-        in_out = "OUTPUT",
-        socket_type = "NodeSocketVector"
-    )
-    spec_txt_calc_n.interface.new_socket(
-        name = "Specular",
-        in_out = "OUTPUT",
-        socket_type = "NodeSocketVector"
-    )
+    spec_txt_calc_n.interface.new_socket(in_out = "OUTPUT", socket_type = "NodeSocketVector", name = "Shininess")
+    spec_txt_calc_n.interface.new_socket(in_out = "OUTPUT", socket_type = "NodeSocketVector", name = "Specular")
+
+
+    # node creation
+    input_n = spec_txt_calc_n.nodes.new("NodeGroupInput")
+    input_n.location = (0, 0)
 
     output_n = spec_txt_calc_n.nodes.new("NodeGroupOutput")
     output_n.location = (185 * 3, 0)
 
-    # node creation
     color_to_rgb_n = spec_txt_calc_n.nodes.new("ShaderNodeSeparateColor")
     color_to_rgb_n.name = color_to_rgb_n.label = _COLOR_TO_RGB_NODE
     color_to_rgb_n.location = (185, 0)

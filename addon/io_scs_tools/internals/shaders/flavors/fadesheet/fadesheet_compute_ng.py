@@ -84,48 +84,17 @@ def __create_node_group__():
         fadesheet_compute_g.nodes.clear()
 
     # inputs defining
-    fadesheet_compute_g.interface.new_socket(
-        name = "FPS",
-        in_out = "INPUT",
-        socket_type = "NodeSocketFloat"
-    )
-    fadesheet_compute_g.interface.new_socket(
-        name = "FramesRow",
-        in_out = "INPUT",
-        socket_type = "NodeSocketFloat"
-    )
-    fadesheet_compute_g.interface.new_socket(
-        name = "FramesTotal",
-        in_out = "INPUT",
-        socket_type = "NodeSocketFloat"
-    )
-    fadesheet_compute_g.interface.new_socket(
-        name = "FrameSize",
-        in_out = "INPUT",
-        socket_type = "NodeSocketVector"
-    )
-    fadesheet_compute_g.interface.new_socket(
-        name = "UV",
-        in_out = "INPUT",
-        socket_type = "NodeSocketVector"
-    )
+    fadesheet_compute_g.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketFloat",  name = "FPS")
+    fadesheet_compute_g.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketFloat",  name = "FramesRow")
+    fadesheet_compute_g.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketFloat",  name = "FramesTotal")
+    fadesheet_compute_g.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketVector", name = "FrameSize")
+    fadesheet_compute_g.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketVector", name = "UV")
 
     # outputs defining
-    fadesheet_compute_g.interface.new_socket(
-        name = "UV0",
-        in_out = "OUTPUT",
-        socket_type = "NodeSocketVector"
-    )
-    fadesheet_compute_g.interface.new_socket(
-        name = "UV1",
-        in_out = "OUTPUT",
-        socket_type = "NodeSocketVector"
-    )
-    fadesheet_compute_g.interface.new_socket(
-        name = "FrameBlend",
-        in_out = "OUTPUT",
-        socket_type = "NodeSocketFloat"
-    )
+    fadesheet_compute_g.interface.new_socket(in_out = "OUTPUT", socket_type = "NodeSocketVector", name = "UV0")
+    fadesheet_compute_g.interface.new_socket(in_out = "OUTPUT", socket_type = "NodeSocketVector", name = "UV1")
+    fadesheet_compute_g.interface.new_socket(in_out = "OUTPUT", socket_type = "NodeSocketFloat",  name = "FrameBlend")
+
 
     # node creation
     input_n = fadesheet_compute_g.nodes.new("NodeGroupInput")

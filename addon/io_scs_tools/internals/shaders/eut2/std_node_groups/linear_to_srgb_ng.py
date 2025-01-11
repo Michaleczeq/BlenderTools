@@ -69,24 +69,19 @@ def __create_linear_to_srgb_group__():
     pos_x_shift = 185
 
     # inputs defining
-    lin_to_srgb_g.interface.new_socket(
-        name = "Value",
-        in_out = "INPUT",
-        socket_type = "NodeSocketFloat"
-    )
+    lin_to_srgb_g.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketFloat", name = "Value")
+
+    # outputs defining
+    lin_to_srgb_g.interface.new_socket(in_out = "OUTPUT", socket_type = "NodeSocketFloat", name = "Value")
+
+    
+    # group nodes
     input_n = lin_to_srgb_g.nodes.new("NodeGroupInput")
     input_n.location = (start_pos_x - pos_x_shift, 0)
 
-    # outputs defining
-    lin_to_srgb_g.interface.new_socket(
-        name = "Value",
-        in_out = "OUTPUT",
-        socket_type = "NodeSocketFloat"
-    )
     output_n = lin_to_srgb_g.nodes.new("NodeGroupOutput")
     output_n.location = (start_pos_x + pos_x_shift * 7, 0)
 
-    # group nodes
     small_mult_n = lin_to_srgb_g.nodes.new("ShaderNodeMath")
     small_mult_n.name = small_mult_n.label = _SMALL_MULT_NODE
     small_mult_n.location = (start_pos_x + pos_x_shift * 3, 200)

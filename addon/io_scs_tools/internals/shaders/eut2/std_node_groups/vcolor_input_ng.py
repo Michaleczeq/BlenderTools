@@ -66,23 +66,14 @@ def __create_vcolor_group__():
     vcol_g = bpy.data.node_groups.new(type="ShaderNodeTree", name=VCOLOR_G)
 
     # outputs defining
-    vcol_g.interface.new_socket(
-        name = "Vertex Color",
-        description = "Vertex color output",
-        in_out = "OUTPUT",
-        socket_type = "NodeSocketColor"
-    )
-    vcol_g.interface.new_socket(
-        name = "Vertex Color Alpha",
-        description = "Vertex color output",
-        in_out = "OUTPUT",
-        socket_type = "NodeSocketFloat"
-    )
+    vcol_g.interface.new_socket(in_out = "OUTPUT", socket_type = "NodeSocketColor", name = "Vertex Color",       description = "Vertex color output")
+    vcol_g.interface.new_socket(in_out = "OUTPUT", socket_type = "NodeSocketFloat", name = "Vertex Color Alpha", description = "Vertex color output")
 
+
+    # group nodes
     output_n = vcol_g.nodes.new("NodeGroupOutput")
     output_n.location = (185 * 5, 0)
 
-    # group nodes
     vcol_n = vcol_g.nodes.new("ShaderNodeVertexColor")
     vcol_n.name = vcol_n.label = _VCOL_ATTRIBUTE_NODE
     vcol_n.location = (pos_x_shift, 200)

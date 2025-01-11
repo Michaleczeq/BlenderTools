@@ -27,7 +27,6 @@ class InteriorLit(DifSpecAddEnv):
     VGCOLOR_MULT_NODE = "VertexGlassColorMultiplier"
     GLASS_COL_NODE = "GlassColor"
     GLASS_COL_MIX_NODE = "GlassColorMix"
-    GLASS_COL_FAC_NODE = "GlassColorFactor"
     LAYER0_TEX_NODE = "Layer0Tex"
     LAYER1_TEX_NODE = "Layer1Tex"
     MASK_TEX_NODE = "MaskTex"
@@ -119,11 +118,6 @@ class InteriorLit(DifSpecAddEnv):
         nmap_tex_n.width = 140
         """
 
-        # - column 2 -
-        glass_col_fac_n = node_tree.nodes.new("ShaderNodeValue")
-        glass_col_fac_n.name = glass_col_fac_n.label = InteriorLit.GLASS_COL_FAC_NODE
-        glass_col_fac_n.location = (start_pos_x + pos_x_shift * 2, start_pos_y + 800)
-
         # - column 3 -
         vgcol_mult_n = node_tree.nodes.new("ShaderNodeVectorMath")
         vgcol_mult_n.name = vgcol_mult_n.label = InteriorLit.VGCOLOR_MULT_NODE
@@ -131,9 +125,11 @@ class InteriorLit(DifSpecAddEnv):
         vgcol_mult_n.operation = "MULTIPLY"
 
         # - column 4 -
-        glass_col_mix_n = node_tree.nodes.new("ShaderNodeMixRGB")
+        glass_col_mix_n = node_tree.nodes.new("ShaderNodeMix")
         glass_col_mix_n.name = glass_col_mix_n.label = InteriorLit.GLASS_COL_MIX_NODE
         glass_col_mix_n.location = (start_pos_x + pos_x_shift * 4, start_pos_y + 1200)
+        glass_col_mix_n.data_type = "RGBA"
+        glass_col_mix_n.blend_type = "MIX"
 
 
         # links creation
@@ -148,16 +144,13 @@ class InteriorLit(DifSpecAddEnv):
         node_tree.links.new(base_tex_n.outputs['Color'], vgcol_mult_n.inputs[0])
 
         node_tree.links.new(glass_col_n.outputs['Color'], vgcol_mult_n.inputs[1])
-        node_tree.links.new(glass_col_n.outputs['Color'], glass_col_mix_n.inputs['Color2'])
-
-        # - column 2 -
-        node_tree.links.new(glass_col_fac_n.outputs['Value'], glass_col_mix_n.inputs['Fac'])
+        node_tree.links.new(glass_col_n.outputs['Color'], glass_col_mix_n.inputs['B'])
 
         # - column 3 -
-        node_tree.links.new(vgcol_mult_n.outputs['Vector'], glass_col_mix_n.inputs['Color1'])
+        node_tree.links.new(vgcol_mult_n.outputs['Vector'], glass_col_mix_n.inputs['A'])
 
         # - column 4 -
-        node_tree.links.new(glass_col_mix_n.outputs['Color'], vcol_mult_n.inputs[1])
+        node_tree.links.new(glass_col_mix_n.outputs['Result'], vcol_mult_n.inputs[1])
 
     ### TEXTURES ###
     @staticmethod
@@ -236,7 +229,9 @@ class InteriorLit(DifSpecAddEnv):
         node_tree.nodes[InteriorLit.GLASS_COL_NODE].outputs["Color"].default_value = color
 
         factor = aux_property[3]["value"]
-        node_tree.nodes[InteriorLit.GLASS_COL_FAC_NODE].outputs["Value"].default_value = factor
+
+
+        node_tree.nodes[InteriorLit.GLASS_COL_MIX_NODE].inputs['Factor'].default_value = factor
         
     @staticmethod
     def set_aux5(node_tree, aux_property):

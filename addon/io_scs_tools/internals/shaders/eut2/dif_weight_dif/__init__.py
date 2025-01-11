@@ -81,24 +81,25 @@ class DifWeightDif(Dif):
         spec_mult_n.location = (start_pos_x + pos_x_shift * 4, start_pos_y + 1900)
         spec_mult_n.operation = "MULTIPLY"
 
-        base_over_mix_n = node_tree.nodes.new("ShaderNodeMixRGB")
+        base_over_mix_n = node_tree.nodes.new("ShaderNodeMix")
         base_over_mix_n.name = base_over_mix_n.label = DifWeightDif.BASE_OVER_MIX_NODE
         base_over_mix_n.location = (start_pos_x + pos_x_shift * 3, start_pos_y + 1300)
+        base_over_mix_n.data_type = "RGBA"
         base_over_mix_n.blend_type = "MIX"
 
         # links creation
         node_tree.links.new(over_tex_n.inputs['Vector'], sec_uv_n.outputs['UV'])
 
         # pass 1
-        node_tree.links.new(base_over_mix_n.inputs['Fac'], vcol_group_n.outputs['Vertex Color Alpha'])
-        node_tree.links.new(base_over_mix_n.inputs['Color1'], base_tex_n.outputs['Color'])
-        node_tree.links.new(base_over_mix_n.inputs['Color2'], over_tex_n.outputs['Color'])
+        node_tree.links.new(base_over_mix_n.inputs['Factor'], vcol_group_n.outputs['Vertex Color Alpha'])
+        node_tree.links.new(base_over_mix_n.inputs['A'], base_tex_n.outputs['Color'])
+        node_tree.links.new(base_over_mix_n.inputs['B'], over_tex_n.outputs['Color'])
 
         # pass 2
         node_tree.links.new(spec_mult_n.inputs[0], spec_col_n.outputs[0])
         node_tree.links.new(spec_mult_n.inputs[1], vcol_scale_n.outputs[0])
 
-        node_tree.links.new(vcol_mult_n.inputs[1], base_over_mix_n.outputs['Color'])
+        node_tree.links.new(vcol_mult_n.inputs[1], base_over_mix_n.outputs['Result'])
 
         # pass to material
         node_tree.links.new(compose_lighting_n.inputs['Specular Color'], spec_mult_n.outputs[0])

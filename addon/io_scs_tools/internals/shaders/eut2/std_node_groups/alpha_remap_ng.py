@@ -50,31 +50,17 @@ def __create_node_group__():
     asafew_g = bpy.data.node_groups.new(type="ShaderNodeTree", name=ASAFEW_G)
 
     # inputs defining
-    asafew_g.interface.new_socket(
-        name = "Alpha",
-        in_out = "INPUT",
-        socket_type = "NodeSocketFloat"
-    )
-    asafew_g.interface.new_socket(
-        name = "Factor1",
-        in_out = "INPUT",
-        socket_type = "NodeSocketFloat"
-    )
-    asafew_g.interface.new_socket(
-        name = "Factor2",
-        in_out = "INPUT",
-        socket_type = "NodeSocketFloat"
-    )
-
-    input_n = asafew_g.nodes.new("NodeGroupInput")
-    input_n.location = (0, 0)
+    asafew_g.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketFloat", name = "Alpha")
+    asafew_g.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketFloat", name = "Factor1")
+    asafew_g.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketFloat", name = "Factor2")
 
     # outputs defining
-    asafew_g.interface.new_socket(
-        name = "Weighted Alpha",
-        in_out = "OUTPUT",
-        socket_type = "NodeSocketFloat"
-    )
+    asafew_g.interface.new_socket(in_out = "OUTPUT", socket_type = "NodeSocketFloat", name = "Weighted Alpha")
+
+
+    # node creation
+    input_n = asafew_g.nodes.new("NodeGroupInput")
+    input_n.location = (0, 0)
 
     output_n = asafew_g.nodes.new("NodeGroupOutput")
     output_n.location = (185 * 3, 0)

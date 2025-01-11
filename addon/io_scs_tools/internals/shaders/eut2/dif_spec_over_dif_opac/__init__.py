@@ -70,20 +70,21 @@ class DifSpecOverDifOpac(DifSpec):
         over_tex_n.location = (start_pos_x + pos_x_shift, start_pos_y + 1200)
         over_tex_n.width = 140
 
-        over_mix_node = node_tree.nodes.new("ShaderNodeMixRGB")
+        over_mix_node = node_tree.nodes.new("ShaderNodeMix")
         over_mix_node.name = DifSpecOverDifOpac.OVER_MIX_NODE
         over_mix_node.label = DifSpecOverDifOpac.OVER_MIX_NODE
-        over_mix_node.location = (start_pos_x + pos_x_shift * 3, start_pos_y + 1300)
+        over_mix_node.location = (start_pos_x + pos_x_shift * 3, start_pos_y + 1350)
+        over_mix_node.data_type = "RGBA"
         over_mix_node.blend_type = "MIX"
 
         # links creation
         node_tree.links.new(over_tex_n.inputs['Vector'], sec_uv_n.outputs['UV'])
 
-        node_tree.links.new(over_mix_node.inputs['Fac'], over_tex_n.outputs['Alpha'])
-        node_tree.links.new(over_mix_node.inputs['Color1'], base_tex_n.outputs['Color'])
-        node_tree.links.new(over_mix_node.inputs['Color2'], over_tex_n.outputs['Color'])
+        node_tree.links.new(over_mix_node.inputs['Factor'], over_tex_n.outputs['Alpha'])
+        node_tree.links.new(over_mix_node.inputs['A'], base_tex_n.outputs['Color'])
+        node_tree.links.new(over_mix_node.inputs['B'], over_tex_n.outputs['Color'])
 
-        node_tree.links.new(vcol_mult_n.inputs[1], over_mix_node.outputs['Color'])
+        node_tree.links.new(vcol_mult_n.inputs[1], over_mix_node.outputs['Result'])
 
     @staticmethod
     def set_aux1(node_tree, aux_property):

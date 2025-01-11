@@ -66,36 +66,21 @@ def __create_node_group__():
     lampmask_g = bpy.data.node_groups.new(type="ShaderNodeTree", name=LAMPMASK_MIX_G)
 
     # inputs defining
-    lampmask_g.interface.new_socket(
-        name = "Lampmask Tex Alpha",
-        in_out = "INPUT",
-        socket_type = "NodeSocketFloat"
-    )
-    lampmask_g.interface.new_socket(
-        name = "Lampmask Tex Color",
-        in_out = "INPUT",
-        socket_type = "NodeSocketColor"
-    )
-    lampmask_g.interface.new_socket(
-        name = "UV Vector",
-        in_out = "INPUT",
-        socket_type = "NodeSocketVector"
-    )
-
-    input_n = lampmask_g.nodes.new("NodeGroupInput")
-    input_n.location = (0, 0)
+    lampmask_g.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketFloat",  name = "Lampmask Tex Alpha")
+    lampmask_g.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketColor",  name = "Lampmask Tex Color")
+    lampmask_g.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketVector", name = "UV Vector")
 
     # outputs defining
-    lampmask_g.interface.new_socket(
-        name = "Lampmask Addition Color",
-        in_out = "OUTPUT",
-        socket_type = "NodeSocketColor"
-    )
+    lampmask_g.interface.new_socket(in_out = "OUTPUT", socket_type = "NodeSocketColor", name = "Lampmask Addition Color")
+
+
+    # nodes creation
+    input_n = lampmask_g.nodes.new("NodeGroupInput")
+    input_n.location = (0, 0)
 
     output_n = lampmask_g.nodes.new("NodeGroupOutput")
     output_n.location = (pos_x_shift * 9, 0)
 
-    # nodes creation
     alpha_decode_n = lampmask_g.nodes.new("ShaderNodeMath")
     alpha_decode_n.name = alpha_decode_n.label = _TEX_COL_SEP_NODE
     alpha_decode_n.location = (pos_x_shift, 50)

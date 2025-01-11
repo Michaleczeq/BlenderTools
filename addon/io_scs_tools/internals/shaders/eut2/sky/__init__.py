@@ -96,7 +96,7 @@ class Sky(BaseShader):
         diff_col_n.location = (start_pos_x + pos_x_shift, start_pos_y + 2000)
 
         for tex_type_i, tex_type in enumerate(texture_types.get()):
-            Sky.__create_texel_component_nodes__(node_tree, tex_type, (start_pos_x + pos_x_shift, start_pos_y + 1500 - tex_type_i * 450))
+            Sky.__create_texel_component_nodes__(node_tree, tex_type, (start_pos_x + pos_x_shift, start_pos_y + 1500 - tex_type_i * 550))
 
         base_a_tex_final_n = node_tree.nodes[Sky.TEX_FINAL_MIX_NODE_PREFIX + texture_types.get()[0]]
         base_b_tex_final_n = node_tree.nodes[Sky.TEX_FINAL_MIX_NODE_PREFIX + texture_types.get()[1]]
@@ -119,34 +119,40 @@ class Sky(BaseShader):
         diff_mult_n.location = (start_pos_x + pos_x_shift * 4, start_pos_y + 2000)
         diff_mult_n.operation = "MULTIPLY"
 
-        weather_base_mix_n = node_tree.nodes.new("ShaderNodeMixRGB")
+        weather_base_mix_n = node_tree.nodes.new("ShaderNodeMix")
         weather_base_mix_n.name = weather_base_mix_n.label = Sky.WEATHER_BASE_MIX_NODE
-        weather_base_mix_n.location = (start_pos_x + pos_x_shift * 4, start_pos_y + 1500)
+        weather_base_mix_n.location = (start_pos_x + pos_x_shift * 4, start_pos_y + 1400)
+        weather_base_mix_n.data_type = "RGBA"
         weather_base_mix_n.blend_type = "MIX"
 
-        weather_base_alpha_mix_n = node_tree.nodes.new("ShaderNodeMixRGB")
+        weather_base_alpha_mix_n = node_tree.nodes.new("ShaderNodeMix")
         weather_base_alpha_mix_n.name = weather_base_alpha_mix_n.label = Sky.WEATHER_BASE_A_MIX_NODE
-        weather_base_alpha_mix_n.location = (start_pos_x + pos_x_shift * 4, start_pos_y + 1300)
+        weather_base_alpha_mix_n.location = (start_pos_x + pos_x_shift * 4, start_pos_y + 1150)
+        weather_base_alpha_mix_n.data_type = "RGBA"
         weather_base_alpha_mix_n.blend_type = "MIX"
 
-        weather_over_mix_n = node_tree.nodes.new("ShaderNodeMixRGB")
+        weather_over_mix_n = node_tree.nodes.new("ShaderNodeMix")
         weather_over_mix_n.name = weather_over_mix_n.label = Sky.WEATHER_OVER_MIX_NODE
-        weather_over_mix_n.location = (start_pos_x + pos_x_shift * 4, start_pos_y + 700)
+        weather_over_mix_n.location = (start_pos_x + pos_x_shift * 4, start_pos_y + 300)
+        weather_over_mix_n.data_type = "RGBA"
         weather_over_mix_n.blend_type = "MIX"
 
-        weather_over_alpha_mix_n = node_tree.nodes.new("ShaderNodeMixRGB")
+        weather_over_alpha_mix_n = node_tree.nodes.new("ShaderNodeMix")
         weather_over_alpha_mix_n.name = weather_over_alpha_mix_n.label = Sky.WEATHER_OVER_A_MIX_NODE
-        weather_over_alpha_mix_n.location = (start_pos_x + pos_x_shift * 4, start_pos_y + 500)
+        weather_over_alpha_mix_n.location = (start_pos_x + pos_x_shift * 4, start_pos_y + 50)
+        weather_over_alpha_mix_n.data_type = "RGBA"
         weather_over_alpha_mix_n.blend_type = "MIX"
 
-        weather_mix_n = node_tree.nodes.new("ShaderNodeMixRGB")
+        weather_mix_n = node_tree.nodes.new("ShaderNodeMix")
         weather_mix_n.name = weather_mix_n.label = Sky.WEATHER_MIX_NODE
-        weather_mix_n.location = (start_pos_x + pos_x_shift * 5, start_pos_y + 1100)
+        weather_mix_n.location = (start_pos_x + pos_x_shift * 5, start_pos_y + 850)
+        weather_mix_n.data_type = "RGBA"
         weather_mix_n.blend_type = "MIX"
 
-        weather_alpha_mix_n = node_tree.nodes.new("ShaderNodeMixRGB")
+        weather_alpha_mix_n = node_tree.nodes.new("ShaderNodeMix")
         weather_alpha_mix_n.name = weather_alpha_mix_n.label = Sky.WEATHER_A_MIX_NODE
-        weather_alpha_mix_n.location = (start_pos_x + pos_x_shift * 5, start_pos_y + 900)
+        weather_alpha_mix_n.location = (start_pos_x + pos_x_shift * 5, start_pos_y + 600)
+        weather_alpha_mix_n.data_type = "RGBA"
         weather_alpha_mix_n.blend_type = "MIX"
 
         weather_diff_mult_n = node_tree.nodes.new("ShaderNodeVectorMath")
@@ -156,7 +162,7 @@ class Sky(BaseShader):
 
         opacity_stars_mix_n = node_tree.nodes.new("ShaderNodeVectorMath")
         opacity_stars_mix_n.name = opacity_stars_mix_n.label = Sky.OPACITY_STARS_MIX_NODE
-        opacity_stars_mix_n.location = (start_pos_x + pos_x_shift * 6, start_pos_y + 900)
+        opacity_stars_mix_n.location = (start_pos_x + pos_x_shift * 6, start_pos_y + 700)
         opacity_stars_mix_n.operation = "MULTIPLY"
         opacity_stars_mix_n.inputs[1].default_value = (1.0,) * 3
 
@@ -184,30 +190,30 @@ class Sky(BaseShader):
         node_tree.links.new(diff_mult_n.inputs[0], diff_col_n.outputs[0])
         node_tree.links.new(diff_mult_n.inputs[1], vcol_mult_n.outputs[0])
 
-        node_tree.links.new(weather_base_mix_n.inputs['Color1'], base_a_tex_final_n.outputs[0])
-        node_tree.links.new(weather_base_mix_n.inputs['Color2'], base_b_tex_final_n.outputs[0])
+        node_tree.links.new(weather_base_mix_n.inputs['A'], base_a_tex_final_n.outputs['Result'])
+        node_tree.links.new(weather_base_mix_n.inputs['B'], base_b_tex_final_n.outputs['Result'])
 
-        node_tree.links.new(weather_base_alpha_mix_n.inputs['Color1'], base_a_tex_final_alpha_n.outputs[0])
-        node_tree.links.new(weather_base_alpha_mix_n.inputs['Color2'], base_b_tex_final_alpha_n.outputs[0])
+        node_tree.links.new(weather_base_alpha_mix_n.inputs['A'], base_a_tex_final_alpha_n.outputs['Result'])
+        node_tree.links.new(weather_base_alpha_mix_n.inputs['B'], base_b_tex_final_alpha_n.outputs['Result'])
 
-        node_tree.links.new(weather_over_mix_n.inputs['Color1'], over_a_tex_final_n.outputs[0])
-        node_tree.links.new(weather_over_mix_n.inputs['Color2'], over_b_tex_final_n.outputs[0])
+        node_tree.links.new(weather_over_mix_n.inputs['A'], over_a_tex_final_n.outputs['Result'])
+        node_tree.links.new(weather_over_mix_n.inputs['B'], over_b_tex_final_n.outputs['Result'])
 
-        node_tree.links.new(weather_over_alpha_mix_n.inputs['Color1'], over_a_tex_final_alpha_n.outputs[0])
-        node_tree.links.new(weather_over_alpha_mix_n.inputs['Color2'], over_b_tex_final_alpha_n.outputs[0])
+        node_tree.links.new(weather_over_alpha_mix_n.inputs['A'], over_a_tex_final_alpha_n.outputs['Result'])
+        node_tree.links.new(weather_over_alpha_mix_n.inputs['B'], over_b_tex_final_alpha_n.outputs['Result'])
 
         # pass 5
-        node_tree.links.new(weather_mix_n.inputs['Color1'], weather_base_mix_n.outputs[0])
-        node_tree.links.new(weather_mix_n.inputs['Color2'], weather_over_mix_n.outputs[0])
+        node_tree.links.new(weather_mix_n.inputs['A'], weather_base_mix_n.outputs['Result'])
+        node_tree.links.new(weather_mix_n.inputs['B'], weather_over_mix_n.outputs['Result'])
 
-        node_tree.links.new(weather_alpha_mix_n.inputs['Color1'], weather_base_alpha_mix_n.outputs[0])
-        node_tree.links.new(weather_alpha_mix_n.inputs['Color2'], weather_over_alpha_mix_n.outputs[0])
+        node_tree.links.new(weather_alpha_mix_n.inputs['A'], weather_base_alpha_mix_n.outputs['Result'])
+        node_tree.links.new(weather_alpha_mix_n.inputs['B'], weather_over_alpha_mix_n.outputs['Result'])
 
         # pass 6
         node_tree.links.new(weather_diff_mult_n.inputs[0], diff_mult_n.outputs[0])
-        node_tree.links.new(weather_diff_mult_n.inputs[1], weather_mix_n.outputs[0])
+        node_tree.links.new(weather_diff_mult_n.inputs[1], weather_mix_n.outputs['Result'])
 
-        node_tree.links.new(opacity_stars_mix_n.inputs[0], weather_alpha_mix_n.outputs[0])
+        node_tree.links.new(opacity_stars_mix_n.inputs[0], weather_alpha_mix_n.outputs['Result'])
 
         # pass 7
         node_tree.links.new(out_shader_node.inputs['Color'], weather_diff_mult_n.outputs[0])
@@ -244,17 +250,19 @@ class Sky(BaseShader):
         tex_n.location = (location[0], location[1])
         tex_n.width = 140
 
-        mix_col_n = node_tree.nodes.new("ShaderNodeMixRGB")
+        mix_col_n = node_tree.nodes.new("ShaderNodeMix")
         mix_col_n.name = mix_col_n.label = Sky.TEX_FINAL_MIX_NODE_PREFIX + tex_type
-        mix_col_n.location = (location[0] + pos_x_shift * 2, location[1] + 100)
+        mix_col_n.location = (location[0] + pos_x_shift * 2, location[1] + 150)
+        mix_col_n.data_type = "RGBA"
         mix_col_n.blend_type = "MIX"
-        mix_col_n.inputs['Color2'].default_value = (0.0,) * 4
+        mix_col_n.inputs['B'].default_value = (0.0,) * 4
 
-        mix_a_n = node_tree.nodes.new("ShaderNodeMixRGB")
+        mix_a_n = node_tree.nodes.new("ShaderNodeMix")
         mix_a_n.name = mix_a_n.label = Sky.TEX_FINAL_A_MIX_NODE_PREFIX + tex_type
         mix_a_n.location = (location[0] + pos_x_shift * 2, location[1] - 100)
+        mix_a_n.data_type = "RGBA"
         mix_a_n.blend_type = "MIX"
-        mix_a_n.inputs['Color2'].default_value = (0.0,) * 4
+        mix_a_n.inputs['B'].default_value = (0.0,) * 4
 
     @staticmethod
     def __create_texel_component_links__(node_tree, tex_type, uv_socket):
@@ -279,10 +287,10 @@ class Sky(BaseShader):
         node_tree.links.new(texel_obb_n.inputs[0], separate_uv_n.outputs['Y'])
         node_tree.links.new(tex_n.inputs[0], uv_socket)
 
-        node_tree.links.new(mix_col_n.inputs['Fac'], texel_obb_n.outputs[0])
-        node_tree.links.new(mix_col_n.inputs['Color1'], tex_n.outputs['Color'])
-        node_tree.links.new(mix_a_n.inputs['Fac'], texel_obb_n.outputs[0])
-        node_tree.links.new(mix_a_n.inputs['Color1'], tex_n.outputs['Alpha'])
+        node_tree.links.new(mix_col_n.inputs['Factor'], texel_obb_n.outputs[0])
+        node_tree.links.new(mix_col_n.inputs['A'], tex_n.outputs['Color'])
+        node_tree.links.new(mix_a_n.inputs['Factor'], texel_obb_n.outputs[0])
+        node_tree.links.new(mix_a_n.inputs['A'], tex_n.outputs['Alpha'])
 
     @staticmethod
     def finalize(node_tree, material):
@@ -474,15 +482,15 @@ class Sky(BaseShader):
 
         profile_blend = _math_utils.clamp(aux_property[0]['value'])
 
-        node_tree.nodes[Sky.WEATHER_BASE_MIX_NODE].inputs['Fac'].default_value = profile_blend
-        node_tree.nodes[Sky.WEATHER_BASE_A_MIX_NODE].inputs['Fac'].default_value = profile_blend
-        node_tree.nodes[Sky.WEATHER_OVER_MIX_NODE].inputs['Fac'].default_value = profile_blend
-        node_tree.nodes[Sky.WEATHER_OVER_A_MIX_NODE].inputs['Fac'].default_value = profile_blend
+        node_tree.nodes[Sky.WEATHER_BASE_MIX_NODE].inputs['Factor'].default_value = profile_blend
+        node_tree.nodes[Sky.WEATHER_BASE_A_MIX_NODE].inputs['Factor'].default_value = profile_blend
+        node_tree.nodes[Sky.WEATHER_OVER_MIX_NODE].inputs['Factor'].default_value = profile_blend
+        node_tree.nodes[Sky.WEATHER_OVER_A_MIX_NODE].inputs['Factor'].default_value = profile_blend
 
         weather_blend = _math_utils.clamp(aux_property[1]['value'])
 
-        node_tree.nodes[Sky.WEATHER_MIX_NODE].inputs['Fac'].default_value = weather_blend
-        node_tree.nodes[Sky.WEATHER_A_MIX_NODE].inputs['Fac'].default_value = weather_blend
+        node_tree.nodes[Sky.WEATHER_MIX_NODE].inputs['Factor'].default_value = weather_blend
+        node_tree.nodes[Sky.WEATHER_A_MIX_NODE].inputs['Factor'].default_value = weather_blend
 
         if sky_stars.is_set(node_tree):
             stars_opacity = (_math_utils.clamp(aux_property[2]['value']),) * 3

@@ -107,9 +107,10 @@ class DifSpecWeightMult2Weight2(DifSpecWeightMult2):
         mult_1_tex_n.location = (start_pos_x + pos_x_shift, start_pos_y + 600)
         mult_1_tex_n.width = 140
 
-        spec_col_mix_n = node_tree.nodes.new("ShaderNodeMixRGB")
+        spec_col_mix_n = node_tree.nodes.new("ShaderNodeMix")
         spec_col_mix_n.name = spec_col_mix_n.label = DifSpecWeightMult2Weight2.SPEC_COLOR_MIX_NODE
-        spec_col_mix_n.location = (start_pos_x + pos_x_shift * 3, start_pos_y + 2100)
+        spec_col_mix_n.location = (start_pos_x + pos_x_shift * 3, start_pos_y + 2150)
+        spec_col_mix_n.data_type = "RGBA"
         spec_col_mix_n.blend_type = "MIX"
 
         sec_mult2_mix_n = node_tree.nodes.new("ShaderNodeGroup")
@@ -117,14 +118,16 @@ class DifSpecWeightMult2Weight2(DifSpecWeightMult2):
         sec_mult2_mix_n.location = (start_pos_x + pos_x_shift * 3, start_pos_y + 800)
         sec_mult2_mix_n.node_tree = mult2_mix_ng.get_node_group()
 
-        combined_a_mix_n = node_tree.nodes.new("ShaderNodeMixRGB")
+        combined_a_mix_n = node_tree.nodes.new("ShaderNodeMix")
         combined_a_mix_n.name = combined_a_mix_n.label = DifSpecWeightMult2Weight2.COMBINED_ALPHA_MIX_NODE
-        combined_a_mix_n.location = (start_pos_x + pos_x_shift * 4, start_pos_y + 1200)
+        combined_a_mix_n.location = (start_pos_x + pos_x_shift * 4, start_pos_y + 1250)
+        combined_a_mix_n.data_type = "RGBA"
         combined_a_mix_n.blend_type = "MIX"
 
-        combined_mix_n = node_tree.nodes.new("ShaderNodeMixRGB")
+        combined_mix_n = node_tree.nodes.new("ShaderNodeMix")
         combined_mix_n.name = combined_mix_n.label = DifSpecWeightMult2Weight2.COMBINED_MIX_NODE
         combined_mix_n.location = (start_pos_x + pos_x_shift * 4, start_pos_y + 1000)
+        combined_mix_n.data_type = "RGBA"
         combined_mix_n.blend_type = "MIX"
 
         # links creation
@@ -135,9 +138,9 @@ class DifSpecWeightMult2Weight2(DifSpecWeightMult2):
         node_tree.links.new(base_1_tex_n.inputs["Vector"], sec_uv_n.outputs["UV"])
 
         # pass 1
-        node_tree.links.new(spec_col_mix_n.inputs["Fac"], vcol_group_n.outputs["Vertex Color Alpha"])
-        node_tree.links.new(spec_col_mix_n.inputs["Color1"], spec_col_n.outputs["Color"])
-        node_tree.links.new(spec_col_mix_n.inputs["Color2"], sec_spec_col_n.outputs["Color"])
+        node_tree.links.new(spec_col_mix_n.inputs["Factor"], vcol_group_n.outputs["Vertex Color Alpha"])
+        node_tree.links.new(spec_col_mix_n.inputs["A"], spec_col_n.outputs["Color"])
+        node_tree.links.new(spec_col_mix_n.inputs["B"], sec_spec_col_n.outputs["Color"])
 
         node_tree.links.new(sec_mult2_mix_n.inputs["Base Alpha"], base_1_tex_n.outputs["Alpha"])
         node_tree.links.new(sec_mult2_mix_n.inputs["Base Color"], base_1_tex_n.outputs["Color"])
@@ -145,19 +148,19 @@ class DifSpecWeightMult2Weight2(DifSpecWeightMult2):
         node_tree.links.new(sec_mult2_mix_n.inputs["Mult Color"], mult_1_tex_n.outputs["Color"])
 
         # pass 2
-        node_tree.links.new(combined_a_mix_n.inputs["Fac"], vcol_group_n.outputs["Vertex Color Alpha"])
-        node_tree.links.new(combined_a_mix_n.inputs["Color1"], mult2_mix_gn.outputs["Mix Alpha"])
-        node_tree.links.new(combined_a_mix_n.inputs["Color2"], sec_mult2_mix_n.outputs["Mix Alpha"])
+        node_tree.links.new(combined_a_mix_n.inputs["Factor"], vcol_group_n.outputs["Vertex Color Alpha"])
+        node_tree.links.new(combined_a_mix_n.inputs["A"], mult2_mix_gn.outputs["Mix Alpha"])
+        node_tree.links.new(combined_a_mix_n.inputs["B"], sec_mult2_mix_n.outputs["Mix Alpha"])
 
-        node_tree.links.new(combined_mix_n.inputs["Fac"], vcol_group_n.outputs["Vertex Color Alpha"])
-        node_tree.links.new(combined_mix_n.inputs["Color1"], mult2_mix_gn.outputs["Mix Color"])
-        node_tree.links.new(combined_mix_n.inputs["Color2"], sec_mult2_mix_n.outputs["Mix Color"])
+        node_tree.links.new(combined_mix_n.inputs["Factor"], vcol_group_n.outputs["Vertex Color Alpha"])
+        node_tree.links.new(combined_mix_n.inputs["A"], mult2_mix_gn.outputs["Mix Color"])
+        node_tree.links.new(combined_mix_n.inputs["B"], sec_mult2_mix_n.outputs["Mix Color"])
 
         # pass 3
-        node_tree.links.new(spec_mult_n.inputs[0], spec_col_mix_n.outputs["Color"])
-        node_tree.links.new(spec_mult_n.inputs[1], combined_a_mix_n.outputs["Color"])
+        node_tree.links.new(spec_mult_n.inputs[0], spec_col_mix_n.outputs["Result"])
+        node_tree.links.new(spec_mult_n.inputs[1], combined_a_mix_n.outputs["Result"])
 
-        node_tree.links.new(vcol_mult_n.inputs[1], combined_mix_n.outputs["Color"])
+        node_tree.links.new(vcol_mult_n.inputs[1], combined_mix_n.outputs["Result"])
 
     @staticmethod
     def set_reflection2(node_tree, value):

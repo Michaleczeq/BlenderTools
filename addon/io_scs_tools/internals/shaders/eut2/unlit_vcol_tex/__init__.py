@@ -463,24 +463,28 @@ class UnlitVcolTex(BaseShader):
             base1_tex_n.location = (base_tex_n.location.x, base_tex_n.location.y - 300)
             base1_tex_n.width = 140
 
-            base_base1_mix_n = node_tree.nodes.new("ShaderNodeMixRGB")
+            base_base1_mix_n = node_tree.nodes.new("ShaderNodeMix")
             base_base1_mix_n.name = base_base1_mix_n.label = UnlitVcolTex.BASE_BASE1_MIX_NODE
-            base_base1_mix_n.location = (base_tex_n.location.x + 185 * 2, base_tex_n.location.y - 300)
+            base_base1_mix_n.location = (base_tex_n.location.x + 185 * 2, base_tex_n.location.y - 250)
+            base_base1_mix_n.data_type = "RGBA"
+            base_base1_mix_n.blend_type = "MIX"
 
-            base_base1_amix_n = node_tree.nodes.new("ShaderNodeMixRGB")
+            base_base1_amix_n = node_tree.nodes.new("ShaderNodeMix")
             base_base1_amix_n.name = base_base1_amix_n.label = UnlitVcolTex.BASE_BASE1_AMIX_NODE
             base_base1_amix_n.location = (base_tex_n.location.x + 185 * 2, base_tex_n.location.y - 500)
+            base_base1_amix_n.data_type = "RGBA"
+            base_base1_amix_n.blend_type = "MIX"
 
             # links
-            node_tree.links.new(base_base1_mix_n.inputs['Color1'], base_tex_n.outputs['Color'])
-            node_tree.links.new(base_base1_mix_n.inputs['Color2'], base1_tex_n.outputs['Color'])
+            node_tree.links.new(base_base1_mix_n.inputs['A'], base_tex_n.outputs['Color'])
+            node_tree.links.new(base_base1_mix_n.inputs['B'], base1_tex_n.outputs['Color'])
 
-            node_tree.links.new(base_base1_amix_n.inputs['Color1'], base_tex_n.outputs['Alpha'])
-            node_tree.links.new(base_base1_amix_n.inputs['Color2'], base1_tex_n.outputs['Alpha'])
+            node_tree.links.new(base_base1_amix_n.inputs['A'], base_tex_n.outputs['Alpha'])
+            node_tree.links.new(base_base1_amix_n.inputs['B'], base1_tex_n.outputs['Alpha'])
 
-            node_tree.links.new(tex_mult_n.inputs[1], base_base1_mix_n.outputs['Color'])
+            node_tree.links.new(tex_mult_n.inputs[1], base_base1_mix_n.outputs['Result'])
 
-            node_tree.links.new(opacity_n.inputs[0], base_base1_amix_n.outputs['Color'])
+            node_tree.links.new(opacity_n.inputs[0], base_base1_amix_n.outputs['Result'])
 
             # flavor creation
             uvmap_n.location.x -= 185
@@ -490,8 +494,8 @@ class UnlitVcolTex(BaseShader):
                            uvmap_n.outputs['UV'],
                            base_tex_n.inputs[0],
                            base1_tex_n.inputs[0],
-                           base_base1_mix_n.inputs['Fac'],
-                           base_base1_amix_n.inputs['Fac'])
+                           base_base1_mix_n.inputs['Factor'],
+                           base_base1_amix_n.inputs['Factor'])
 
         else:
             fadesheet.delete(node_tree)

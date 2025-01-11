@@ -47,31 +47,20 @@ def __create_refl_normal_group__():
     refl_normal_g = bpy.data.node_groups.new(type="ShaderNodeTree", name=REFL_NORMAL_G)
 
     # inputs defining
-    refl_normal_g.interface.new_socket(
-        name = "Incoming",
-        in_out = "INPUT",
-        socket_type = "NodeSocketVector"
-    )
-    refl_normal_g.interface.new_socket(
-        name = "Normal",
-        in_out = "INPUT",
-        socket_type = "NodeSocketVector"
-    )
-
-    input_n = refl_normal_g.nodes.new("NodeGroupInput")
-    input_n.location = (0, 0)
+    refl_normal_g.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketVector", name = "Incoming")
+    refl_normal_g.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketVector", name = "Normal")
 
     # outputs defining
-    refl_normal_g.interface.new_socket(
-        name = "Reflection Normal",
-        in_out = "OUTPUT",
-        socket_type = "NodeSocketVector"
-    )
+    refl_normal_g.interface.new_socket(in_out = "OUTPUT", socket_type = "NodeSocketVector", name = "Reflection Normal")
+
+
+    # group nodes
+    input_n = refl_normal_g.nodes.new("NodeGroupInput")
+    input_n.location = (0, 0)
 
     output_n = refl_normal_g.nodes.new("NodeGroupOutput")
     output_n.location = (185 * 7, 0)
 
-    # group nodes
     view_vector_n = refl_normal_g.nodes.new("ShaderNodeVectorMath")
     view_vector_n.location = (185, 250)
     view_vector_n.operation = "MULTIPLY"

@@ -88,66 +88,27 @@ def __create_node_group__():
     compose_light_g = bpy.data.node_groups.new(type="ShaderNodeTree", name=COMPOSE_LIGHTING_G)
 
     # inputs defining
-    compose_light_g.interface.new_socket(
-        name = "AddAmbient",
-        in_out = "INPUT",
-        socket_type = "NodeSocketFloat"
-    )
-    compose_light_g.interface.new_socket(
-        name = "Diffuse Color",
-        in_out = "INPUT",
-        socket_type = "NodeSocketColor"
-    )
-    compose_light_g.interface.new_socket(
-        name = "Specular Color",
-        in_out = "INPUT",
-        socket_type = "NodeSocketColor"
-    )
-    compose_light_g.interface.new_socket(
-        name = "Env Color",
-        in_out = "INPUT",
-        socket_type = "NodeSocketColor"
-    )
-    compose_light_g.interface.new_socket(
-        name = "Diffuse Lighting",
-        in_out = "INPUT",
-        socket_type = "NodeSocketColor"
-    )
-    compose_light_g.interface.new_socket(
-        name = "Specular Lighting",
-        in_out = "INPUT",
-        socket_type = "NodeSocketColor"
-    )
-    compose_light_g.interface.new_socket(
-        name = "Alpha",
-        in_out = "INPUT",
-        socket_type = "NodeSocketFloat"
-    )
-
-    input_n = compose_light_g.nodes.new("NodeGroupInput")
-    input_n.location = (start_pos_x - pos_x_shift, 0)
+    compose_light_g.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketFloat", name = "AddAmbient")
+    compose_light_g.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketColor", name = "Diffuse Color")
+    compose_light_g.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketColor", name = "Specular Color")
+    compose_light_g.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketColor", name = "Env Color")
+    compose_light_g.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketColor", name = "Diffuse Lighting")
+    compose_light_g.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketColor", name = "Specular Lighting")
+    compose_light_g.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketFloat", name = "Alpha")
 
     # outputs defining
-    compose_light_g.interface.new_socket(
-        name = "Shader",
-        in_out = "OUTPUT",
-        socket_type = "NodeSocketShader"
-    )
-    compose_light_g.interface.new_socket(
-        name = "Color",
-        in_out = "OUTPUT",
-        socket_type = "NodeSocketColor"
-    )
-    compose_light_g.interface.new_socket(
-        name = "Alpha",
-        in_out = "OUTPUT",
-        socket_type = "NodeSocketFloat"
-    )
+    compose_light_g.interface.new_socket(in_out = "OUTPUT", socket_type = "NodeSocketShader", name = "Shader")
+    compose_light_g.interface.new_socket(in_out = "OUTPUT", socket_type = "NodeSocketColor",  name = "Color")
+    compose_light_g.interface.new_socket(in_out = "OUTPUT", socket_type = "NodeSocketFloat",  name = "Alpha")
+
+
+    # nodes creation
+    input_n = compose_light_g.nodes.new("NodeGroupInput")
+    input_n.location = (start_pos_x - pos_x_shift, 0)
 
     output_n = compose_light_g.nodes.new("NodeGroupOutput")
     output_n.location = (start_pos_x + pos_x_shift * 8, 0)
 
-    # nodes creation
     add_ambient_col_n = compose_light_g.nodes.new("ShaderNodeRGB")
     add_ambient_col_n.name = add_ambient_col_n.label = _ADD_AMBIENT_COL_NODE
     add_ambient_col_n.location = (start_pos_x + pos_x_shift * 1, 400)

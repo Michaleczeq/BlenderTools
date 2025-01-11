@@ -84,33 +84,14 @@ def __create_node_group__():
         animsheet_xfade_g.nodes.clear()
 
     # inputs defining
-    animsheet_xfade_g.interface.new_socket(
-        name = "FPS",
-        in_out = "INPUT",
-        socket_type = "NodeSocketFloat"
-    )
-    animsheet_xfade_g.interface.new_socket(
-        name = "FramesTotal",
-        in_out = "INPUT",
-        socket_type = "NodeSocketFloat"
-    )
-    animsheet_xfade_g.interface.new_socket(
-        name = "FramesRow",
-        in_out = "INPUT",
-        socket_type = "NodeSocketFloat"
-    )
+    animsheet_xfade_g.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketFloat", name = "FPS")
+    animsheet_xfade_g.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketFloat", name = "FramesTotal")
+    animsheet_xfade_g.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketFloat", name = "FramesRow")
 
     # outputs defining
-    animsheet_xfade_g.interface.new_socket(
-        name = "FrameX",
-        in_out = "OUTPUT",
-        socket_type = "NodeSocketFloat"
-    )
-    animsheet_xfade_g.interface.new_socket(
-        name = "FrameY",
-        in_out = "OUTPUT",
-        socket_type = "NodeSocketFloat"
-    )
+    animsheet_xfade_g.interface.new_socket(in_out = "OUTPUT", socket_type = "NodeSocketFloat", name = "FrameX")
+    animsheet_xfade_g.interface.new_socket(in_out = "OUTPUT", socket_type = "NodeSocketFloat", name = "FrameY")
+
 
     # node creation
     input_n = animsheet_xfade_g.nodes.new("NodeGroupInput")
