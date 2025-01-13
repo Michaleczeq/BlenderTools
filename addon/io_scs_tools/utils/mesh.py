@@ -311,11 +311,10 @@ def get_mesh_for_normals(mesh):
     new_mesh = mesh.copy()
 
     # if user is not using auto smooth, then apply it now just for the porpuse of proper normals split calculation.
-    if not new_mesh.use_auto_smooth:
-        new_mesh.use_auto_smooth = True
-        new_mesh.auto_smooth_angle = 3.14
-
-    new_mesh.calc_normals_split()
+    # NOTE: auto_smooth property has been replaced by a modifier node group asset in Blender 4.1, so now users should use modifier yourself?
+    # if not new_mesh.use_auto_smooth:
+    #     new_mesh.use_auto_smooth = True
+    #     new_mesh.auto_smooth_angle = 3.14
 
     return new_mesh
 
