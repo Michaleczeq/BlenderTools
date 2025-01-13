@@ -320,13 +320,12 @@ def get_mesh_for_normals(mesh):
 
 
 def cleanup_mesh(mesh):
-    """Frees normals split and removes mesh if possible.
+    """Removes mesh if possible.
 
     :param mesh: mesh to be cleaned
     :type mesh: bpy.types.Mesh
     """
 
-    mesh.free_normals_split()
     if mesh.users == 0:
         bpy.data.meshes.remove(mesh, do_unlink=True)
 
