@@ -129,7 +129,9 @@ def __update_shader_texture_tobj_file__(self, context, tex_type):
         if texture_raw_path.endswith(".tobj"):
             texture_name = _path_utils.get_texture_path_from_tobj(tobj_file, raw_value=True)
         else:
-            texture_name = os.path.basename(texture_raw_path)
+            # path must be expanded to absolute path becasue basename doesn't support paths with "//"
+            abs_texture_path = bpy.path.abspath(texture_raw_path)
+            texture_name = os.path.basename(abs_texture_path)
 
         # update last tobj load time if export was successful otherwise report saving problems
         if _tobj_exp.export(tobj_file, texture_name, texture_settings):

@@ -233,7 +233,9 @@ def _create_scs_root_object(name, loaded_variants, loaded_looks, mats_info, obje
                 part.include = True
 
                 # cleanup generated terrain points vertex layers by variant
-                for obj in parts_dict[part.name]:
+                # Because "collect_parts_on_root" return ONLY dictionary of USED parts, parts_dict must include empty list for cases,
+                # where part.name is not existing in parts_dict (especially for "defaultpart" which is always included, and can be used also as empty part))
+                for obj in parts_dict.get(part.name, []):
 
                     if obj.type != "MESH":
                         continue
