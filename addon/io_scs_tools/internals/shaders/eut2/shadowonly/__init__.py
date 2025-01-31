@@ -93,16 +93,16 @@ class Shadowonly(BaseShader):
         """
 
         material.use_backface_culling = True
-        material.blend_method = "OPAQUE"
+        material.surface_render_method = "DITHERED"
 
         # set proper blend method and possible alpha test pass
         if alpha_test.is_set(node_tree):
-            material.blend_method = "CLIP"
-            material.alpha_threshold = 0.05
 
             # init parent
             out_mat_node = node_tree.nodes[Shadowonly.OUT_MAT_NODE]
             output_n = node_tree.nodes[Shadowonly.OUTPUT_NODE]
+
+            out_mat_node.inputs["Alpha Type"].default_value = 0.0
 
             # links creation
             node_tree.links.new(out_mat_node.outputs['Shader'], output_n.inputs['Surface'])

@@ -139,10 +139,7 @@ class Baked(BaseShader):
         """
 
         material.use_backface_culling = True
-        material.blend_method = "OPAQUE"
-
-        if material.blend_method == "OPAQUE" and node_tree.nodes[Baked.COMPOSE_LIGHTING_NODE].inputs['Alpha'].links:
-            node_tree.links.remove(node_tree.nodes[Baked.COMPOSE_LIGHTING_NODE].inputs['Alpha'].links[0])
+        material.surface_render_method = "DITHERED"
 
     @staticmethod
     def set_shadow_bias(node_tree, value):

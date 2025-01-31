@@ -139,6 +139,7 @@ class Dif(BaseShader):
         compose_lighting_n.location = (start_pos_x + pos_x_shift * 8, start_pos_y + 2000)
         compose_lighting_n.node_tree = compose_lighting_ng.get_node_group()
         compose_lighting_n.inputs["Alpha"].default_value = 1.0
+        compose_lighting_n.inputs["Alpha Type"].default_value = -1.0
 
         output_n = node_tree.nodes.new("ShaderNodeOutputMaterial")
         output_n.name = Dif.OUTPUT_NODE
@@ -179,16 +180,16 @@ class Dif(BaseShader):
         """
 
         material.use_backface_culling = True
-        material.blend_method = "OPAQUE"
+        material.surface_render_method = "DITHERED"
+
+        compose_lighting_n = node_tree.nodes[Dif.COMPOSE_LIGHTING_NODE]
 
         # set proper blend method and possible alpha test pass
         if alpha_test.is_set(node_tree):
-            material.blend_method = "CLIP"
-            material.alpha_threshold = 0.05
+            compose_lighting_n.inputs["Alpha Type"].default_value = 0.0
 
             # add alpha test pass if multiply blend enabled, where alphed pixels shouldn't be multiplied as they are discarded
             if blend_mult.is_set(node_tree):
-                compose_lighting_n = node_tree.nodes[Dif.COMPOSE_LIGHTING_NODE]
 
                 # alpha test pass has to get fully opaque input, thus remove transparency linkage
                 if compose_lighting_n.inputs['Alpha'].links:
@@ -201,13 +202,16 @@ class Dif(BaseShader):
                 alpha_test.add_pass(node_tree, shader_from, alpha_from, shader_to)
 
         if blend_add.is_set(node_tree):
-            material.blend_method = "BLEND"
+            compose_lighting_n.inputs["Alpha Type"].default_value = 1.0
+            material.surface_render_method = "BLENDED"
         if blend_mult.is_set(node_tree):
-            material.blend_method = "BLEND"
+            compose_lighting_n.inputs["Alpha Type"].default_value = 1.0
+            material.surface_render_method = "BLENDED"
         if blend_over.is_set(node_tree):
-            material.blend_method = "BLEND"
+            compose_lighting_n.inputs["Alpha Type"].default_value = 1.0
+            material.surface_render_method = "BLENDED"
 
-        if material.blend_method == "OPAQUE" and node_tree.nodes[Dif.COMPOSE_LIGHTING_NODE].inputs['Alpha'].links:
+        if compose_lighting_n.inputs["Alpha Type"].default_value < 0.0 and node_tree.nodes[Dif.COMPOSE_LIGHTING_NODE].inputs['Alpha'].links:
             node_tree.links.remove(node_tree.nodes[Dif.COMPOSE_LIGHTING_NODE].inputs['Alpha'].links[0])
 
     @staticmethod

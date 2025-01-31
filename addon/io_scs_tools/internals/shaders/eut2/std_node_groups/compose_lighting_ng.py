@@ -95,6 +95,7 @@ def __create_node_group__():
     compose_light_g.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketColor", name = "Diffuse Lighting")
     compose_light_g.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketColor", name = "Specular Lighting")
     compose_light_g.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketFloat", name = "Alpha")
+    compose_light_g.interface.new_socket(in_out = "INPUT", socket_type = "NodeSocketFloat", name = "Alpha Type", description = "-1 = OPAQUE\n0 = CLIP\n1 = BLEND")
 
     # outputs defining
     compose_light_g.interface.new_socket(in_out = "OUTPUT", socket_type = "NodeSocketShader", name = "Shader")
@@ -169,6 +170,7 @@ def __create_node_group__():
 
     compose_light_g.links.new(out_mat_node.inputs["Color"], sum_final_n.outputs["Vector"])
     compose_light_g.links.new(out_mat_node.inputs["Alpha"], input_n.outputs["Alpha"])
+    compose_light_g.links.new(out_mat_node.inputs["Alpha Type"], input_n.outputs["Alpha Type"])
 
     compose_light_g.links.new(output_n.inputs["Shader"], out_mat_node.outputs["Shader"])
     compose_light_g.links.new(output_n.inputs["Color"], sum_final_n.outputs["Vector"])

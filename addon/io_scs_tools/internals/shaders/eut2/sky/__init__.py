@@ -303,14 +303,18 @@ class Sky(BaseShader):
         """
 
         material.use_backface_culling = True
-        material.blend_method = "BLEND"
+        material.surface_render_method = "BLENDED"
+
+        out_shader_node = node_tree.nodes[Sky.OUT_SHADER_NODE]
 
         if sky_stars.is_set(node_tree):
-            material.blend_method = "BLEND"
+            out_shader_node.inputs["Alpha Type"].default_value = 1.0
+            material.surface_render_method = "BLENDED"
         if sky_back.is_set(node_tree):
-            material.blend_method = "OPAQUE"
+            out_shader_node.inputs["Alpha Type"].default_value = -1.0
+            material.surface_render_method = "DITHERED"
 
-        if material.blend_method == "OPAQUE" and node_tree.nodes[Sky.OUT_SHADER_NODE].inputs['Alpha'].links:
+        if out_shader_node.inputs["Alpha Type"].default_value < 0.0 and node_tree.nodes[Sky.OUT_SHADER_NODE].inputs['Alpha'].links:
             node_tree.links.remove(node_tree.nodes[Sky.OUT_SHADER_NODE].inputs['Alpha'].links[0])
 
     @staticmethod

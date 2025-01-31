@@ -87,7 +87,8 @@ class LightTex(Dif):
         Dif.finalize(node_tree, material)
 
         # in game it gets added to framebuffer, however we don't have access to frame buffer thus make approximation with alpha blending
-        material.blend_method = "BLEND"
+        material.surface_render_method = "BLENDED"
+        node_tree.nodes[Dif.COMPOSE_LIGHTING_NODE].inputs["Alpha Type"].default_value = 1.0
 
     @staticmethod
     def set_shininess(node_tree, factor):
