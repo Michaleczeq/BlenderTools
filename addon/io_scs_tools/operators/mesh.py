@@ -210,6 +210,45 @@ class InteriorWindowTool:
             return {'FINISHED'}
 
 
+    class SCS_TOOLS_OT_FixVertexNormals(bpy.types.Operator):
+        bl_label = "Fix Vertex Normals"
+        bl_idname = "mesh.scs_tools_fix_vertex_normals"
+        bl_description = "Fix Vertex Normals for proper interior paralax effect."
+        bl_options = {'REGISTER', 'UNDO'}
+
+        @classmethod
+        def poll(cls, context):
+            if context.object is None or context.object.mode != "OBJECT" or not context.object.select_get():
+                return False
+
+            material = context.object.active_material
+            if material and material.scs_props.mat_effect_name:
+                effect = material.scs_props.mat_effect_name
+                if "eut2.interior" in effect:
+                    return True
+
+            return False
+
+        def execute(self, context):
+            mesh = context.object.data
+            
+            normals_changed = 0
+            new_normals = []
+
+            # Change normals vector to direct upwards (0, 0, 1)
+            for loop in mesh.loops:
+                new_normals.append((0.0, 0.0, 1.0))
+                normals_changed += 1
+
+            # Set the new split normals
+            mesh.normals_split_custom_set(new_normals)
+            mesh.update()
+            
+
+            self.report({"INFO"}, "Changed %i split normals!" % normals_changed)
+            return {'FINISHED'}
+
+
 class VertexColorTools:
     """
     Wrapper class for better navigation in file
@@ -732,6 +771,7 @@ classes = (
     LampTool.SCS_TOOLS_OT_SetLampmaskUV,
 
     InteriorWindowTool.SCS_TOOLS_OT_SetGlassReflectionUV,
+    InteriorWindowTool.SCS_TOOLS_OT_FixVertexNormals,
 
     VertexColorTools.SCS_TOOLS_OT_AddVertexColorsToActive,
     VertexColorTools.SCS_TOOLS_OT_AddVertexColorsToAll,

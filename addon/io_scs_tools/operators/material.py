@@ -850,7 +850,8 @@ class Aliasing:
 
             is_aliased_directory = ("/material/road" in tex_raw_path or
                                     "/material/terrain" in tex_raw_path or
-                                    "/material/custom" in tex_raw_path)
+                                    "/material/custom" in tex_raw_path or
+                                    "/umatlib" in tex_raw_path)
 
             # abort if empty texture or not aliased directory
             if not (tex_raw_path != "" and is_aliased_directory):

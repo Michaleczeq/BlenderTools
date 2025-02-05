@@ -311,7 +311,8 @@ class MaterialSCSTools(bpy.types.PropertyGroup):
         """
         return {'base', 'reflection', 'over', 'oclu', 'mask' , 'mask_1' , 'mask_2', 'mask_3', 'mult', 'iamod', 'lightmap', 'paintjob',
                 'flakenoise', 'nmap', 'base_1', 'mult_1', 'detail', 'nmap_detail', 'nmap_over' , 'layer0', 'layer1',
-                'sky_weather_base_a', 'sky_weather_base_b', 'sky_weather_over_a', 'sky_weather_over_b'}
+                'sky_weather_base_a', 'sky_weather_base_b', 'sky_weather_over_a', 'sky_weather_over_b',
+                'texture_sky_weather_base_mask_a', 'texture_sky_weather_over_mask_b'}
 
     def get_id(self):
         """Gets unique ID for material within current Blend file. If ID does not exists yet it's calculated.
@@ -529,6 +530,30 @@ class MaterialSCSTools(bpy.types.PropertyGroup):
 
     def update_shader_texture_sky_weather_over_b_settings(self, context):
         __update_shader_texture_tobj_file__(self, context, "sky_weather_over_b")
+
+    def update_shader_texture_sky_weather_base_mask_a(self, context):
+        __update_shader_texture__(self, context, "sky_weather_base_mask_a")
+
+    def update_shader_texture_sky_weather_base_mask_a_settings(self, context):
+        __update_shader_texture_tobj_file__(self, context, "sky_weather_base_mask_a")
+
+    def update_shader_texture_sky_weather_base_mask_b(self, context):
+        __update_shader_texture__(self, context, "sky_weather_base_mask_b")
+
+    def update_shader_texture_sky_weather_base_mask_b_settings(self, context):
+        __update_shader_texture_tobj_file__(self, context, "sky_weather_base_mask_b")
+
+    def update_shader_texture_sky_weather_over_mask_a(self, context):
+        __update_shader_texture__(self, context, "sky_weather_over_mask_a")
+
+    def update_shader_texture_sky_weather_over_mask_a_settings(self, context):
+        __update_shader_texture_tobj_file__(self, context, "sky_weather_over_mask_a")
+
+    def update_shader_texture_sky_weather_over_mask_b(self, context):
+        __update_shader_texture__(self, context, "sky_weather_over_mask_b")
+
+    def update_shader_texture_sky_weather_over_mask_b_settings(self, context):
+        __update_shader_texture_tobj_file__(self, context, "sky_weather_over_mask_b")
 
     _cached_mat_num = -1
     """Caching number of all materials to properly fix material ids when duplicating material"""
@@ -2050,6 +2075,210 @@ class MaterialSCSTools(bpy.types.PropertyGroup):
     shader_texture_sky_weather_over_b_uv: CollectionProperty(
         name="Texture Sky Weather Over B UV Sets",
         description="Texture Sky Weather Over B UV sets for active Material",
+        type=UVMappingItem,
+        options={'HIDDEN'},
+    )
+
+    # TEXTURE: SKY_WEATHER_BASE_MASK_A
+    shader_texture_sky_weather_base_mask_a: StringProperty(
+        name="Texture Sky Weather Base Mask A",
+        description="Texture Sky Weather Base Mask A for active Material",
+        default=_MAT_consts.unset_bitmap_filepath,
+        options={'HIDDEN'},
+        subtype='NONE',
+        update=update_shader_texture_sky_weather_base_mask_a,
+    )
+    shader_texture_sky_weather_base_mask_a_imported_tobj: StringProperty(
+        name="Imported TOBJ Path",
+        description="Use imported TOBJ path reference which will be exported into material (NOTE: export will not take care of any TOBJ files!)",
+        default="",
+        update=__update_look__
+    )
+    shader_texture_sky_weather_base_mask_a_locked: BoolProperty(
+        name="Texture Locked",
+        description="Tells if texture is locked and should not be changed by user(intended for internal usage only)",
+        default=False
+    )
+    shader_texture_sky_weather_base_mask_a_map_type: StringProperty(
+        name="Texture Map Type",
+        description="Stores texture mapping type and should not be changed by user(intended for internal usage only)",
+        default="2d"
+    )
+    shader_texture_sky_weather_base_mask_a_settings: EnumProperty(
+        name="Settings",
+        description="TOBJ settings for this texture",
+        items=__get_texture_settings__(),
+        default=set(),
+        options={'ENUM_FLAG'},
+        update=update_shader_texture_sky_weather_base_mask_a_settings
+    )
+    shader_texture_sky_weather_base_mask_a_tobj_load_time: StringProperty(
+        name="Last TOBJ load time",
+        description="Time string of last loading",
+        default="",
+    )
+    shader_texture_sky_weather_base_mask_a_use_imported: BoolProperty(
+        name="Use Imported",
+        description="Use custom provided path for TOBJ reference",
+        default=False,
+        update=__update_look__
+    )
+    shader_texture_sky_weather_base_mask_a_uv: CollectionProperty(
+        name="Texture Sky Weather Base Mask A UV Sets",
+        description="Texture Sky Weather Base Mask A UV sets for active Material",
+        type=UVMappingItem,
+        options={'HIDDEN'},
+    )
+
+    # TEXTURE: SKY_WEATHER_BASE_MASK_B
+    shader_texture_sky_weather_base_mask_b: StringProperty(
+        name="Texture Sky Weather Base Mask B",
+        description="Texture Sky Weather Base Mask B for active Material",
+        default=_MAT_consts.unset_bitmap_filepath,
+        options={'HIDDEN'},
+        subtype='NONE',
+        update=update_shader_texture_sky_weather_base_mask_b,
+    )
+    shader_texture_sky_weather_base_mask_b_imported_tobj: StringProperty(
+        name="Imported TOBJ Path",
+        description="Use imported TOBJ path reference which will be exported into material (NOTE: export will not take care of any TOBJ files!)",
+        default="",
+        update=__update_look__
+    )
+    shader_texture_sky_weather_base_mask_b_locked: BoolProperty(
+        name="Texture Locked",
+        description="Tells if texture is locked and should not be changed by user(intended for internal usage only)",
+        default=False
+    )
+    shader_texture_sky_weather_base_mask_b_map_type: StringProperty(
+        name="Texture Map Type",
+        description="Stores texture mapping type and should not be changed by user(intended for internal usage only)",
+        default="2d"
+    )
+    shader_texture_sky_weather_base_mask_b_settings: EnumProperty(
+        name="Settings",
+        description="TOBJ settings for this texture",
+        items=__get_texture_settings__(),
+        default=set(),
+        options={'ENUM_FLAG'},
+        update=update_shader_texture_sky_weather_base_mask_b_settings
+    )
+    shader_texture_sky_weather_base_mask_b_tobj_load_time: StringProperty(
+        name="Last TOBJ load time",
+        description="Time string of last loading",
+        default="",
+    )
+    shader_texture_sky_weather_base_mask_b_use_imported: BoolProperty(
+        name="Use Imported",
+        description="Use custom provided path for TOBJ reference",
+        default=False,
+        update=__update_look__
+    )
+    shader_texture_sky_weather_base_mask_b_uv: CollectionProperty(
+        name="Texture Sky Weather Base Mask B UV Sets",
+        description="Texture Sky Weather Base Mask B UV sets for active Material",
+        type=UVMappingItem,
+        options={'HIDDEN'},
+    )
+
+    # TEXTURE: SKY_WEATHER_OVER_MASK_A
+    shader_texture_sky_weather_over_mask_a: StringProperty(
+        name="Texture Sky Weather Over Mask A",
+        description="Texture Sky Weather Over Mask A for active Material",
+        default=_MAT_consts.unset_bitmap_filepath,
+        options={'HIDDEN'},
+        subtype='NONE',
+        update=update_shader_texture_sky_weather_over_mask_a,
+    )
+    shader_texture_sky_weather_over_mask_a_imported_tobj: StringProperty(
+        name="Imported TOBJ Path",
+        description="Use imported TOBJ path reference which will be exported into material (NOTE: export will not take care of any TOBJ files!)",
+        default="",
+        update=__update_look__
+    )
+    shader_texture_sky_weather_over_mask_a_locked: BoolProperty(
+        name="Texture Locked",
+        description="Tells if texture is locked and should not be changed by user(intended for internal usage only)",
+        default=False
+    )
+    shader_texture_sky_weather_over_mask_a_map_type: StringProperty(
+        name="Texture Map Type",
+        description="Stores texture mapping type and should not be changed by user(intended for internal usage only)",
+        default="2d"
+    )
+    shader_texture_sky_weather_over_mask_a_settings: EnumProperty(
+        name="Settings",
+        description="TOBJ settings for this texture",
+        items=__get_texture_settings__(),
+        default=set(),
+        options={'ENUM_FLAG'},
+        update=update_shader_texture_sky_weather_over_mask_a_settings
+    )
+    shader_texture_sky_weather_over_mask_a_tobj_load_time: StringProperty(
+        name="Last TOBJ load time",
+        description="Time string of last loading",
+        default="",
+    )
+    shader_texture_sky_weather_over_mask_a_use_imported: BoolProperty(
+        name="Use Imported",
+        description="Use custom provided path for TOBJ reference",
+        default=False,
+        update=__update_look__
+    )
+    shader_texture_sky_weather_over_mask_a_uv: CollectionProperty(
+        name="Texture Sky Weather Over Mask A UV Sets",
+        description="Texture Sky Weather Over Mask A UV sets for active Material",
+        type=UVMappingItem,
+        options={'HIDDEN'},
+    )
+
+    # TEXTURE: SKY_WEATHER_OVER_MASK_B
+    shader_texture_sky_weather_over_mask_b: StringProperty(
+        name="Texture Sky Weather Over Mask B",
+        description="Texture Sky Weather Over Mask B for active Material",
+        default=_MAT_consts.unset_bitmap_filepath,
+        options={'HIDDEN'},
+        subtype='NONE',
+        update=update_shader_texture_sky_weather_over_mask_b,
+    )
+    shader_texture_sky_weather_over_mask_b_imported_tobj: StringProperty(
+        name="Imported TOBJ Path",
+        description="Use imported TOBJ path reference which will be exported into material (NOTE: export will not take care of any TOBJ files!)",
+        default="",
+        update=__update_look__
+    )
+    shader_texture_sky_weather_over_mask_b_locked: BoolProperty(
+        name="Texture Locked",
+        description="Tells if texture is locked and should not be changed by user(intended for internal usage only)",
+        default=False
+    )
+    shader_texture_sky_weather_over_mask_b_map_type: StringProperty(
+        name="Texture Map Type",
+        description="Stores texture mapping type and should not be changed by user(intended for internal usage only)",
+        default="2d"
+    )
+    shader_texture_sky_weather_over_mask_b_settings: EnumProperty(
+        name="Settings",
+        description="TOBJ settings for this texture",
+        items=__get_texture_settings__(),
+        default=set(),
+        options={'ENUM_FLAG'},
+        update=update_shader_texture_sky_weather_over_mask_b_settings
+    )
+    shader_texture_sky_weather_over_mask_b_tobj_load_time: StringProperty(
+        name="Last TOBJ load time",
+        description="Time string of last loading",
+        default="",
+    )
+    shader_texture_sky_weather_over_mask_b_use_imported: BoolProperty(
+        name="Use Imported",
+        description="Use custom provided path for TOBJ reference",
+        default=False,
+        update=__update_look__
+    )
+    shader_texture_sky_weather_over_mask_b_uv: CollectionProperty(
+        name="Texture Sky Weather Over Mask B UV Sets",
+        description="Texture Sky Weather Over Mask B UV sets for active Material",
         type=UVMappingItem,
         options={'HIDDEN'},
     )

@@ -52,12 +52,22 @@ def post_load(scene):
         ("2.4", apply_fixes_for_2_4),
     )
 
+    VERSIONS_LIST_UNOFFICIAL = (
+        ("4", apply_fixes_for_un_4),
+    )
+
     for version, func in VERSIONS_LIST:
         if _info_utils.cmp_ver_str(last_load_bt_ver, version) <= 0:
-
-            # try to add apply fixed function as callback, if failed execute fixes right now
-            if not AsyncPathsInit.append_callback(func):
-                func()
+            # for, for unofficial versions
+            for version2, func2 in VERSIONS_LIST_UNOFFICIAL:
+                if _info_utils.cmp_ver_str_unofficial(last_load_bt_ver, version2) <= 0:
+                    # try to add apply fixed function as callback, if failed execute fixes right now
+                    if not AsyncPathsInit.append_callback(func2):
+                        func2()
+                else: 
+                    # try to add apply fixed function as callback, if failed execute fixes right now
+                    if not AsyncPathsInit.append_callback(func):
+                        func()
 
     # as last update "last load" Blender Tools version to current
     _get_scs_globals().last_load_bt_version = _info_utils.get_tools_version()
@@ -344,3 +354,47 @@ def apply_fixes_for_2_4():
 
     # 1. reload all materials
     _reload_materials()
+
+def apply_fixes_for_un_4():
+    """
+    Applies fixes for unofficial 2.4.xxxxxx.4 or less:
+    1. Pre-reload changes and collect data
+    2. Reload materials since some got removed/restructed attributes
+        a) Replace tsnmap16 and tsnmapuv16 with tsnmap and tsnmapuv
+    3.
+    """
+
+    print("INFO\t-  Applying fixes for unofficial version <= 4")
+
+
+    # 1. do pre-reload changes and collect data
+    for mat in bpy.data.materials:
+
+        effect_name = mat.scs_props.mat_effect_name
+
+        # tsnmap16 and tsnmapuv16 are removed from game, thus replace them.
+        if any(x in effect_name for x in (".tsnmap16", ".tsnmapuv16")):
+            mat.scs_props.mat_effect_name = mat.scs_props.mat_effect_name.replace(".tsnmap16", ".tsnmap").replace(".tsnmapuv16", ".tsnmapuv")
+
+        # SOME EXAMPLE CODE, IGNORE
+        # window.[day|night] got transformed into window.lit
+        # if effect_name in ("eut2.window.day", "eut2.window.night"):
+        #     mat.scs_props.mat_effect_name = "eut2.window.lit"
+        #     mat.scs_props.active_shader_preset_name = "window.lit"
+
+    # 2. reload all materials
+    _reload_materials()
+
+
+    # Due to update from Blender 3.6, we let user know he is migrating to Blender 4.3
+    windows = bpy.data.window_managers[0].windows
+    if len(windows) > 0:
+        msg = (
+            "\nWelcome folks. You just migrated to Blender 4.3! Yey",
+            "Big thanks, that you decided to try my unofficial BT update. I appreciate it.",
+            "I hope you will enjoy new features and fixes I've added to this version.",
+            "For full changelog and more details, visit official topic on: https://www.forum.scssoft.com"
+        )
+
+        with bpy.context.temp_override(window=windows[0]):
+            bpy.ops.wm.scs_tools_show_3dview_report('INVOKE_DEFAULT', message="\n".join(msg))

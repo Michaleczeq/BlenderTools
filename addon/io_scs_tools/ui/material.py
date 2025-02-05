@@ -292,7 +292,8 @@ class SCS_TOOLS_PT_Material(_shared.HeaderIconPanel, _MaterialPanelBlDefs, Panel
             normalized_base_tex_path = mat.scs_props.shader_texture_base.replace("\\", "/")
             is_aliasing_path = ("/material/road" in normalized_base_tex_path or
                                 "/material/terrain" in normalized_base_tex_path or
-                                "/material/custom" in normalized_base_tex_path)
+                                "/material/custom" in normalized_base_tex_path or
+                                "/umatlib" in normalized_base_tex_path)
 
             is_aliasable = ('textures' in shader_data and
                             (
@@ -310,6 +311,7 @@ class SCS_TOOLS_PT_Material(_shared.HeaderIconPanel, _MaterialPanelBlDefs, Panel
                                             "-> '/material/road'\n"
                                             "-> '/material/terrain'\n"
                                             "-> '/material/custom'\n"
+                                            "-> '/umatlib'\n"
                                             "Additional requirement for aliasing is also single texture material or\n"
                                             "exceptionally multi texture material of 'dif.spec.weight.mult2' family.\n\n"
                                             "Currently aliasing can not be done because:")

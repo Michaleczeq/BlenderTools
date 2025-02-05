@@ -189,12 +189,19 @@ def _get_look(section):
                 mat_effect = mat_effect.replace(".night", ".day")
                 lprint("W Night version of building shader detected in material %r, switching it to day!", (mat_alias,))
 
+            # Extra treatment for deprecated/removed shaders and flavors
+            #
             # If day/night version of "window" shader is detected, switch it to "lit".
             if mat_effect.startswith("eut2.window") and mat_effect.endswith((".day", ".night")):
 
                 mat_effect = mat_effect.replace(".day", ".lit").replace(".night", ".lit")
+                lprint("W Outdated Day/Night version of window shader detected in material %r, switching it to lit!", (mat_alias,))
 
-                lprint("W Outdated Day or Night version of window shader detected in material %r, switching it to lit!", (mat_alias,))
+            # If tsnmap16/tsnmapuv16 flavor is detected, switch it to "tsnmap/tsnmapuv
+            if any(x in mat_effect for x in (".tsnmap16", ".tsnmapuv16")):
+                
+                mat_effect = mat_effect.replace(".tsnmap16", ".tsnmap").replace(".tsnmapuv16", ".tsnmapuv")
+                lprint('W Outdated tsnmap16/tsnmapuv16 flavor detected in material %r, switching it to tsnmap/tsnmapuv!', (mat_alias,))
 
             look_mat_settings[mat_alias] = (mat_effect, mat_flags, attributes, textures, sec)
 

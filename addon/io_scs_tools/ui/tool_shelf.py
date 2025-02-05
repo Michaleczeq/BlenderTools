@@ -508,15 +508,14 @@ class SCS_TOOLS_PT_InteriorWindowTool(_ToolShelfBlDefs, Panel):
     Creates Interior Window Tool panel for SCS Tools tab.
     """
     bl_label = "Interior Window Tool"
-    bl_context = "mesh_edit"
 
     @classmethod
     def poll(cls, context):
-        return context.mode == "EDIT_MESH"
+        return context.mode in {'EDIT_MESH', 'OBJECT'}
 
     def draw(self, context):
         if not self.poll(context):
-            self.layout.label(text="Not in 'Edit Mode'!", icon="INFO")
+            self.layout.label(text="Not in 'Edit/Object Mode'!", icon="INFO")
             return
 
         layout = self.layout
@@ -530,6 +529,9 @@ class SCS_TOOLS_PT_InteriorWindowTool(_ToolShelfBlDefs, Panel):
         props.glass_state = _IWT_consts.GlassReflection.Enable.name
         props = body_row.operator("mesh.scs_tools_set_glassreflection_uv", text="Disable")
         props.glass_state = _IWT_consts.GlassReflection.Disable.name
+
+        body_col = layout.column(align=True)
+        body_col.operator("mesh.scs_tools_fix_vertex_normals", text="Fix Vertex Normals", icon='NORMALS_VERTEX_FACE')
 
 class SCS_TOOLS_PT_VColoring(_ToolShelfBlDefs, Panel):
     bl_label = "VColoring"

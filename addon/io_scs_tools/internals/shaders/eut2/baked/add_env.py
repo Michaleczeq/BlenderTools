@@ -158,7 +158,7 @@ class BakedSpecAddEnv(BakedSpec, StdAddEnv):
         :type uv_layer: str
         """
 
-        pass    # NOTE: as in "baked" shader textures use this same UVs as base_tex, we just ignore this
+        BakedSpec.set_base_uv(node_tree, uv_layer)
 
     @staticmethod
     def set_mask_1_texture(node_tree, image):
@@ -193,7 +193,7 @@ class BakedSpecAddEnv(BakedSpec, StdAddEnv):
         :type uv_layer: str
         """
 
-        pass    # NOTE: as in "baked" shader textures use this same UVs as base_tex, we just ignore this
+        BakedSpec.set_base_uv(node_tree, uv_layer)
 
     @staticmethod
     def set_paint_flavor(node_tree, switch_on):

@@ -111,4 +111,4 @@ class BakedSpec(Baked):
         :type uv_layer: str
         """
 
-        pass    # NOTE: as in "baked" shader textures use this same UVs as base_tex, we just ignore this
+        Baked.set_base_uv(node_tree, uv_layer)

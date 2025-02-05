@@ -139,12 +139,27 @@ class DifSpecAmodDifSpec(DifSpec):
         node_tree.nodes[DifSpecAmodDifSpec.DECAL_BLEND_FACTOR_NODE].inputs["Factor2"].default_value = aux_property[1]['value']
     
     @staticmethod
+    def set_mask_uv(node_tree, uv_layer):
+        """Set UV layer to mask texture in shader.
+
+        :param node_tree: node tree of current shader
+        :type node_tree: bpy.types.NodeTree
+        :param uv_layer: uv layer string used for mask texture
+        :type uv_layer: str
+        """
+
+        if uv_layer is None or uv_layer == "":
+            uv_layer = _MESH_consts.none_uv
+
+        node_tree.nodes[DifSpecAmodDifSpec.SEC_UVMAP_NODE].uv_map = uv_layer
+    
+    @staticmethod
     def set_mask_texture(node_tree, image):
         """Set mask texture to shader.
 
         :param node_tree: node tree of current shader
         :type node_tree: bpy.types.NodeTree
-        :param image: texture image which should be assigned to over texture node
+        :param image: texture image which should be assigned to mask texture node
         :type image: bpy.types.Texture
         """
 
@@ -174,10 +189,7 @@ class DifSpecAmodDifSpec(DifSpec):
         :type uv_layer: str
         """
 
-        if uv_layer is None or uv_layer == "":
-            uv_layer = _MESH_consts.none_uv
-
-        node_tree.nodes[DifSpecAmodDifSpec.SEC_UVMAP_NODE].uv_map = uv_layer
+        DifSpecAmodDifSpec.set_mask_uv(node_tree, uv_layer)
 
     @staticmethod
     def set_over_texture(node_tree, image):
