@@ -1706,22 +1706,42 @@ Shader {
     }
     Texture {
         Tag: "texture[X]:texture_sky_weather_base_a"
-        Value: "/model/skybox/nice_00/nice00_08_80_g"
+        Value: "/asset/skybox/s_nice_00/s_nice00_10_80_g"
         TexCoord: ( 0 )
     }
     Texture {
         Tag: "texture[X]:texture_sky_weather_base_b"
-        Value: "/model/skybox/nice_00/nice00_08_80_g"
+        Value: "/asset/skybox/s_nice_00/s_nice00_10_80_g"
         TexCoord: ( 0 )
     }
     Texture {
         Tag: "texture[X]:texture_sky_weather_over_a"
-        Value: "/model/skybox/bad_00/bad00_08_80_g"
+        Value: "/asset/skybox/s_bad_02/s_bad02_03_10_g"
         TexCoord: ( 0 )
     }
     Texture {
         Tag: "texture[X]:texture_sky_weather_over_b"
-        Value: "/model/skybox/nice_00/nice00_08_80_g"
+        Value: "/asset/skybox/s_bad_02/s_bad02_03_10_g"
+        TexCoord: ( 0 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_sky_weather_base_mask_a"
+        Value: "/asset/skybox/s_nice_05/s_nice05_05_00_c"
+        TexCoord: ( 0 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_sky_weather_base_mask_b"
+        Value: "/asset/skybox/s_nice_05/s_nice05_05_00_c"
+        TexCoord: ( 0 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_sky_weather_over_mask_a"
+        Value: "/asset/skybox/s_bad_02/s_bad02_05_00_c"
+        TexCoord: ( 0 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_sky_weather_over_mask_b"
+        Value: "/asset/skybox/s_bad_02/s_bad02_05_00_c"
         TexCoord: ( 0 )
     }
 }

@@ -276,6 +276,7 @@ class Mesh:
 
     default_uv = "UV"
     default_vcol = "Col"
+    default_vfactor = "Factor"
 
 
 class PrefabLocators:

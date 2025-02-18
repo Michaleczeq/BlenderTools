@@ -244,7 +244,9 @@ class SCS_TOOLS_PT_Material(_shared.HeaderIconPanel, _MaterialPanelBlDefs, Panel
             active_vcolors = bpy.context.active_object.data.color_attributes
             is_valid_vcolor = _MESH_consts.default_vcol in active_vcolors
             is_valid_vcolor_a = _MESH_consts.default_vcol + _MESH_consts.vcol_a_suffix in active_vcolors
-            if not is_valid_vcolor or not is_valid_vcolor_a:
+            is_valid_vfactor = _MESH_consts.default_vfactor in active_vcolors
+            is_valid_vfactor_shader = ("piko.alldir") in mat.scs_props.mat_effect_name
+            if not is_valid_vcolor or not is_valid_vcolor_a or (not is_valid_vfactor and is_valid_vfactor_shader):
 
                 vcol_missing_box = layout.box()
 
@@ -259,6 +261,9 @@ class SCS_TOOLS_PT_Material(_shared.HeaderIconPanel, _MaterialPanelBlDefs, Panel
 
                 if not is_valid_vcolor_a:
                     info_msg += "-> '" + _MESH_consts.default_vcol + _MESH_consts.vcol_a_suffix + "'\n"
+
+                if not is_valid_vfactor and is_valid_vfactor_shader:
+                    info_msg += "-> '" + _MESH_consts.default_vfactor + "'\n"
 
                 info_msg += "You can use 'Add Vertex Colors To (Active/All)' button to add needed layers or add layers manually."
                 _shared.draw_warning_operator(col, "Vertex Colors Missing", info_msg, text="More Info", icon='INFO')

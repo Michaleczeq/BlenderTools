@@ -31,9 +31,9 @@ class Stream:
         TANGENT = "_TANGENT"
         RGB = "_RGB"
         RGBA = "_RGBA"
+        FACTOR = "_FACTOR" # NOTE: used only in piko.alldir flavor
         UV = "_UV"  # NOTE: there can be up to 9 uv streams
         TUV = "_TUV"  # NOTE: there can be up to 9 tuv streams
-        FACTOR = "_FACTOR" # NOTE: used only in piko.alldir flavor
 
     __format = ""  # defined by type of tag
     __tag = Types.POSITION
