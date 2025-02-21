@@ -873,6 +873,11 @@ class Aliasing:
 
             mat_cont = mat_container.get_data_from_file(mat_abs_path)
 
+            # abort if data couldn't be recived
+            if not mat_cont:
+                self.report({'ERROR'}, "Couldn't read aliased material, aliasing aborted!")
+                return {'CANCELLED'}
+
             # set attributes
             for attr_tuple in mat_cont.get_attributes().items():
 

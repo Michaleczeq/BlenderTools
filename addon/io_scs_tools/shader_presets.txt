@@ -1018,7 +1018,7 @@ Shader {
 Shader {
     PresetName: "dif.spec.weight"
     Effect: "eut2.dif.spec.weight"
-    Flavors: ( "NMAP_TS|NMAP_TS_UV|NMAP_TS_16|NMAP_TS_UV_16|NMAP_TS_CALC" "SHADOW" "PAINT" "TEXGEN0" "ASAFEW" "ALPHA" "DEPTH" "BLEND_OVER|BLEND_MULT|BLEND_ADD" )
+    Flavors: ( "NMAP_TS|NMAP_TS_UV|NMAP_TS_CALC" "SHADOW" "PAINT" "TEXGEN0" "ASAFEW" "ALPHA" "DEPTH" "BLEND_OVER|BLEND_MULT|BLEND_ADD" )
     Flags: 0
     Attribute {
         Format: FLOAT3
@@ -2491,15 +2491,6 @@ Flavor {
     }
 }
 Flavor {
-    Type: "NMAP_TS_16"
-    Name: "tsnmap16"
-    Texture {
-        Tag: "texture[X]:texture_nmap"
-        Value: ""
-        TexCoord: ( 0 )
-    }
-}
-Flavor {
     Type: "NMAP_TS_CALC"
     Name: "tsnmapcalc"
     Texture {
@@ -2525,15 +2516,6 @@ Flavor {
 Flavor {
     Type: "NMAP_TS_UV"
     Name: "tsnmapuv"
-    Texture {
-        Tag: "texture[X]:texture_nmap"
-        Value: ""
-        TexCoord: ( 6 )
-    }
-}
-Flavor {
-    Type: "NMAP_TS_UV_16"
-    Name: "tsnmapuv16"
     Texture {
         Tag: "texture[X]:texture_nmap"
         Value: ""

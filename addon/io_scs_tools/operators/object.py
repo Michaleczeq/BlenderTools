@@ -1247,7 +1247,7 @@ class Collision:
         """Switch visibility of static collision objects."""
         bl_label = "View Static Collision Objects"
         bl_idname = "object.scs_tools_switch_static_collision_objects"
-        bl_description = "View only objects which SCS Part is prefixed with 'coll', marking it as static collision object" + \
+        bl_description = "View only objects which SCS Part is prefixed with 'coll', '_col' or suffixed with '_c', marking it as static collision object" + \
                          _BaseViewOperator.bl_base_description
 
         def execute(self, context):
