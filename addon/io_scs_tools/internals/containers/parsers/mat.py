@@ -3,6 +3,38 @@ from ast import literal_eval
 
 from io_scs_tools.utils.printout import lprint
 
+def parse_attributes(content, attr_pattern, print_info=False):
+    """Parse attributes from content and return them as dictionary.
+
+    :param content: content of material file
+    :type content: str
+    :param attr_pattern: regex pattern for matching one attribute
+    :type attr_pattern: re.Pattern
+    :param print_info: switch for printing parsing info
+    :type print_info: bool
+    :return: dictionary of mapped material attributes
+    :rtype: dict
+    """
+    attr_dict = {}
+    for i, attr_m in enumerate(attr_pattern.finditer(content)):
+
+        attr_name = attr_m.group("attr_name")
+        attr_value = attr_m.group("attr_val").replace("{", "(").replace("}", ")")
+
+        try:
+            parsed_attr_value = literal_eval(attr_value)
+        except ValueError:
+            parsed_attr_value = None
+            lprint("W Ignoring unrecognized/malformed MAT file attribute:\n\t   Name: %r; Value: %r;", (attr_name, attr_value))
+
+        if print_info:
+            print("\tName:", attr_name, " -> Value(", type(parsed_attr_value).__name__, "):", parsed_attr_value)
+
+        # fill successfully parsed values into dictionary
+        if parsed_attr_value is not None:
+            attr_dict[attr_name] = parsed_attr_value
+
+    return attr_dict
 
 def read_data(filepath, print_info=False):
     """Reads data from mat file and returns it's attributes as dictionary.
@@ -33,8 +65,6 @@ def read_data(filepath, print_info=False):
     nested_pattern = compile(r'(?P<%s>\w+):"(?P<%s>[^"]+)"\{(?P<%s>[^}]+)\}' % (_ATTR_NAME_G ,_ATTR_VALUE_G, _ATTR_VALUE_NEST_G))
     """Regex pattern for matching nested data in content."""
 
-    attr_dict = {}
-
     with open(filepath, encoding="utf8") as f:
         f_data = f.read()
         f.close()
@@ -52,23 +82,8 @@ def read_data(filepath, print_info=False):
             print("Content:\n", content, sep='')
 
         if mat_format == "material":
-            for i, attr_m in enumerate(attr_pattern.finditer(content)):
+            attr_dict = parse_attributes(content, attr_pattern, print_info)
 
-                attr_name = attr_m.group(_ATTR_NAME_G)
-                attr_value = attr_m.group(_ATTR_VALUE_G).replace("{", "(").replace("}", ")")
-
-                try:
-                    parsed_attr_value = literal_eval(attr_value)
-                except ValueError:
-                    parsed_attr_value = None
-                    lprint("W Ignoring unrecognized/malformed MAT file attribute:\n\t   Name: %r; Value: %r;", (attr_name, attr_value))
-
-                if print_info:
-                    print("\tName:", attr_name, " -> Value(", type(parsed_attr_value).__name__, "):", parsed_attr_value)
-
-                # fill successfully parsed values into dictionary
-                if parsed_attr_value is not None:
-                    attr_dict[attr_name] = parsed_attr_value
         elif mat_format == "effect":
 
             nested_list = {}
@@ -87,7 +102,7 @@ def read_data(filepath, print_info=False):
                 for i, n_attr_m in enumerate(attr_pattern.finditer(attr_value_nest)):
 
                     nested_attr_name = n_attr_m.group(_ATTR_NAME_G)
-                    nested_attr_value = n_attr_m.group(_ATTR_VALUE_G).replace("{", "(").replace("}", ")")
+                    nested_attr_value = n_attr_m.group(_ATTR_VALUE_G).replace("{", "(").replace("}", ")").replace('"', '')
                     
                     if print_info:
                         print("\tName:", nested_attr_name, " -> Value(", type(nested_attr_value).__name__, "):", nested_attr_value)
@@ -102,24 +117,8 @@ def read_data(filepath, print_info=False):
             if print_info:
                 print("Nested dict:\n", nested_list, sep='')
 
-            # parse normal attributes
-            for i, attr_m in enumerate(attr_pattern.finditer(content)):
-
-                attr_name = attr_m.group(_ATTR_NAME_G)
-                attr_value = attr_m.group(_ATTR_VALUE_G).replace("{", "(").replace("}", ")")
-
-                try:
-                    parsed_attr_value = literal_eval(attr_value)
-                except ValueError:
-                    parsed_attr_value = None
-                    lprint("W Ignoring unrecognized/malformed MAT file attribute:\n\t   Name: %r; Value: %r;", (attr_name, attr_value))
-
-                if print_info:
-                    print("\tName:", attr_name, " -> Value(", type(parsed_attr_value).__name__, "):", parsed_attr_value)
-
-                # fill successfully parsed values into dictionary
-                if parsed_attr_value is not None:
-                    attr_dict[attr_name] = parsed_attr_value
+            # parse attributes
+            attr_dict = parse_attributes(content, attr_pattern, print_info)
 
             if print_info:
                 print("Attr dict:\n", attr_dict, sep='')
@@ -130,8 +129,6 @@ def read_data(filepath, print_info=False):
 
             if print_info:
                 print("Combined dict:\n", attr_dict, sep='')
-
-            lprint("I Mat format `%s` is not fully support.\n\t   Some attributes unique for this format will not be parsed if used!", (mat_format, ))
 
         else:
             lprint("E Unknown mat format: `%s`", (mat_format, ))
