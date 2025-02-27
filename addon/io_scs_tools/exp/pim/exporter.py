@@ -427,6 +427,7 @@ def execute(dirpath, name_suffix, root_object, armature_object, skeleton_filepat
                     vcol += (alpha * 2,)
 
                 # 5. vfcol -> vfcol_lay = mesh.color_attributes[2].data; vfcol_lay[loop_i].color
+                vfcol = None
                 vfactor_shader = ("piko.alldir") in material.scs_props.mat_effect_name
                 if vfactor_shader:
                     if _MESH_consts.default_vfactor not in mesh.color_attributes:  # get FACTOR component
@@ -434,7 +435,7 @@ def execute(dirpath, name_suffix, root_object, armature_object, skeleton_filepat
                         missing_vfcolor = True
                     else:
                         vfcolors = mesh.color_attributes[_MESH_consts.default_vfactor]
-
+                        
                         if vfcolors.domain == 'POINT':
                             color = Color(vfcolors.data[vert_i].color[:3])
                             alpha = vfcolors.data[vert_i].color[3]

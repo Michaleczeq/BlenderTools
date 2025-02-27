@@ -258,6 +258,20 @@ def is_valid_shader_texture_path(shader_texture):
     return False
 
 
+def is_valid_shader_material_path(shader_material):
+    """It returns True if there is valid Shader Material file, otherwise False.
+
+    :param shader_material: SCS material path, can be absolute or relative
+    :type shader_material: str
+    :return: True if there is valid Shader Material file, otherwise False
+    :rtype: bool
+    """
+
+    if shader_material.endswith(".mat") or shader_material.endswith(".umat"):
+        return is_valid_shader_texture_path(shader_material)
+
+    return False
+
 def is_valid_shader_presets_library_path():
     """It returns True if there is valid "*.txt" file in
     the Shader Presets Library directory, otherwise False."""
@@ -414,6 +428,29 @@ def get_shader_presets_filepath():
 
     return shader_presets_file
 
+def get_material_extens_and_strip_path(material_path):
+    """Gets all supported material extensions and strips given input path for any of it.
+
+    :param material_path: shader material raw path value
+    :type material_path: str
+    :return: list of extensions and stripped path as tuple
+    :rtype: tuple[list[str], str]
+    """
+
+    extensions = [".mat", ".umat"]
+
+    # strip of any extensions ( endswith is most secure, because of possible multiple extensions )
+    if material_path.endswith(".umat"):
+
+        extensions.insert(0, material_path[-5:])
+        material_path = material_path[:-5]
+
+    elif material_path.endswith(".mat"):
+
+        extensions.insert(0, material_path[-4:])
+        material_path = material_path[:-4]
+
+    return extensions, material_path
 
 def get_texture_path_from_tobj(tobj_filepath, raw_value=False):
     """Get absolute path of texture from given tobj filepath.
@@ -503,6 +540,99 @@ def get_texture_extens_and_strip_path(texture_path):
 
     return extensions, texture_path
 
+def get_scs_file_str(file_string, file_type):
+    """Get file string as presented in SCS files: "/folder1/folder2/file"
+    without any file extensions. Input path can also have object extension or supported extensions.
+    Path will be searched and returned in this order:
+    1. relative path on current SCS Project Base Path
+    2. relative path on parent base dirs of current SCS Project Base Path in the case of mod/dlc
+    3. find absolute file path
+    4. return unchanged texture string path
+
+    :param file_string: file string for which file should be found e.g.: "/folder1/folder2/file" or absolute path
+    :type file_string: str
+    :param file_type: type of file for which path should be found
+    :type file_type: str (material|texture)
+    :return: relative path to file object or absolute path to file object or unchanged file string
+    :rtype: str
+    """
+
+    scs_project_path = _get_scs_globals().scs_project_path
+    orig_file_string = file_string
+
+    # remove any directory separators left overs from different platform
+    file_string = file_string.replace("/", os.sep).replace("\\", os.sep)
+
+    if file_type == "material":
+        extensions, file_string = get_material_extens_and_strip_path(file_string)
+    elif file_type == "texture":
+        extensions, file_string = get_texture_extens_and_strip_path(file_string)
+    else:
+        raise ValueError("Invalid file type: %s" % file_type)
+
+    # if texture string starts with scs project path we can directly strip of project path
+    if startswith(file_string, scs_project_path):
+        file_string = file_string[len(scs_project_path):]
+    else:  # check if texture string came from base project while scs project path is in dlc/mod folder
+
+        # first find longest matching path
+        try:
+            common_path_len = len(os.path.commonpath([scs_project_path, file_string]))
+        except ValueError:  # if ValueError is raised then paths do not match for sure, thus set it to 0
+            common_path_len = 0
+
+        nonmatched_path_part = file_string[common_path_len + 1:]
+
+        if nonmatched_path_part.startswith("base" + os.sep) or nonmatched_path_part.startswith("base_") or nonmatched_path_part.startswith("dlc_"):
+
+            # now check if provided texture string is the same as:
+            # current scs project path + one or two directories up + non matched path of the part
+            # NOTE: find calls is inverted in relation to number of parents dirs
+            for infix, find_calls_count in (("..", 2), (".." + os.sep + "..", 1)):
+
+                modif_file_string = os.path.join(scs_project_path, infix + os.sep + nonmatched_path_part)
+
+                # we got a hit if one or two directories up is the same path as texture string
+                if is_samepath(modif_file_string, file_string):
+                    slash_idx = 0
+                    for _ in range(0, find_calls_count):
+                        slash_idx = nonmatched_path_part.find(os.sep, slash_idx)
+
+                    # catch invalid cases that needs investigation
+                    assert slash_idx != -1
+
+                    file_string = nonmatched_path_part[slash_idx:]
+
+    # check for relative files through extensions
+    for ext in extensions:
+        file_path = get_abs_path("//" + file_string.strip(os.sep) + ext)
+        if file_path and os.path.isfile(file_path):
+            return "//" + file_string.replace(os.sep, "/").strip("/") + ext
+
+    # check for absolute files through extensions
+    for ext in extensions:
+        file_path = get_abs_path(file_string + ext, skip_mod_check=True)
+        if file_path and os.path.isfile(file_path):
+            return file_string.replace(os.sep, "/") + ext
+
+    return orig_file_string
+
+def get_scs_material_str(material_string):
+    """Get material string as presented in SCS files: "/umatlib/specual/collision_umat"
+    without any file extensions. Input path can also have supported material extensions.
+    Path will be searched and returned in this order:
+    1. relative path on current SCS Project Base Path
+    2. relative path on parent base dirs of current SCS Project Base Path in the case of mod/dlc
+    3. find absolute file path
+    4. return unchanged material string path
+
+    :param material_string: material string for which material should be found e.g.: "/umatlib/specual/collision_umat" or absolute path
+    :type material_string: str
+    :return: relative path to material object or absolute path to material object or unchanged material string
+    :rtype: str
+    """
+
+    return get_scs_file_str(material_string, "material")
 
 def get_scs_texture_str(texture_string):
     """Get texture string as presented in SCS files: "/material/environment/vehicle_reflection"
@@ -519,60 +649,7 @@ def get_scs_texture_str(texture_string):
     :rtype: str
     """
 
-    scs_project_path = _get_scs_globals().scs_project_path
-    orig_texture_string = texture_string
-
-    # remove any directory separators left overs from different platform
-    texture_string = texture_string.replace("/", os.sep).replace("\\", os.sep)
-
-    extensions, texture_string = get_texture_extens_and_strip_path(texture_string)
-
-    # if texture string starts with scs project path we can directly strip of project path
-    if startswith(texture_string, scs_project_path):
-        texture_string = texture_string[len(scs_project_path):]
-    else:  # check if texture string came from base project while scs project path is in dlc/mod folder
-
-        # first find longest matching path
-        try:
-            common_path_len = len(os.path.commonpath([scs_project_path, texture_string]))
-        except ValueError:  # if ValueError is raised then paths do not match for sure, thus set it to 0
-            common_path_len = 0
-
-        nonmatched_path_part = texture_string[common_path_len + 1:]
-
-        if nonmatched_path_part.startswith("base" + os.sep) or nonmatched_path_part.startswith("base_") or nonmatched_path_part.startswith("dlc_"):
-
-            # now check if provided texture string is the same as:
-            # current scs project path + one or two directories up + non matched path of the part
-            # NOTE: find calls is inverted in relation to number of parents dirs
-            for infix, find_calls_count in (("..", 2), (".." + os.sep + "..", 1)):
-
-                modif_texture_string = os.path.join(scs_project_path, infix + os.sep + nonmatched_path_part)
-
-                # we got a hit if one or two directories up is the same path as texture string
-                if is_samepath(modif_texture_string, texture_string):
-                    slash_idx = 0
-                    for _ in range(0, find_calls_count):
-                        slash_idx = nonmatched_path_part.find(os.sep, slash_idx)
-
-                    # catch invalid cases that needs investigation
-                    assert slash_idx != -1
-
-                    texture_string = nonmatched_path_part[slash_idx:]
-
-    # check for relative TOBJ, TGA, PNG
-    for ext in extensions:
-        texture_path = get_abs_path("//" + texture_string.strip(os.sep) + ext)
-        if texture_path and os.path.isfile(texture_path):
-            return "//" + texture_string.replace(os.sep, "/").strip("/") + ext
-
-    # check for absolute TOBJ, TGA, PNG
-    for ext in extensions:
-        texture_path = get_abs_path(texture_string + ext, skip_mod_check=True)
-        if texture_path and os.path.isfile(texture_path):
-            return texture_string.replace(os.sep, "/") + ext
-
-    return orig_texture_string
+    return get_scs_file_str(texture_string, "texture")
 
 
 def get_tobj_path_from_shader_texture(shader_texture, check_existance=True):

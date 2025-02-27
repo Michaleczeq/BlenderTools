@@ -75,6 +75,24 @@ def __update_look__(self, context):
         for scs_root in scs_roots:
             _looks.update_look_from_material(scs_root, context.active_object.active_material, is_preset_change)
 
+def __update_shader_material__(self, context):
+    """Hookup function for update of shader material in Blender.
+
+    :param context: Blender context
+    :type context: bpy.types.Context
+    :param tex_type: string representing texture type
+    :type tex_type: str
+    """
+
+    __update_look__((), context)
+
+    material = _material_utils.get_material_from_context(context)
+
+    if material:
+        shader_material_filepath = getattr(self, "shader_material")
+
+        # always correct scs path string
+        shader_material_filepath = self["shader_material"] = _path_utils.get_scs_material_str(shader_material_filepath)
 
 def __update_shader_attribute__(self, context, attr_type):
     """Hookup function for updating shader attributes in Blender.
@@ -357,6 +375,9 @@ class MaterialSCSTools(bpy.types.PropertyGroup):
         __update_look__(self, context)
         del self["preset_change"]  # remove indicator of shader preset update
 
+    def update_shader_material(self, context):
+        __update_shader_material__(self, context)
+
     def update_shader_attribute_add_ambient(self, context):
         __update_shader_attribute__(self, context, "add_ambient")
 
@@ -596,6 +617,16 @@ class MaterialSCSTools(bpy.types.PropertyGroup):
         default="",
         subtype='NONE',
         update=__update_look__
+    )
+
+    # SHADER MATERIAL
+    shader_material: StringProperty(
+        name="Shader Material",
+        description="Shader Material for active Aliasing",
+        default=_MAT_consts.unset_bitmap_filepath,
+        options={'HIDDEN'},
+        subtype='NONE',
+        update=update_shader_material,
     )
 
     # SHADER ATTRIBUTES
