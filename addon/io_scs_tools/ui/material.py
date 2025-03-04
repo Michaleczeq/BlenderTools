@@ -294,21 +294,15 @@ class SCS_TOOLS_PT_Material(_shared.HeaderIconPanel, _MaterialPanelBlDefs, Panel
             alias_icon = _shared.get_on_off_icon(mat.scs_props.enable_aliasing)
             alias_row.prop(mat.scs_props, "enable_aliasing", icon=alias_icon, text=alias_text, toggle=True)
 
-            # Fix for "water" shader, where there is no "base" texture. Water is used as aliased in umatlib.
-            if "water" in mat.scs_props.mat_effect_name:
-                normalized_base_tex_path = mat.scs_props.shader_texture_layer0.replace("\\", "/")
-            else:
-                normalized_base_tex_path = mat.scs_props.shader_texture_base.replace("\\", "/")
+            normalized_base_tex_path = mat.scs_props.shader_texture_base.replace("\\", "/")
             is_aliasing_path = ("/material/road" in normalized_base_tex_path or
                                 "/material/terrain" in normalized_base_tex_path or
-                                "/material/custom" in normalized_base_tex_path or
-                                "/umatlib" in normalized_base_tex_path)
+                                "/material/custom" in normalized_base_tex_path)
 
             is_aliasable = ('textures' in shader_data and
                             (
                                     len(shader_data["textures"]) == 1 or
                                     (len(shader_data["textures"]) == 2 and "tsnmap" in mat.scs_props.mat_effect_name) or
-                                    (len(shader_data["textures"]) >= 2 and "water" in mat.scs_props.mat_effect_name) or
                                     (len(shader_data["textures"]) == 2 and "dif.spec.weight.mult2" in mat.scs_props.mat_effect_name)
                             ))
 
@@ -321,15 +315,14 @@ class SCS_TOOLS_PT_Material(_shared.HeaderIconPanel, _MaterialPanelBlDefs, Panel
                                             "-> '/material/road'\n"
                                             "-> '/material/terrain'\n"
                                             "-> '/material/custom'\n"
-                                            "-> '/umatlib'\n"
                                             "Additional requirement for aliasing is also single texture material (excluding nmap) or\n"
-                                            "exceptionally multi texture material of 'dif.spec.weight.mult2' or 'water' family.\n\n"
+                                            "exceptionally multi texture material of 'dif.spec.weight.mult2' family.\n\n"
                                             "Currently aliasing can not be done because:")
 
                     if not is_aliasing_path:
                         aliasing_info_msg += "\n-> Your 'Base' texture doesn't point to any of this (sub)directories."
                     if not is_aliasable:
-                        aliasing_info_msg += "\n-> Current shader type use multiple textures or it's not 'dif.spec.weight.mult2' or 'water' family type."
+                        aliasing_info_msg += "\n-> Current shader type use multiple textures or it's not 'dif.spec.weight.mult2' family type."
 
                     _shared.draw_warning_operator(alias_row, "Aliasing Info", aliasing_info_msg, icon='INFO')
 

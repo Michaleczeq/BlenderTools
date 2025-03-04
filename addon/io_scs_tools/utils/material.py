@@ -499,8 +499,6 @@ def set_shader_data_to_material(material, section, is_import=False, override_bac
     if override_back_data:
         for key in scs_props_keys:
             is_key_used = False
-            if key.startswith("shader_material"):
-                is_key_used = True
             if key.startswith("shader_attribute"):
                 for used_attribute in used_attribute_types:
                     if used_attribute in key[16:]:
