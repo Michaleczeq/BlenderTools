@@ -286,7 +286,8 @@ class VertexColorTools:
         def poll(cls, context):
             return context.object is not None and context.object.mode == "VERTEX_PAINT" and len(context.object.data.color_attributes) > 0
 
-        def __init__(self):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
             self.original_col = {}
 
         def __del__(self):

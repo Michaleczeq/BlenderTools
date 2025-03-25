@@ -80,17 +80,17 @@ class Piece:
 
         if tangent:
             vertex_hash = (index,
-                            int(normal[0] * fprec),
-                            int(normal[1] * fprec),
-                            int(normal[2] * fprec),
-                            int(rgba[0] * fprec),
-                            int(rgba[1] * fprec),
-                            int(rgba[2] * fprec),
-                            int(rgba[3] * fprec),
-                            int(tangent[0] * fprec),
-                            int(tangent[1] * fprec),
-                            int(tangent[2] * fprec),
-                            int(tangent[3] * fprec))
+                           int(normal[0] * fprec),
+                           int(normal[1] * fprec),
+                           int(normal[2] * fprec),
+                           int(rgba[0] * fprec),
+                           int(rgba[1] * fprec),
+                           int(rgba[2] * fprec),
+                           int(rgba[3] * fprec),
+                           int(tangent[0] * fprec),
+                           int(tangent[1] * fprec),
+                           int(tangent[2] * fprec),
+                           int(tangent[3] * fprec))
         else:
             vertex_hash = (index,
                            int(normal[0] * fprec),

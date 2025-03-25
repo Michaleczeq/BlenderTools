@@ -33,7 +33,7 @@ class SCSExportHelper:
     export_scene_name = None
     """Stores name of the export scene (used to skip custom drawing elements update on export scene)."""
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         self.cached_objects = None
         """:type list[bpy.types.Object]: Used in selection mode to cache selected objects, to avoid multiple collecting."""
         self.objects_states = dict()

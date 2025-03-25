@@ -90,16 +90,17 @@ class ObjectPartInventoryItem(bpy.types.PropertyGroup):
         scs_root_obj = _object_utils.get_scs_root(context.active_object)
 
         # if there is more of parts with same name, make postfixed name (this will cause another name update)
-        if len(_inventory.get_indices(scs_root_obj.scs_object_part_inventory, self.name)) == 2:  # duplicate
+        if scs_root_obj != None:
+            if len(_inventory.get_indices(scs_root_obj.scs_object_part_inventory, self.name)) == 2:  # duplicate
 
-            i = 1
-            new_name = _name_utils.tokenize_name(self.name + "_" + str(i).zfill(2))
-            while _inventory.get_index(scs_root_obj.scs_object_part_inventory, new_name) != -1:
+                i = 1
                 new_name = _name_utils.tokenize_name(self.name + "_" + str(i).zfill(2))
-                i += 1
+                while _inventory.get_index(scs_root_obj.scs_object_part_inventory, new_name) != -1:
+                    new_name = _name_utils.tokenize_name(self.name + "_" + str(i).zfill(2))
+                    i += 1
 
-            if new_name != self.name:
-                self.name = new_name
+                if new_name != self.name:
+                    self.name = new_name
 
         if "scs_part_old_name" in self:
 
