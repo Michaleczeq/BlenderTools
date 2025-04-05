@@ -22,7 +22,7 @@ bl_info = {
     "name": "SCS Tools",
     "description": "Setup models, Import-Export SCS data format",
     "author": "Simon Lusenc (50keda), Milos Zajic (4museman), Michal (Michaleczeq)",
-    "version": (2, 4, "aeadde03", 5),
+    "version": (2, 4, "aeadde03", 6),
     "blender": (4, 4, 0),
     "location": "File > Import-Export",
     "doc_url": "http://modding.scssoft.com/wiki/Documentation/Tools/SCS_Blender_Tools",
@@ -221,6 +221,11 @@ class SCS_TOOLS_OT_Export(bpy.types.Operator, _SCSExportHelper, ExportHelper):
 
     filename_ext = ".pim"
     filter_glob: StringProperty(default=str("*" + filename_ext), options={'HIDDEN'})
+
+    def __init__(self, *args, **kwargs):
+        bpy.types.Operator.__init__(self, *args, **kwargs)
+        _SCSExportHelper.__init__(self, *args, **kwargs)
+        ExportHelper.__init__(self)
 
     def execute(self, context):
         # convert filepath to None if empty, so export will ignore given menu file path and try to export to other none menu set paths
