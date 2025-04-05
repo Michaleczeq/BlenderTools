@@ -1418,6 +1418,11 @@ Shader {
         Value: ( 0.0 )
     }
     Attribute {
+        Format: FLOAT3
+        Tag: "env_factor"
+        Value: ( 1.0 1.0 1.0 )
+    }
+    Attribute {
         Format: FLOAT2
         Tag: "fresnel"
         Value: ( 0.01 -1 )
@@ -1769,6 +1774,11 @@ Shader {
         Format: FLOAT
         Tag: "add_ambient"
         Value: ( 0.0 )
+    }
+    Attribute {
+        Format: FLOAT3
+        Tag: "env_factor"
+        Value: ( 1.0 1.0 1.0 )
     }
     Attribute {
         Format: FLOAT2
