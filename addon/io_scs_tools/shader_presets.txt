@@ -1054,7 +1054,7 @@ Shader {
 Shader {
     PresetName: "dif.spec.weight.add.env"
     Effect: "eut2.dif.spec.weight.add.env"
-    Flavors: ( "NMAP_TS|NMAP_TS_UV" "SHADOW" "PAINT" "TEXGEN0" "ALPHA" "DEPTH" "BLEND_OVER|BLEND_MULT|BLEND_ADD" )
+    Flavors: ( "NMAP_TS|NMAP_TS_UV|NMAP_TS_UV_2" "SHADOW" "PAINT" "TEXGEN0" "ALPHA" "DEPTH" "BLEND_OVER|BLEND_MULT|BLEND_ADD" )
     Flags: 0
     Attribute {
         Format: FLOAT3
@@ -1486,7 +1486,7 @@ Shader {
 Shader {
     PresetName: "lamp"
     Effect: "eut2.lamp"
-    Flavors: ( "ANIM" "NMAP_TS|NMAP_TS_UV" "SHADOW" "ENVMAP" )
+    Flavors: ( "LAMP_ANIM" "NMAP_TS|NMAP_TS_UV" "SHADOW" "ENVMAP" )
     Flags: 0
     Attribute {
         Format: FLOAT3
@@ -1515,6 +1515,7 @@ Shader {
     }
     Texture {
         Tag: "texture[X]:texture_mask"
+        FriendlyTag: "Lamp Mask"
         Value: ""
         TexCoord: ( 1 )
     }
@@ -1589,6 +1590,7 @@ Shader {
     }
     Texture {
         Tag: "texture[X]:texture_base"
+        FriendlyTag: "Mask"
         Value: ""
         TexCoord: ( 0 )
     }
@@ -1907,16 +1909,19 @@ Shader {
     }
     Texture {
         Tag: "texture[X]:texture_layer0"
+        FriendlyTag: "Waves 0"
         Value: "/material/terrain/water/waves_lake"
         TexCoord: ( -1 )
     }
     Texture {
         Tag: "texture[X]:texture_layer1"
+        FriendlyTag: "Waves 1"
         Value: "/material/terrain/water/waves_lake"
         TexCoord: ( -1 )
     }
     Texture {
         Tag: "texture[X]:texture_reflection"
+        FriendlyTag: "Environment cube"
         Value: "/material/environment/generic_reflection"
         TexCoord: ( -1 )
     }
@@ -2009,11 +2014,13 @@ Shader {
     }
     Texture {
         Tag: "texture[X]:texture_mask"
+        FriendlyTag: "Decal strength"
         Value: ""
         TexCoord: ( 1 )
     }
     Texture {
         Tag: "texture[X]:texture_over"
+        FriendlyTag: "Decal"
         Value: ""
         TexCoord: ( 1 )
     }
@@ -2073,26 +2080,31 @@ Shader {
     }
     Texture {
         Tag: "texture[X]:texture_base"
+        FriendlyTag: "Atlas"
         Value: ""
         TexCoord: ( 0 )
     }
     Texture {
         Tag: "texture[X]:texture_layer0"
+        FriendlyTag: "Emissive (Day)"
         Value: ""
         TexCoord: ( 0 )
     }
     Texture {
         Tag: "texture[X]:texture_layer1"
+        FriendlyTag: "Emissive (Night)"
         Value: ""
         TexCoord: ( 0 )
     }
     Texture {
         Tag: "texture[X]:texture_mask"
+        FriendlyTag: "LUT"
         Value: ""
         TexCoord: ( 0 )
     }
     Texture {
         Tag: "texture[X]:texture_nmap_detail"
+        FriendlyTag: "Normal Map"
         Value: ""
         TexCoord: ( 0 )
     }
@@ -2161,31 +2173,37 @@ Shader {
     }
     Texture {
         Tag: "texture[X]:texture_base"
+        FriendlyTag: "Atlas"
         Value: ""
         TexCoord: ( 0 )
     }
     Texture {
         Tag: "texture[X]:texture_over"
+        FriendlyTag: "Curtains"
         Value: ""
         TexCoord: ( 2 )
     }
     Texture {
         Tag: "texture[X]:texture_layer0"
+        FriendlyTag: "Emissive (Day)"
         Value: ""
         TexCoord: ( 0 )
     }
     Texture {
         Tag: "texture[X]:texture_layer1"
+        FriendlyTag: "Emissive (Night)"
         Value: ""
         TexCoord: ( 0 )
     }
     Texture {
         Tag: "texture[X]:texture_mask"
+        FriendlyTag: "LUT"
         Value: ""
         TexCoord: ( 0 )
     }
     Texture {
         Tag: "texture[X]:texture_nmap_detail"
+        FriendlyTag: "Normal Map"
         Value: ""
         TexCoord: ( 0 )
     }
@@ -2222,6 +2240,7 @@ Shader {
     }
     Texture {
         Tag: "texture[X]:texture_over"
+        FriendlyTag: "Specular map"
         Value: ""
         TexCoord: ( 0 )
     }
@@ -2243,11 +2262,13 @@ Shader {
     }
     Texture {
         Tag: "texture[X]:texture_over"
+        FriendlyTag: "Specular map"
         Value: ""
         TexCoord: ( 0 )
     }
     Texture {
         Tag: "texture[X]:texture_mask"
+        FriendlyTag: "Env factor map"
         Value: ""
         TexCoord: ( 0 )
     }
@@ -2281,6 +2302,7 @@ Flavor {
     Name: "a"
     Texture {
         Tag: "texture[X]:texture_base"
+        FriendlyTag: "Alpha source"
         Value: ""
         TexCoord: ( 0 )
     }
@@ -2290,7 +2312,7 @@ Flavor {
     Name: "altuv"
 }
 Flavor {
-    Type: "ANIM"
+    Type: "LAMP_ANIM"
     Name: "anim"
     Attribute {
         Format: FLOAT4
@@ -2306,21 +2328,25 @@ Flavor {
     }
     Texture {
         Tag: "texture[X]:texture_mask"
+        FriendlyTag: "Lamp Mask R"
         Value: ""
         TexCoord: ( 1 )
     }
     Texture {
         Tag: "texture[X]:texture_mask_1"
+        FriendlyTag: "Lamp Mask G"
         Value: ""
         TexCoord: ( 1 )
     }
     Texture {
         Tag: "texture[X]:texture_mask_2"
+        FriendlyTag: "Lamp Mask B"
         Value: ""
         TexCoord: ( 1 )
     }
     Texture {
         Tag: "texture[X]:texture_mask_3"
+        FriendlyTag: "Lamp Mask A"
         Value: ""
         TexCoord: ( 1 )
     }
@@ -2474,6 +2500,10 @@ Flavor {
     Name: "indenv"
 }
 Flavor {
+    Type: "INVERTOPAC"
+    Name: "oinv"
+}
+Flavor {
     Type: "LUMMULVCOL"
     Name: "lvcol"
 }
@@ -2496,6 +2526,7 @@ Flavor {
     Name: "tsnmap"
     Texture {
         Tag: "texture[X]:texture_nmap"
+        FriendlyTag: "Normal map"
         Value: ""
         TexCoord: ( 0 )
     }
@@ -2505,6 +2536,7 @@ Flavor {
     Name: "tsnmapcalc"
     Texture {
         Tag: "texture[X]:texture_nmap"
+        FriendlyTag: "Normal map"
         Value: ""
         TexCoord: ( 0 )
     }
@@ -2514,6 +2546,7 @@ Flavor {
     Name: "tsnmapcalc"
     Texture {
         Tag: "texture[X]:texture_nmap"
+        FriendlyTag: "Normal map"
         Value: ""
         TexCoord: ( 0 )
     }
@@ -2528,6 +2561,7 @@ Flavor {
     Name: "tsnmapuv"
     Texture {
         Tag: "texture[X]:texture_nmap"
+        FriendlyTag: "Normal map"
         Value: ""
         TexCoord: ( 6 )
     }
@@ -2537,11 +2571,28 @@ Flavor {
     Name: "tsnmapuv"
     Texture {
         Tag: "texture[X]:texture_nmap"
+        FriendlyTag: "Normal map"
         Value: ""
         TexCoord: ( 6 )
     }
     Texture {
         Tag: "texture[X]:texture_nmap_detail"
+        Value: ""
+        TexCoord: ( 6 )
+    }
+}
+Flavor {
+    Type: "NMAP_TS_UV_2"
+    Name: "tsnmapuv2"
+    Texture {
+        Tag: "texture[X]:texture_nmap"
+        FriendlyTag: "Normal map"
+        Value: ""
+        TexCoord: ( 0 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_nmap_detail"
+        FriendlyTag: "Normal map (hi-freq detail)"
         Value: ""
         TexCoord: ( 6 )
     }
@@ -2559,6 +2610,7 @@ Flavor {
     Name: "paint"
     Texture {
         Tag: "texture[X]:texture_mask_1"
+        FriendlyTag: "Paint mask"
         Value: ""
         TexCoord: ( 0 )
     }

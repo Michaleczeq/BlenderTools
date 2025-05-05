@@ -62,6 +62,9 @@ def setup_nodes(material, effect, attr_dict, tex_dict, tex_settings_dict, recrea
     if effect.endswith(".tsnmapuv") or ".tsnmapuv." in effect:
         flavors["nmap"] = True
 
+    if effect.endswith(".tsnmapuv2") or ".tsnmapuv2." in effect:
+        flavors["nmap"] = True
+
     if effect.endswith(".tsnmap") or ".tsnmap." in effect:
         flavors["nmap"] = True
 
@@ -73,6 +76,9 @@ def setup_nodes(material, effect, attr_dict, tex_dict, tex_settings_dict, recrea
 
     if effect.endswith(".linv") or ".linv." in effect:
         flavors["linv"] = True
+
+    if effect.endswith(".oinv") or ".oinv." in effect:
+        flavors["oinv"] = True
 
     if effect.endswith(".lvcol") or ".lvcol." in effect:
         flavors["lvcol"] = True

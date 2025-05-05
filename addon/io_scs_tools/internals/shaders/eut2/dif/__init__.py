@@ -30,6 +30,7 @@ from io_scs_tools.internals.shaders.flavors import blend_mult
 from io_scs_tools.internals.shaders.flavors import nmap
 from io_scs_tools.internals.shaders.flavors import paint
 from io_scs_tools.internals.shaders.flavors import tg0
+from io_scs_tools.internals.shaders.flavors import oinv
 from io_scs_tools.utils import convert as _convert_utils
 from io_scs_tools.utils import material as _material_utils
 
@@ -557,3 +558,24 @@ class Dif(BaseShader):
 
         else:
             paint.delete(node_tree)
+
+    @staticmethod
+    def set_oinv_flavor(node_tree, switch_on):
+        """Set oinv flavor to this shader.
+
+        :param node_tree: node tree of current shader
+        :type node_tree: bpy.types.NodeTree
+        :param switch_on: flag indication if flavor should be switched on or off
+        :type switch_on: bool
+        """
+
+        opacity_n = node_tree.nodes[Dif.OPACITY_NODE]
+        compose_lighting_n = node_tree.nodes[Dif.COMPOSE_LIGHTING_NODE]
+
+        if switch_on:
+
+            location = (opacity_n.location.x + 185, opacity_n.location.y + 40)
+            oinv.init(node_tree, location, opacity_n.outputs["Value"], compose_lighting_n.inputs["Alpha"])
+
+        else:
+            oinv.delete(node_tree)

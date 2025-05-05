@@ -593,6 +593,8 @@ class SCS_TOOLS_PT_MaterialTextures(_MaterialPanelBlDefs, Panel):
         tag_id_string = tag_id[1]
         texture_type = tag_id_string[8:]
         shader_texture_id = str('shader_' + tag_id_string)
+        frendly_tag = texture.get('FriendlyTag', None)
+        texture_label = frendly_tag if frendly_tag else str(texture_type.title())
 
         if hide_state == 'True':
             return
@@ -600,7 +602,7 @@ class SCS_TOOLS_PT_MaterialTextures(_MaterialPanelBlDefs, Panel):
         texture_box = layout.box().column()  # create column for compact display with alignment
 
         header_split = texture_box.row(align=True)
-        header_split.label(text=texture_type.title(), icon='TEXTURE')
+        header_split.label(text=texture_label, icon='TEXTURE')
 
         if hasattr(mat.scs_props, shader_texture_id):
 
