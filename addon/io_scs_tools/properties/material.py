@@ -312,7 +312,7 @@ class MaterialSCSTools(bpy.types.PropertyGroup):
         return {'base', 'reflection', 'over', 'oclu', 'mask' , 'mask_1' , 'mask_2', 'mask_3', 'mult', 'iamod', 'lightmap', 'paintjob',
                 'flakenoise', 'nmap', 'base_1', 'mult_1', 'detail', 'nmap_detail', 'nmap_over' , 'layer0', 'layer1',
                 'sky_weather_base_a', 'sky_weather_base_b', 'sky_weather_over_a', 'sky_weather_over_b',
-                'texture_sky_weather_base_mask_a', 'texture_sky_weather_over_mask_b'}
+                'sky_weather_base_mask_a', 'sky_weather_base_mask_b', 'sky_weather_over_mask_a', 'sky_weather_over_mask_b'}
 
     def get_id(self):
         """Gets unique ID for material within current Blend file. If ID does not exists yet it's calculated.

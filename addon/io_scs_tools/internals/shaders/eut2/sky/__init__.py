@@ -18,10 +18,9 @@
 
 # Copyright (C) 2015-2022: SCS Software
 
-from mathutils import Color
 from io_scs_tools.consts import Mesh as _MESH_consts
 from io_scs_tools.internals.shaders.base import BaseShader
-from io_scs_tools.internals.shaders.flavors import sky_back, sky_stars
+from io_scs_tools.internals.shaders.flavors import sky_bottom, sky_stars
 from io_scs_tools.internals.shaders.eut2.std_node_groups import vcolor_input_ng
 from io_scs_tools.internals.shaders.eut2.sky import texture_types
 from io_scs_tools.internals.shaders.eut2.sky import uv_rescale_ng
@@ -52,6 +51,7 @@ class Sky(BaseShader):
 
     SEPARATE_UV_NODE_PREFIX = "Separate UV "
     TEX_NODE_PREFIX = "Tex "
+    MASK_NODE_PREFIX = "Mask "
     TEX_OOB_BOOL_NODE_PREFIX = "OOBBool "
     TEX_FINAL_MIX_NODE_PREFIX = "FinalTexel "
     TEX_FINAL_A_MIX_NODE_PREFIX = "FinalTexelA "
@@ -96,7 +96,7 @@ class Sky(BaseShader):
         diff_col_n.location = (start_pos_x + pos_x_shift, start_pos_y + 2000)
 
         for tex_type_i, tex_type in enumerate(texture_types.get()):
-            Sky.__create_texel_component_nodes__(node_tree, tex_type, (start_pos_x + pos_x_shift, start_pos_y + 1500 - tex_type_i * 550))
+            Sky.__create_texel_component_nodes__(node_tree, tex_type, (start_pos_x + pos_x_shift, start_pos_y + 1500 - tex_type_i * 750))
 
         base_a_tex_final_n = node_tree.nodes[Sky.TEX_FINAL_MIX_NODE_PREFIX + texture_types.get()[0]]
         base_b_tex_final_n = node_tree.nodes[Sky.TEX_FINAL_MIX_NODE_PREFIX + texture_types.get()[1]]
@@ -121,37 +121,37 @@ class Sky(BaseShader):
 
         weather_base_mix_n = node_tree.nodes.new("ShaderNodeMix")
         weather_base_mix_n.name = weather_base_mix_n.label = Sky.WEATHER_BASE_MIX_NODE
-        weather_base_mix_n.location = (start_pos_x + pos_x_shift * 4, start_pos_y + 1400)
+        weather_base_mix_n.location = (start_pos_x + pos_x_shift * 4, start_pos_y + 1250)       # +1400
         weather_base_mix_n.data_type = "RGBA"
         weather_base_mix_n.blend_type = "MIX"
 
         weather_base_alpha_mix_n = node_tree.nodes.new("ShaderNodeMix")
         weather_base_alpha_mix_n.name = weather_base_alpha_mix_n.label = Sky.WEATHER_BASE_A_MIX_NODE
-        weather_base_alpha_mix_n.location = (start_pos_x + pos_x_shift * 4, start_pos_y + 1150)
+        weather_base_alpha_mix_n.location = (start_pos_x + pos_x_shift * 4, start_pos_y + 1000) # +1150
         weather_base_alpha_mix_n.data_type = "RGBA"
         weather_base_alpha_mix_n.blend_type = "MIX"
 
         weather_over_mix_n = node_tree.nodes.new("ShaderNodeMix")
         weather_over_mix_n.name = weather_over_mix_n.label = Sky.WEATHER_OVER_MIX_NODE
-        weather_over_mix_n.location = (start_pos_x + pos_x_shift * 4, start_pos_y + 300)
+        weather_over_mix_n.location = (start_pos_x + pos_x_shift * 4, start_pos_y - 250)        # +300
         weather_over_mix_n.data_type = "RGBA"
         weather_over_mix_n.blend_type = "MIX"
 
         weather_over_alpha_mix_n = node_tree.nodes.new("ShaderNodeMix")
         weather_over_alpha_mix_n.name = weather_over_alpha_mix_n.label = Sky.WEATHER_OVER_A_MIX_NODE
-        weather_over_alpha_mix_n.location = (start_pos_x + pos_x_shift * 4, start_pos_y + 50)
+        weather_over_alpha_mix_n.location = (start_pos_x + pos_x_shift * 4, start_pos_y - 500)   # +50
         weather_over_alpha_mix_n.data_type = "RGBA"
         weather_over_alpha_mix_n.blend_type = "MIX"
 
         weather_mix_n = node_tree.nodes.new("ShaderNodeMix")
         weather_mix_n.name = weather_mix_n.label = Sky.WEATHER_MIX_NODE
-        weather_mix_n.location = (start_pos_x + pos_x_shift * 5, start_pos_y + 850)
+        weather_mix_n.location = (start_pos_x + pos_x_shift * 5, start_pos_y + 500)         # +850
         weather_mix_n.data_type = "RGBA"
         weather_mix_n.blend_type = "MIX"
 
         weather_alpha_mix_n = node_tree.nodes.new("ShaderNodeMix")
         weather_alpha_mix_n.name = weather_alpha_mix_n.label = Sky.WEATHER_A_MIX_NODE
-        weather_alpha_mix_n.location = (start_pos_x + pos_x_shift * 5, start_pos_y + 600)
+        weather_alpha_mix_n.location = (start_pos_x + pos_x_shift * 5, start_pos_y + 250)   # +600
         weather_alpha_mix_n.data_type = "RGBA"
         weather_alpha_mix_n.blend_type = "MIX"
 
@@ -185,6 +185,7 @@ class Sky(BaseShader):
 
         # pass 3
         node_tree.links.new(vcol_mult_n.inputs[0], vcol_group_n.outputs['Vertex Color'])
+        node_tree.links.new(opacity_stars_mix_n.inputs[1], vcol_group_n.outputs['Vertex Color Alpha'])
 
         # pass 4
         node_tree.links.new(diff_mult_n.inputs[0], diff_col_n.outputs[0])
@@ -250,6 +251,11 @@ class Sky(BaseShader):
         tex_n.location = (location[0], location[1])
         tex_n.width = 140
 
+        mask_n = node_tree.nodes.new("ShaderNodeTexImage")
+        mask_n.name = mask_n.label = Sky.MASK_NODE_PREFIX + tex_type
+        mask_n.location = (location[0], location[1] - 280)
+        mask_n.width = 140
+
         mix_col_n = node_tree.nodes.new("ShaderNodeMix")
         mix_col_n.name = mix_col_n.label = Sky.TEX_FINAL_MIX_NODE_PREFIX + tex_type
         mix_col_n.location = (location[0] + pos_x_shift * 2, location[1] + 150)
@@ -279,6 +285,7 @@ class Sky(BaseShader):
         separate_uv_n = node_tree.nodes[Sky.SEPARATE_UV_NODE_PREFIX + tex_type]
         texel_obb_n = node_tree.nodes[Sky.TEX_OOB_BOOL_NODE_PREFIX + tex_type]
         tex_n = node_tree.nodes[Sky.TEX_NODE_PREFIX + tex_type]
+        mask_n = node_tree.nodes[Sky.MASK_NODE_PREFIX + tex_type]
         mix_col_n = node_tree.nodes[Sky.TEX_FINAL_MIX_NODE_PREFIX + tex_type]
         mix_a_n = node_tree.nodes[Sky.TEX_FINAL_A_MIX_NODE_PREFIX + tex_type]
 
@@ -286,11 +293,12 @@ class Sky(BaseShader):
 
         node_tree.links.new(texel_obb_n.inputs[0], separate_uv_n.outputs['Y'])
         node_tree.links.new(tex_n.inputs[0], uv_socket)
+        node_tree.links.new(mask_n.inputs[0], uv_socket)
 
         node_tree.links.new(mix_col_n.inputs['Factor'], texel_obb_n.outputs[0])
         node_tree.links.new(mix_col_n.inputs['A'], tex_n.outputs['Color'])
         node_tree.links.new(mix_a_n.inputs['Factor'], texel_obb_n.outputs[0])
-        node_tree.links.new(mix_a_n.inputs['A'], tex_n.outputs['Alpha'])
+        node_tree.links.new(mix_a_n.inputs['A'], mask_n.outputs['Color'])
 
     @staticmethod
     def finalize(node_tree, material):
@@ -302,15 +310,18 @@ class Sky(BaseShader):
         :type material: bpy.types.Material
         """
 
-        material.use_backface_culling = True
-        material.surface_render_method = "BLENDED"
-
         out_shader_node = node_tree.nodes[Sky.OUT_SHADER_NODE]
 
-        if sky_stars.is_set(node_tree):
+        material.use_backface_culling = True
+        out_shader_node.inputs["Alpha Type"].default_value = 1.0
+        material.surface_render_method = "BLENDED"
+
+
+        if sky_bottom.is_set(node_tree):
             out_shader_node.inputs["Alpha Type"].default_value = 1.0
             material.surface_render_method = "BLENDED"
-        if sky_back.is_set(node_tree):
+
+        if sky_stars.is_set(node_tree):
             out_shader_node.inputs["Alpha Type"].default_value = -1.0
             material.surface_render_method = "DITHERED"
 
@@ -330,6 +341,10 @@ class Sky(BaseShader):
         color = _convert_utils.to_node_color(color)
 
         node_tree.nodes[Sky.DIFF_COL_NODE].outputs['Color'].default_value = color
+
+    ##########################
+    ####     BASE A/B     ####
+    ##########################
 
     @staticmethod
     def set_sky_weather_base_a_texture(node_tree, image):
@@ -404,6 +419,10 @@ class Sky(BaseShader):
 
         Sky.set_sky_weather_base_a_uv(node_tree, uv_layer)
 
+    ##########################
+    ####     OVER A/B     ####
+    ##########################
+
     @staticmethod
     def set_sky_weather_over_a_texture(node_tree, image):
         """Set over_a texture to shader.
@@ -474,6 +493,158 @@ class Sky(BaseShader):
 
         Sky.set_sky_weather_base_a_uv(node_tree, uv_layer)
 
+    ##########################
+    ####  BASE MASK A/B   ####
+    ##########################
+
+    @staticmethod
+    def set_sky_weather_base_mask_a_texture(node_tree, image):
+        """Set base_mask_a texture to shader.
+
+        :param node_tree: node tree of current shader
+        :type node_tree: bpy.types.NodeTree
+        :param image: texture image which should be assigned to texture node
+        :type image: bpy.types.Image
+        """
+
+        node_tree.nodes[Sky.MASK_NODE_PREFIX + texture_types.get_base_a()].image = image
+
+    @staticmethod
+    def set_sky_weather_base_mask_a_texture_settings(node_tree, settings):
+        """Set base_mask_a texture settings to shader.
+
+        :param node_tree: node tree of current shader
+        :type node_tree: bpy.types.NodeTree
+        :param settings: binary string of TOBJ settings gotten from tobj import
+        :type settings: str
+        """
+        _material_utils.set_texture_settings_to_node(node_tree.nodes[Sky.MASK_NODE_PREFIX + texture_types.get_base_a()], settings)
+
+    @staticmethod
+    def set_sky_weather_base_mask_a_uv(node_tree, uv_layer):
+        """Set UV layer to base_mask_a texture in shader.
+
+        :param node_tree: node tree of current shader
+        :type node_tree: bpy.types.NodeTree
+        :param uv_layer: uv layer string used for base_mask_a texture
+        :type uv_layer: str
+        """
+
+        Sky.set_sky_weather_base_a_uv(node_tree, uv_layer)
+
+    @staticmethod
+    def set_sky_weather_base_mask_b_texture(node_tree, image):
+        """Set base_mask_b texture to shader.
+
+        :param node_tree: node tree of current shader
+        :type node_tree: bpy.types.NodeTree
+        :param image: texture image which should be assigned to texture node
+        :type image: bpy.types.Image
+        """
+
+        node_tree.nodes[Sky.MASK_NODE_PREFIX + texture_types.get_base_b()].image = image
+
+    @staticmethod
+    def set_sky_weather_base_mask_b_texture_settings(node_tree, settings):
+        """Set base_mask_b texture settings to shader.
+
+        :param node_tree: node tree of current shader
+        :type node_tree: bpy.types.NodeTree
+        :param settings: binary string of TOBJ settings gotten from tobj import
+        :type settings: str
+        """
+        _material_utils.set_texture_settings_to_node(node_tree.nodes[Sky.MASK_NODE_PREFIX + texture_types.get_base_b()], settings)
+
+    @staticmethod
+    def set_sky_weather_base_mask_b_uv(node_tree, uv_layer):
+        """Set UV layer to base_mask_b texture in shader.
+
+        :param node_tree: node tree of current shader
+        :type node_tree: bpy.types.NodeTree
+        :param uv_layer: uv layer string used for base_mask_b texture
+        :type uv_layer: str
+        """
+
+        Sky.set_sky_weather_base_a_uv(node_tree, uv_layer)
+
+    ##########################
+    ####  OVER MASK A/B   ####
+    ##########################
+
+    @staticmethod
+    def set_sky_weather_over_mask_a_texture(node_tree, image):
+        """Set over_mask_a texture to shader.
+
+        :param node_tree: node tree of current shader
+        :type node_tree: bpy.types.NodeTree
+        :param image: texture image which should be assigned to texture node
+        :type image: bpy.types.Image
+        """
+
+        node_tree.nodes[Sky.MASK_NODE_PREFIX + texture_types.get_over_a()].image = image
+
+    @staticmethod
+    def set_sky_weather_over_mask_a_texture_settings(node_tree, settings):
+        """Set over_mask_a texture settings to shader.
+
+        :param node_tree: node tree of current shader
+        :type node_tree: bpy.types.NodeTree
+        :param settings: binary string of TOBJ settings gotten from tobj import
+        :type settings: str
+        """
+        _material_utils.set_texture_settings_to_node(node_tree.nodes[Sky.MASK_NODE_PREFIX + texture_types.get_over_a()], settings)
+
+    @staticmethod
+    def set_sky_weather_over_mask_a_uv(node_tree, uv_layer):
+        """Set UV layer to over_mask_a texture in shader.
+
+        :param node_tree: node tree of current shader
+        :type node_tree: bpy.types.NodeTree
+        :param uv_layer: uv layer string used for over_mask_a texture
+        :type uv_layer: str
+        """
+
+        Sky.set_sky_weather_base_a_uv(node_tree, uv_layer)
+
+    @staticmethod
+    def set_sky_weather_over_mask_b_texture(node_tree, image):
+        """Set over_mask_b texture to shader.
+
+        :param node_tree: node tree of current shader
+        :type node_tree: bpy.types.NodeTree
+        :param image: texture image which should be assigned to texture node
+        :type image: bpy.types.Image
+        """
+
+        node_tree.nodes[Sky.MASK_NODE_PREFIX + texture_types.get_over_b()].image = image
+
+    @staticmethod
+    def set_sky_weather_over_mask_b_texture_settings(node_tree, settings):
+        """Set over_mask_b texture settings to shader.
+
+        :param node_tree: node tree of current shader
+        :type node_tree: bpy.types.NodeTree
+        :param settings: binary string of TOBJ settings gotten from tobj import
+        :type settings: str
+        """
+        _material_utils.set_texture_settings_to_node(node_tree.nodes[Sky.MASK_NODE_PREFIX + texture_types.get_over_b()], settings)
+
+    @staticmethod
+    def set_sky_weather_over_mask_b_uv(node_tree, uv_layer):
+        """Set UV layer to over_mask_b texture in shader.
+
+        :param node_tree: node tree of current shader
+        :type node_tree: bpy.types.NodeTree
+        :param uv_layer: uv layer string used for over_mask_b texture
+        :type uv_layer: str
+        """
+
+        Sky.set_sky_weather_base_a_uv(node_tree, uv_layer)
+
+    ##########################
+    ####   AUX/FLAVORS    ####
+    ##########################
+
     @staticmethod
     def set_aux0(node_tree, aux_property):
         """Set blend factors.
@@ -515,7 +686,7 @@ class Sky(BaseShader):
 
         for tex_type_i, tex_type in enumerate(texture_types.get()):
 
-            if (not sky_stars.is_set(node_tree)) and (not sky_back.is_set(node_tree)):  # enabled
+            if (not sky_stars.is_set(node_tree)) and (not sky_bottom.is_set(node_tree)):  # enabled
                 v_cutoff = aux_property[tex_type_i]['value']
             else:  # disabled
                 v_cutoff = float("-inf")
@@ -542,6 +713,21 @@ class Sky(BaseShader):
         node_tree.nodes[Sky.RESCALE_UV_GROUP_NODE].inputs['Rescale Enabled'].default_value = rescale_enabled
 
     @staticmethod
+    def set_sky_bottom_flavor(node_tree, switch_on):
+        """Set sky bottom flavor to this shader.
+
+        :param node_tree: node tree of current shader
+        :type node_tree: bpy.types.NodeTree
+        :param switch_on: flag indication if it should be switched on or off
+        :type switch_on: bool
+        """
+
+        if switch_on:
+            sky_bottom.init(node_tree)
+        else:
+            sky_bottom.delete(node_tree)
+        
+    @staticmethod
     def set_sky_stars_flavor(node_tree, switch_on):
         """Set sky stars flavor to this shader.
 
@@ -556,17 +742,3 @@ class Sky(BaseShader):
         else:
             sky_stars.delete(node_tree)
 
-    @staticmethod
-    def set_sky_back_flavor(node_tree, switch_on):
-        """Set sky back flavor to this shader.
-
-        :param node_tree: node tree of current shader
-        :type node_tree: bpy.types.NodeTree
-        :param switch_on: flag indication if it should be switched on or off
-        :type switch_on: bool
-        """
-
-        if switch_on:
-            sky_back.init(node_tree)
-        else:
-            sky_back.delete(node_tree)
