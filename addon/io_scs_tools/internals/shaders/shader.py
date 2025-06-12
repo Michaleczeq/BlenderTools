@@ -95,6 +95,9 @@ def setup_nodes(material, effect, attr_dict, tex_dict, tex_settings_dict, recrea
     if effect.endswith(".paint") or ".paint." in effect:
         flavors["paint"] = True
 
+    if effect.endswith(".lit") or ".lit." in effect:
+        flavors["lit"] = True
+
     if effect.endswith(".decal.over") and ".retroreflective" in effect:
         flavors["retroreflective_decal"] = True
 

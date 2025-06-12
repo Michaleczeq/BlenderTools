@@ -68,6 +68,42 @@ Shader {
     }
 }
 Shader {
+    PresetName: "billboard"
+    Effect: "eut2.billboard"
+    Flavors: ( "LIT" "NMAP_TS_CALC" "SHADOW" "ASAFEW" )
+    Flags: 0
+    Attribute {
+        Format: FLOAT3
+        Tag: "diffuse"
+        Value: ( 1.0 1.0 1.0 )
+    }
+    Attribute {
+        Format: FLOAT3
+        Tag: "specular"
+        Value: ( 0.0 0.0 0.0 )
+    }
+    Attribute {
+        Format: FLOAT
+        Tag: "shininess"
+        Value: ( 4.0 )
+    }
+    Attribute {
+        Format: FLOAT
+        Tag: "add_ambient"
+        Value: ( 0.0 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_base"
+        Value: ""
+        TexCoord: ( 0 )
+    }
+    Mapping {
+        Tag: "vertex_pos"
+        FriendlyTag: "Vertex Shift"
+        TexCoord: ( 1 )
+    }
+}
+Shader {
     PresetName: "building.add.env.day"
     Effect: "eut2.building.add.env.day"
     Flavors: ( "SHADOW" )
@@ -321,6 +357,7 @@ Shader {
     Flags: 0
     Texture {
         Tag: "texture[X]:texture_base"
+        FriendlyTag: "Shadow (8bit)"
         Value: ""
         TexCoord: ( 0 )
     }
@@ -454,7 +491,7 @@ Shader {
 Shader {
     PresetName: "dif.lum.spec"
     Effect: "eut2.dif.lum.spec"
-    Flavors: ( "SHADOW" "PAINT" "TEXGEN0" "LUMMULVCOL" "ASAFEW" "ALPHA" "DEPTH" "BLEND_OVER|BLEND_MULT|BLEND_ADD" )
+    Flavors: ( "NMAP_TS|NMAP_TS_UV" "SHADOW" "PAINT" "TEXGEN0" "LUMMULVCOL" "ASAFEW" "ALPHA" "DEPTH" "BLEND_OVER|BLEND_MULT|BLEND_ADD" )
     Flags: 0
     Attribute {
         Format: FLOAT3
@@ -1694,6 +1731,7 @@ Shader {
     Flags: 0
     Texture {
         Tag: "texture[X]:texture_base"
+        FriendlyTag: "Shadow (8bit)"
         Value: ""
         TexCoord: ( 0 )
     }
@@ -2512,6 +2550,15 @@ Flavor {
     Name: "oinv"
 }
 Flavor {
+    Type: "LIT"
+    Name: "lit"
+    Texture {
+        Tag: "texture[X]:texture_lightmap"
+        Value: ""
+        TexCoord: ( 0 )
+    }
+}
+Flavor {
     Type: "LUMMULVCOL"
     Name: "lvcol"
 }
@@ -2690,7 +2737,7 @@ Flavor {
     Attribute {
         Format: FLOAT4
         Tag: "aux[0]"
-        FriendlyTag: "TexGen0 (ScaleX, ScaleZ, Rotation, Unk)"
+        FriendlyTag: "TexGen0 (ScaleX, ScaleZ, Rotation, LodSwitch)"
         Value: ( 10.0 10.0 0.0 0.0 )
     }
 }

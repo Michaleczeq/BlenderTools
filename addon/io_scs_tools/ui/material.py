@@ -825,6 +825,8 @@ class SCS_TOOLS_PT_MaterialMappings(_MaterialPanelBlDefs, Panel):
 
         tag = mapping.get('Tag', None)
         shader_mapping_id = str('shader_mapping_' + tag)
+        frendly_tag = mapping.get('FriendlyTag', None)
+        mapping_label = frendly_tag if frendly_tag else str(tag)
 
         #lprint("D ----- Shader: %s", (shader_mapping_id,))
 
@@ -832,7 +834,7 @@ class SCS_TOOLS_PT_MaterialMappings(_MaterialPanelBlDefs, Panel):
         mapping_row = mapping_box.row(align=True)
         item_space = mapping_row.split(factor=split_perc, align=True)
         tag_layout = item_space.row()
-        tag_layout.label(text=tag.title(), icon='UV')
+        tag_layout.label(text=mapping_label, icon='UV')
 
         if hasattr(mat.scs_props, shader_mapping_id):
             # UV LAYERS FOR MAPPING

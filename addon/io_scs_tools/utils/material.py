@@ -718,7 +718,7 @@ def set_shader_data_to_material(material, section, is_import=False, override_bac
     for mapping_type in used_mapping_types.keys():
 
         # skip unknown mapping type
-        if mapping_type not in ("perturbation"):
+        if mapping_type not in ("perturbation", "vertex_pos", "unknown"):
             lprint("D Trying to apply unknown mapping type to SCS material: %r", (mapping_type,))
             continue
 

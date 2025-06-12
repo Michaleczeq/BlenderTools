@@ -254,6 +254,10 @@ def get_shader(effect):
 
         from io_scs_tools.internals.shaders.eut2.dif import Dif as Shader
 
+    elif effect.startswith("billboard"):
+
+        from io_scs_tools.internals.shaders.eut2.billboard import Billboard as Shader
+
     elif effect.startswith("baked.spec"):
 
         if ".add.env" in effect:

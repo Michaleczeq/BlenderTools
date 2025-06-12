@@ -203,6 +203,16 @@ def _get_look(section):
                 mat_effect = mat_effect.replace(".tsnmap16", ".tsnmap").replace(".tsnmapuv16", ".tsnmapuv")
                 lprint('W Outdated tsnmap16/tsnmapuv16 flavor detected in material %r, switching it to tsnmap/tsnmapuv!', (mat_alias,))
 
+            # If day/night version of "eut2.billboard" shader is detected, remove "day/night" and in "night" case, switch to "eut2.billboard.lit"
+            if mat_effect.startswith("eut2.billboard") and mat_effect.endswith((".day", ".night")):
+                
+                if mat_effect.endswith(".night"):
+                    mat_effect = mat_effect.replace("billboard", "billboard.lit")
+                    lprint("W Night version of billboard shader detected in material %r, switching it to lit!", (mat_alias,))
+                else:
+                    mat_effect = mat_effect.replace(".day", "")
+                    lprint("W Day version of billboard shader detected in material %r, removing it from effect!", (mat_alias,))
+
             look_mat_settings[mat_alias] = (mat_effect, mat_flags, attributes, textures, sec)
 
     return look_name, look_mat_settings

@@ -312,7 +312,8 @@ class MaterialSCSTools(bpy.types.PropertyGroup):
         return {'base', 'reflection', 'over', 'oclu', 'mask' , 'mask_1' , 'mask_2', 'mask_3', 'mult', 'iamod', 'lightmap', 'paintjob',
                 'flakenoise', 'nmap', 'base_1', 'mult_1', 'detail', 'nmap_detail', 'nmap_over' , 'layer0', 'layer1',
                 'sky_weather_base_a', 'sky_weather_base_b', 'sky_weather_over_a', 'sky_weather_over_b',
-                'sky_weather_base_mask_a', 'sky_weather_base_mask_b', 'sky_weather_over_mask_a', 'sky_weather_over_mask_b'}
+                'sky_weather_base_mask_a', 'sky_weather_base_mask_b', 'sky_weather_over_mask_a', 'sky_weather_over_mask_b',
+                'heightmap', 'heightmap_over', 'heightmap_jitter'}
 
     def get_id(self):
         """Gets unique ID for material within current Blend file. If ID does not exists yet it's calculated.
@@ -554,6 +555,25 @@ class MaterialSCSTools(bpy.types.PropertyGroup):
 
     def update_shader_texture_sky_weather_over_mask_b_settings(self, context):
         __update_shader_texture_tobj_file__(self, context, "sky_weather_over_mask_b")
+
+    def update_shader_texture_heightmap(self, context):
+        __update_shader_texture__(self, context, "heightmap")
+
+    def update_shader_texture_heightmap_settings(self, context):
+        __update_shader_texture_tobj_file__(self, context, "heightmap")
+
+    def update_shader_texture_heightmap_over(self, context):
+        __update_shader_texture__(self, context, "heightmap_over")
+
+    def update_shader_texture_heightmap_over_settings(self, context):
+        __update_shader_texture_tobj_file__(self, context, "heightmap_over")
+
+    def update_shader_texture_heightmap_jitter(self, context):
+        __update_shader_texture__(self, context, "heightmap_jitter")
+
+    def update_shader_texture_heightmap_jitter_settings(self, context):
+        __update_shader_texture_tobj_file__(self, context, "heightmap_jitter")
+
 
     _cached_mat_num = -1
     """Caching number of all materials to properly fix material ids when duplicating material"""
@@ -2283,10 +2303,175 @@ class MaterialSCSTools(bpy.types.PropertyGroup):
         options={'HIDDEN'},
     )
 
+    # TEXTURE: HEIGHTMAP
+    shader_texture_heightmap: StringProperty(
+        name="Texture Heightmap",
+        description="Texture Heightmap for active Material",
+        default=_MAT_consts.unset_bitmap_filepath,
+        options={'HIDDEN'},
+        subtype='NONE',
+        update=update_shader_texture_heightmap,
+    )
+    shader_texture_heightmap_imported_tobj: StringProperty(
+        name="Imported TOBJ Path",
+        description="Use imported TOBJ path reference which will be exported into material (NOTE: export will not take care of any TOBJ files!)",
+        default="",
+        update=__update_look__
+    )
+    shader_texture_heightmap_locked: BoolProperty(
+        name="Texture Locked",
+        description="Tells if texture is locked and should not be changed by user(intended for internal usage only)",
+        default=False
+    )
+    shader_texture_heightmap_map_type: StringProperty(
+        name="Texture Map Type",
+        description="Stores texture mapping type and should not be changed by user(intended for internal usage only)",
+        default="2d"
+    )
+    shader_texture_heightmap_settings: EnumProperty(
+        name="Settings",
+        description="TOBJ settings for this texture",
+        items=__get_texture_settings__(),
+        default=set(),
+        options={'ENUM_FLAG'},
+        update=update_shader_texture_heightmap_settings
+    )
+    shader_texture_heightmap_tobj_load_time: StringProperty(
+        name="Last TOBJ load time",
+        description="Time string of last loading",
+        default="",
+    )
+    shader_texture_heightmap_use_imported: BoolProperty(
+        name="Use Imported",
+        description="Use custom provided path for TOBJ reference",
+        default=False,
+        update=__update_look__
+    )
+    shader_texture_heightmap_uv: CollectionProperty(
+        name="Texture Heightmap UV Sets",
+        description="Texture Heightmap UV sets for active Material",
+        type=UVMappingItem,
+        options={'HIDDEN'},
+    )
+
+    # TEXTURE: HEIGHTMAP_OVER
+    shader_texture_heightmap_over: StringProperty(
+        name="Texture Heightmap Over",
+        description="Texture Heightmap Over for active Material",
+        default=_MAT_consts.unset_bitmap_filepath,
+        options={'HIDDEN'},
+        subtype='NONE',
+        update=update_shader_texture_heightmap_over,
+    )
+    shader_texture_heightmap_over_imported_tobj: StringProperty(
+        name="Imported TOBJ Path",
+        description="Use imported TOBJ path reference which will be exported into material (NOTE: export will not take care of any TOBJ files!)",
+        default="",
+        update=__update_look__
+    )
+    shader_texture_heightmap_over_locked: BoolProperty(
+        name="Texture Locked",
+        description="Tells if texture is locked and should not be changed by user(intended for internal usage only)",
+        default=False
+    )
+    shader_texture_heightmap_over_map_type: StringProperty(
+        name="Texture Map Type",
+        description="Stores texture mapping type and should not be changed by user(intended for internal usage only)",
+        default="2d"
+    )
+    shader_texture_heightmap_over_settings: EnumProperty(
+        name="Settings",
+        description="TOBJ settings for this texture",
+        items=__get_texture_settings__(),
+        default=set(),
+        options={'ENUM_FLAG'},
+        update=update_shader_texture_heightmap_over_settings
+    )
+    shader_texture_heightmap_over_tobj_load_time: StringProperty(
+        name="Last TOBJ load time",
+        description="Time string of last loading",
+        default="",
+    )
+    shader_texture_heightmap_over_use_imported: BoolProperty(
+        name="Use Imported",
+        description="Use custom provided path for TOBJ reference",
+        default=False,
+        update=__update_look__
+    )
+    shader_texture_heightmap_over_uv: CollectionProperty(
+        name="Texture Heightmap Over UV Sets",
+        description="Texture Heightmap Over UV sets for active Material",
+        type=UVMappingItem,
+        options={'HIDDEN'},
+    )
+
+    # TEXTURE: HEIGHTMAP_JITTER
+    shader_texture_heightmap_jitter: StringProperty(
+        name="Texture Heightmap Jitter",
+        description="Texture Heightmap Jitter for active Material",
+        default=_MAT_consts.unset_bitmap_filepath,
+        options={'HIDDEN'},
+        subtype='NONE',
+        update=update_shader_texture_heightmap_jitter,
+    )
+    shader_texture_heightmap_jitter_imported_tobj: StringProperty(
+        name="Imported TOBJ Path",
+        description="Use imported TOBJ path reference which will be exported into material (NOTE: export will not take care of any TOBJ files!)",
+        default="",
+        update=__update_look__
+    )
+    shader_texture_heightmap_jitter_locked: BoolProperty(
+        name="Texture Locked",
+        description="Tells if texture is locked and should not be changed by user(intended for internal usage only)",
+        default=False
+    )
+    shader_texture_heightmap_jitter_map_type: StringProperty(
+        name="Texture Map Type",
+        description="Stores texture mapping type and should not be changed by user(intended for internal usage only)",
+        default="2d"
+    )
+    shader_texture_heightmap_jitter_settings: EnumProperty(
+        name="Settings",
+        description="TOBJ settings for this texture",
+        items=__get_texture_settings__(),
+        default=set(),
+        options={'ENUM_FLAG'},
+        update=update_shader_texture_heightmap_jitter_settings
+    )
+    shader_texture_heightmap_jitter_tobj_load_time: StringProperty(
+        name="Last TOBJ load time",
+        description="Time string of last loading",
+        default="",
+    )
+    shader_texture_heightmap_jitter_use_imported: BoolProperty(
+        name="Use Imported",
+        description="Use custom provided path for TOBJ reference",
+        default=False,
+        update=__update_look__
+    )
+    shader_texture_heightmap_jitter_uv: CollectionProperty(
+        name="Texture Heightmap Jitter UV Sets",
+        description="Texture Heightmap Jitter UV sets for active Material",
+        type=UVMappingItem,
+        options={'HIDDEN'},
+    )
+
     # MAPPING: PERTURBATION
+    shader_mapping_unknown: CollectionProperty(
+        name="Unknown UV Sets",
+        description="Unknown UV sets for active Material",
+        type=UVAddMappingItem,
+        options={'HIDDEN'},
+    )
     shader_mapping_perturbation: CollectionProperty(
         name="Perturbation UV Sets",
         description="Perturbation UV sets for active Material",
+        type=UVAddMappingItem,
+        options={'HIDDEN'},
+    )
+    shader_mapping_vertex_pos: CollectionProperty(
+        name="Vertex position UV Sets",
+        description="Vertex position UV sets for active Material",
         type=UVAddMappingItem,
         options={'HIDDEN'},
     )
