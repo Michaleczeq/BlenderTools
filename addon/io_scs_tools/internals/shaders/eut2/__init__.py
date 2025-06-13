@@ -164,6 +164,10 @@ def get_shader(effect):
 
         from io_scs_tools.internals.shaders.eut2.dif_spec_mult_dif_spec import DifSpecMultDifSpec as Shader
 
+    elif effect.startswith("dif.spec.add.env.over.dif.opac"):
+
+        from io_scs_tools.internals.shaders.eut2.dif_spec_add_env_over_dif_opac import DifSpecAddEnvOverDifOpac as Shader
+
     elif effect.startswith("dif.spec.add.env.nofresnel"):
 
         from io_scs_tools.internals.shaders.eut2.dif_spec_add_env.nofresnel import DifSpecAddEnvNoFresnel as Shader
