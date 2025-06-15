@@ -504,7 +504,7 @@ class SCS_TOOLS_PT_MaterialAttributes(_MaterialPanelBlDefs, Panel):
         elif tag == 'env_factor':
             value_layout.prop(mat.scs_props, 'shader_attribute_env_factor', text="")
         elif tag == 'fresnel':
-            value_layout.column().prop(mat.scs_props, 'shader_attribute_fresnel', text="")
+            value_layout.prop(mat.scs_props, 'shader_attribute_fresnel', text="")
         elif tag == 'tint':
             value_layout.prop(mat.scs_props, 'shader_attribute_tint', text="")
         elif tag == 'tint_opacity':

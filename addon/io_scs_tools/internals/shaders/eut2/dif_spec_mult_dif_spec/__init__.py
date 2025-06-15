@@ -21,6 +21,7 @@
 from io_scs_tools.consts import Mesh as _MESH_consts
 from io_scs_tools.internals.shaders.eut2.dif_spec import DifSpec
 from io_scs_tools.internals.shaders.flavors import tg1
+from io_scs_tools.internals.shaders.flavors import opasrc1
 from io_scs_tools.utils import material as _material_utils
 
 
@@ -181,3 +182,29 @@ class DifSpecMultDifSpec(DifSpec):
                 tg1.set_scale(node_tree, aux_property[0]['value'], aux_property[1]['value'], 0)
             else:
                 tg1.set_scale(node_tree, aux_property[0]['value'], aux_property[1]['value'], aux_property[2]['value'])
+
+    @staticmethod
+    def set_opasrc1_flavor(node_tree, switch_on):
+        """Set opasrc1 flavor to this shader.
+
+        :param node_tree: node tree of current shader
+        :type node_tree: bpy.types.NodeTree
+        :param switch_on: flag indication if flavor should be switched on or off
+        :type switch_on: bool
+        """
+
+        vcol_group_n = node_tree.nodes[DifSpecMultDifSpec.VCOL_GROUP_NODE]
+        base_tex_n = node_tree.nodes[DifSpecMultDifSpec.BASE_TEX_NODE]
+
+        compose_lighting_n = node_tree.nodes[DifSpecMultDifSpec.COMPOSE_LIGHTING_NODE]
+
+        if switch_on:
+
+            location = (5 * 185, 1800)
+            opasrc1.init(node_tree, location,
+                         vcol_group_n.outputs["Vertex Color Alpha"],
+                         base_tex_n.outputs["Alpha"],
+                         compose_lighting_n.inputs["Alpha"])
+
+        else:
+            opasrc1.delete(node_tree)

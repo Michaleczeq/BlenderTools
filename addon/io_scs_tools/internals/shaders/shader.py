@@ -80,6 +80,9 @@ def setup_nodes(material, effect, attr_dict, tex_dict, tex_settings_dict, recrea
     if effect.endswith(".oinv") or ".oinv." in effect:
         flavors["oinv"] = True
 
+    if effect.endswith(".opasrc01") or ".opasrc01." in effect:
+        flavors["opasrc1"] = True
+
     if effect.endswith(".lvcol") or ".lvcol." in effect:
         flavors["lvcol"] = True
 
