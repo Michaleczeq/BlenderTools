@@ -175,59 +175,42 @@ class SCS_TOOLS_PT_Material(_shared.HeaderIconPanel, _MaterialPanelBlDefs, Panel
             column = layout.column(align=True)
             column.alignment = "LEFT"
 
-            # draw switching operator for each flavor (if there is more variants draw operator for each variant)
-            enabled_flavors = {}  # store enabled flavors, for later analyzing which rows should be disabled
-            """:type: dict[int, io_scs_tools.internals.shader_presets.ui_shader_preset_item.FlavorVariant]"""
-            flavor_rows = []  # store row UI layout of flavor operators, for later analyzing which rows should be disabled
+            # 1. Collect currently active flavor variants
+            active_flavors = {}
             for i, flavor in enumerate(preset.flavors):
+                for variant in flavor.variants:
+                    if ("." + variant.suffix + ".") in effect_flavor_part or effect_flavor_part.endswith("." + variant.suffix):
+                        active_flavors[i] = variant.suffix
 
+            # 2. Draw switching operator for each flavor (if there is more variants draw operator for each variant)
+            for i, flavor in enumerate(preset.flavors):
+                
                 row = column.row(align=True)
-                flavor_rows.append(row)
 
                 for flavor_variant in flavor.variants:
 
-                    is_in_middle = "." + flavor_variant.suffix + "." in effect_flavor_part
-                    is_on_end = effect_flavor_part.endswith("." + flavor_variant.suffix)
-                    flavor_enabled = is_in_middle or is_on_end
+                    # is that flavor active?
+                    is_active = ("." + flavor_variant.suffix + ".") in effect_flavor_part or effect_flavor_part.endswith("." + flavor_variant.suffix)
 
-                    icon = _shared.get_on_off_icon(flavor_enabled)
-                    props = row.operator("material.scs_tools_switch_flavor", text=flavor_variant.suffix, icon=icon, depress=flavor_enabled)
+                    # simulate turning on the flavor
+                    simulated = []
+                    for j, f in enumerate(preset.flavors):
+                        if i == j:
+                            simulated.append(flavor_variant.suffix)
+                        else:
+                            suffix = active_flavors.get(j)
+                            if suffix:
+                                simulated.append(suffix)
+                    new_flavor_str = "." + ".".join(simulated) if simulated else ""
+
+                    is_compatible = _shader_presets.has_section(preset.name, new_flavor_str)
+
+                    sub = row.row(align=True)
+                    sub.enabled = is_compatible or is_active
+                    icon = _shared.get_on_off_icon(is_active)
+                    props = sub.operator("material.scs_tools_switch_flavor", text=flavor_variant.suffix, icon=icon, depress=is_active)
                     props.flavor_name = flavor_variant.suffix
-                    props.flavor_enabled = flavor_enabled
-
-                    if flavor_enabled:
-                        enabled_flavors[i] = flavor_variant
-
-            # now as we drawn the flavors and we know which ones are enabled,
-            # search the ones that are not compatible with currently enabled flavors and disable them in UI!
-            for i, flavor in enumerate(preset.flavors):
-
-                # enabled flavors have to stay enabled so skip them
-                if i in enabled_flavors:
-                    continue
-
-                for flavor_variant in flavor.variants:
-
-                    # 1. construct proposed new flavor string:
-                    # combine strings of enabled flavors and current flavor variant
-                    new_flavor_str = ""
-                    curr_flavor_added = False
-                    for enabled_i in enabled_flavors.keys():
-
-                        if i < enabled_i and not curr_flavor_added:
-                            new_flavor_str += "." + flavor_variant.suffix
-                            curr_flavor_added = True
-
-                        new_flavor_str += "." + enabled_flavors[enabled_i].suffix
-
-                    if not curr_flavor_added:
-                        new_flavor_str += "." + flavor_variant.suffix
-
-                    # 2. check if proposed new flavor combination exists in cache:
-                    # if not then row on current flavor index has to be disabled
-                    if not _shader_presets.has_section(preset.name, new_flavor_str):
-                        flavor_rows[i].enabled = False
-                        break
+                    props.flavor_enabled = is_active
 
     @staticmethod
     def draw_parameters(layout, mat, scs_inventories, split_perc, is_imported_shader=False):

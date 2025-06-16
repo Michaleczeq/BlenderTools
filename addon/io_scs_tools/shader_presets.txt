@@ -365,7 +365,7 @@ Shader {
 Shader {
     PresetName: "dif"
     Effect: "eut2.dif"
-    Flavors: ( "FLAT" "SHADOW" "PAINT" "TEXGEN0" "TEXMTX0" "ALPHA" "DEPTH" "BLEND_OVER|BLEND_MULT|BLEND_ADD" )
+    Flavors: ( "FLAT" "SHADOW" "PAINT" "TEXGEN0" "TEXMTX0" "ALPHA" "DEPTH" "BLEND_ATTR|BLEND_OVER|BLEND_MULT|BLEND_ADD" )
     Flags: 0
     Attribute {
         Format: FLOAT3
@@ -402,7 +402,7 @@ Shader {
     PresetName: "dif.anim"
     Effect: "eut2.dif.anim"
     # NOTE: intentionally disabled TEXGEN0 flavor as it conflicts with usage of aux[0] attribute
-    Flavors: ( "FADESHEET|FLIPSHEET" "ALPHA" "BLEND_OVER|BLEND_MULT|BLEND_ADD" )
+    Flavors: ( "NMAP_TS_CALC_OVER0" "FADESHEET|FLIPSHEET" "ALPHA" "BLEND_OVER|BLEND_MULT|BLEND_ADD" )
     Flags: 0
     Attribute {
         Format: FLOAT3
@@ -533,7 +533,7 @@ Shader {
 Shader {
     PresetName: "dif.spec"
     Effect: "eut2.dif.spec"
-    Flavors: ( "NMAP_TS|NMAP_TS_UV" "SHADOW" "PAINT" "TEXGEN0" "ASAFEW" "ALPHA" "DEPTH" "BLEND_OVER|BLEND_MULT|BLEND_ADD" )
+    Flavors: ( "NMAP_TS|NMAP_TS_UV" "SHADOW" "PAINT" "TEXGEN0" "ASAFEW" "ALPHA" "DEPTH" "BLEND_ATTR|BLEND_OVER|BLEND_MULT|BLEND_ADD" )
     Flags: 0
     Attribute {
         Format: FLOAT3
@@ -958,7 +958,7 @@ Shader {
 Shader {
     PresetName: "dif.spec.mult.dif.spec"
     Effect: "eut2.dif.spec.mult.dif.spec"
-    Flavors: ( "NMAP_TS|NMAP_TS_UV" "SHADOW" "PAINT" "TEXGEN0" "TEXGEN1" "ALPHA" "OPASRC01" "DEPTH" "BLEND_OVER|BLEND_ADD" )
+    Flavors: ( "NMAP_TS|NMAP_TS_UV" "SHADOW" "PAINT" "TEXGEN0" "TEXGEN1" "ALPHA" "OPASRC01" "DEPTH" "BLEND_ATTR|BLEND_OVER|BLEND_ADD" )
     Flags: 0
     Attribute {
         Format: FLOAT3
@@ -999,7 +999,7 @@ Shader {
 Shader {
     PresetName: "dif.spec.mult.dif.spec.add.env"
     Effect: "eut2.dif.spec.mult.dif.spec.add.env"
-    Flavors: ( "NMAP_TS|NMAP_TS_UV" "SHADOW" "PAINT" "TEXGEN0" "TEXGEN1" "ALPHA" "DEPTH" "BLEND_OVER|BLEND_ADD" )
+    Flavors: ( "NMAP_TS|NMAP_TS_UV" "SHADOW" "PAINT" "TEXGEN0" "TEXGEN1" "ALPHA" "OPASRC01" "DEPTH" "BLEND_OVER|BLEND_ADD" )
     Flags: 0
     Attribute {
         Format: FLOAT3
@@ -2544,12 +2544,16 @@ Flavor {
     Name: "add"
 }
 Flavor {
-    Type: "BLEND_OVER"
-    Name: "over"
+    Type: "BLEND_ATTR"
+    Name: "attr"
 }
 Flavor {
     Type: "BLEND_MULT"
     Name: "mult"
+}
+Flavor {
+    Type: "BLEND_OVER"
+    Name: "over"
 }
 Flavor {
     Type: "COLORMASK"
@@ -2722,6 +2726,21 @@ Flavor {
     Texture {
         Tag: "texture[X]:texture_nmap"
         FriendlyTag: "Normal map"
+        Value: ""
+        TexCoord: ( 0 )
+    }
+}
+Flavor {
+    Type: "NMAP_TS_CALC_OVER0"
+    Name: "tsnmapcalc"
+    Texture {
+        Tag: "texture[X]:texture_nmap"
+        FriendlyTag: "Normal map"
+        Value: ""
+        TexCoord: ( 0 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_nmap_over"
         Value: ""
         TexCoord: ( 0 )
     }
