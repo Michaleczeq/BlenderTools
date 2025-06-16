@@ -20,6 +20,7 @@
 
 from io_scs_tools.consts import Mesh as _MESH_consts
 from io_scs_tools.internals.shaders.eut2.dif_spec import DifSpec
+from io_scs_tools.internals.shaders.flavors import tg1
 from io_scs_tools.utils import material as _material_utils
 
 
@@ -63,7 +64,7 @@ class DifSpecOclu(DifSpec):
         # node creation
         sec_uvmap_n = node_tree.nodes.new("ShaderNodeUVMap")
         sec_uvmap_n.name = sec_uvmap_n.label = DifSpecOclu.SEC_UVMAP_NODE
-        sec_uvmap_n.location = (start_pos_x - pos_x_shift, start_pos_y + 1100)
+        sec_uvmap_n.location = (start_pos_x - pos_x_shift, start_pos_y + 900)
         sec_uvmap_n.uv_map = _MESH_consts.none_uv
 
         oclu_tex_n = node_tree.nodes.new("ShaderNodeTexImage")
@@ -141,3 +142,44 @@ class DifSpecOclu(DifSpec):
             uv_layer = _MESH_consts.none_uv
 
         node_tree.nodes[DifSpecOclu.SEC_UVMAP_NODE].uv_map = uv_layer
+
+    @staticmethod
+    def set_tg1_flavor(node_tree, switch_on):
+        """Set zero texture generation flavor to this shader.
+
+        :param node_tree: node tree of current shader
+        :type node_tree: bpy.types.NodeTree
+        :param switch_on: flag indication if flavor should be switched on or off
+        :type switch_on: bool
+        """
+
+        if switch_on and not tg1.is_set(node_tree):
+
+            out_node = node_tree.nodes[DifSpecOclu.GEOM_NODE]
+            in_node = node_tree.nodes[DifSpecOclu.OCLU_TEX_NODE]
+
+            out_node.location.x -= 185
+            location = (out_node.location.x + 185, out_node.location.y)
+
+            tg1.init(node_tree, location, out_node.outputs["Position"], in_node.inputs["Vector"])
+
+        elif not switch_on:
+
+            tg1.delete(node_tree)
+
+    @staticmethod
+    def set_aux1(node_tree, aux_property):
+        """Set second texture generation scale and rotation.
+
+        :param node_tree: node tree of current shader
+        :type node_tree: bpy.types.NodeTree
+        :param aux_property: secondary specular color represented with property group
+        :type aux_property: bpy.types.IDPropertyGroup
+        """
+
+        if tg1.is_set(node_tree):
+            # Fix for old float2 aux[1]
+            if (len(aux_property)) == 2:
+                tg1.set_scale(node_tree, aux_property[0]['value'], aux_property[1]['value'], 0)
+            else:
+                tg1.set_scale(node_tree, aux_property[0]['value'], aux_property[1]['value'], aux_property[2]['value'])

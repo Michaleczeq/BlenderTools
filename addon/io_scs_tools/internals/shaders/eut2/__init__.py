@@ -139,6 +139,10 @@ def get_shader(effect):
     elif effect.startswith("decalshadow"):
 
         from io_scs_tools.internals.shaders.eut2.decalshadow import Decalshadow as Shader
+    
+    elif effect.startswith("dif.spec.over.dif.opac.add.env"):
+
+        from io_scs_tools.internals.shaders.eut2.dif_spec_over_dif_opac_add_env import DifSpecOverDifOpacAddEnv as Shader
 
     elif effect.startswith("dif.spec.over.dif.opac"):
 
@@ -225,6 +229,10 @@ def get_shader(effect):
     elif effect.startswith("dif.spec.weight.weight.dif.spec.weight"):
 
         from io_scs_tools.internals.shaders.eut2.dif_spec_weight_weight_dif_spec_weight import DifSpecWeightWeightDifSpecWeight as Shader
+
+    elif effect.startswith("dif.spec.weight.mask.dif.spec.weight"):
+
+        from io_scs_tools.internals.shaders.eut2.dif_spec_weight_mask_dif_spec_weight import DifSpecWeightMaskDifSpecWeight as Shader
 
     elif effect.startswith("dif.spec.weight.mult2.weight2"):
 

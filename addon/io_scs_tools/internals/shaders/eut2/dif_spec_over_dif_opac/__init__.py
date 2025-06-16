@@ -61,7 +61,7 @@ class DifSpecOverDifOpac(DifSpec):
         sec_uv_n = node_tree.nodes.new("ShaderNodeUVMap")
         sec_uv_n.name = DifSpecOverDifOpac.SEC_UVMAP_NODE
         sec_uv_n.label = DifSpecOverDifOpac.SEC_UVMAP_NODE
-        sec_uv_n.location = (start_pos_x - pos_x_shift, start_pos_y + 1200)
+        sec_uv_n.location = (start_pos_x - pos_x_shift, start_pos_y + 900)
         sec_uv_n.uv_map = _MESH_consts.none_uv
 
         over_tex_n = node_tree.nodes.new("ShaderNodeTexImage")

@@ -94,7 +94,7 @@ class DifSpecMultDifIamodDifAddEnv(DifSpecMultDifSpec, StdAddEnv):
         third_uvmap_n = node_tree.nodes.new("ShaderNodeUVMap")
         third_uvmap_n.name = DifSpecMultDifIamodDifAddEnv.THIRD_UVMAP_NODE
         third_uvmap_n.label = DifSpecMultDifIamodDifAddEnv.THIRD_UVMAP_NODE
-        third_uvmap_n.location = (start_pos_x - pos_x_shift, start_pos_y + 900)
+        third_uvmap_n.location = (start_pos_x - pos_x_shift, start_pos_y + 750)
         third_uvmap_n.uv_map = _MESH_consts.none_uv
 
         iamod_tex_n = node_tree.nodes.new("ShaderNodeTexImage")

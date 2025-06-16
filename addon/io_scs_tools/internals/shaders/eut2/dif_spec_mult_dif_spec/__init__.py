@@ -70,7 +70,7 @@ class DifSpecMultDifSpec(DifSpec):
         sec_uvmap_n = node_tree.nodes.new("ShaderNodeUVMap")
         sec_uvmap_n.name = DifSpecMultDifSpec.SEC_UVMAP_NODE
         sec_uvmap_n.label = DifSpecMultDifSpec.SEC_UVMAP_NODE
-        sec_uvmap_n.location = (start_pos_x - pos_x_shift, start_pos_y + 1200)
+        sec_uvmap_n.location = (start_pos_x - pos_x_shift, start_pos_y + 900)
         sec_uvmap_n.uv_map = _MESH_consts.none_uv
 
         mult_tex_n = node_tree.nodes.new("ShaderNodeTexImage")

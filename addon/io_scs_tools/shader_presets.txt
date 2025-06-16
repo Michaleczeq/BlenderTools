@@ -1101,7 +1101,7 @@ Shader {
 Shader {
     PresetName: "dif.spec.oclu"
     Effect: "eut2.dif.spec.oclu"
-    Flavors: ( "NMAP_TS|NMAP_TS_UV" "SHADOW" "PAINT" "TEXGEN0" "TEXGEN1" "ALPHA" "DEPTH" "BLEND_OVER|BLEND_ADD" )
+    Flavors: ( "NMAP_TS|NMAP_TS_UV" "SHADOW" "PAINT" "TEXGEN0" "TEXGEN1" "ALPHA" "DEPTH" "BLEND_ATTR|BLEND_OVER|BLEND_ADD" )
     Flags: 0
     Attribute {
         Format: FLOAT3
@@ -1254,7 +1254,7 @@ Shader {
 Shader {
     PresetName: "dif.spec.over.dif.opac"
     Effect: "eut2.dif.spec.over.dif.opac"
-    Flavors: ( "SHADOW" "PAINT" "TEXGEN0" "TEXGEN1" "ALPHA" "DEPTH" "BLEND_OVER|BLEND_ADD|ENVMAP" )
+    Flavors: ( "SHADOW" "PAINT" "TEXGEN0" "TEXGEN1" "ALPHA" "DEPTH" "BLEND_ATTR|BLEND_OVER|BLEND_ADD" )
     Flags: 0
     Attribute {
         Format: FLOAT3
@@ -1298,9 +1298,65 @@ Shader {
     }
 }
 Shader {
+    PresetName: "dif.spec.over.dif.opac.add.env"
+    Effect: "eut2.dif.spec.over.dif.opac.add.env"
+    Flavors: ( "SHADOW" "PAINT" "TEXGEN0" "TEXGEN1" "ALPHA" "DEPTH" "BLEND_OVER|BLEND_ADD" )
+    Flags: 0
+    Attribute {
+        Format: FLOAT3
+        Tag: "diffuse"
+        Value: ( 1.0 1.0 1.0 )
+    }
+    Attribute {
+        Format: FLOAT3
+        Tag: "specular"
+        Value: ( 1.0, 1.0, 1.0 )
+    }
+    Attribute {
+        Format: FLOAT
+        Tag: "shininess"
+        Value: ( 24.0 )
+    }
+    Attribute {
+        Format: FLOAT
+        Tag: "add_ambient"
+        Value: ( 0.0 )
+    }
+    Attribute {
+        Format: FLOAT
+        Tag: "reflection"
+        Value: ( 0.0 )
+    }
+    Attribute {
+        Format: FLOAT
+        Tag: "reflection2"
+        Value: ( 0.0 )
+    }
+    Attribute {
+        Format: FLOAT3
+        Tag: "env_factor"
+        Value: ( 0.5 0.5 0.5 )
+    }
+    Attribute {
+        Format: FLOAT2
+        Tag: "fresnel"
+        Value: ( 0.2 0.9 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_base"
+        Value: ""
+        TexCoord: ( 0 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_over"
+        Value: ""
+        TexCoord: ( 1 )
+    }
+}
+Shader {
     PresetName: "dif.spec.weight"
     Effect: "eut2.dif.spec.weight"
-    Flavors: ( "NMAP_TS|NMAP_TS_UV|NMAP_TS_CALC" "SHADOW" "PAINT" "TEXGEN0" "ASAFEW" "ALPHA" "DEPTH" "BLEND_OVER|BLEND_MULT|BLEND_ADD" )
+    Flavors: ( "NMAP_TS|NMAP_TS_UV|NMAP_TS_CALC" "SHADOW" "PAINT" "TEXGEN0" "ASAFEW" "ALPHA" "DEPTH" "HEIGHTMAP" "BLEND_ATTR|BLEND_OVER|BLEND_MULT|BLEND_ADD" )
     Flags: 0
     Attribute {
         Format: FLOAT3
@@ -1428,6 +1484,63 @@ Shader {
         Tag: "texture[X]:texture_reflection"
         Value: "/material/environment/generic_reflection"
         TexCoord: ( -1 )
+    }
+}
+Shader {
+    PresetName: "dif.spec.weight.mask.dif.spec.weight"
+    Effect: "eut2.dif.spec.weight.mask.dif.spec.weight"
+    Flavors: ( "SHADOW" "PAINT" "DEPTH" "BLEND_ATTR" )
+    Flags: 0
+    Attribute {
+        Format: FLOAT3
+        Tag: "diffuse"
+        Value: ( 1.0 1.0 1.0 )
+    }
+    Attribute {
+        Format: FLOAT3
+        Tag: "specular"
+        Value: ( 1.0 1.0 1.0 )
+    }
+    Attribute {
+        Format: FLOAT
+        Tag: "shininess"
+        Value: ( 20.0 )
+    }
+    Attribute {
+        Format: FLOAT
+        Tag: "add_ambient"
+        Value: ( 0.0 )
+    }
+    Attribute {
+        Format: FLOAT
+        Tag: "reflection"
+        Value: ( 0.0 )
+    }
+    Attribute {
+        Format: FLOAT4
+        Tag: "aux[3]"
+        FriendlyTag: "Specular2 & Shininess2"
+        Value: ( 1.0 1.0 1.0 20.0 )
+    }
+    Attribute {
+        Format: FLOAT
+        Tag: "reflection2"
+        Value: ( 0.0 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_base"
+        Value: ""
+        TexCoord: ( 0 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_mask"
+        Value: ""
+        TexCoord: ( 1 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_over"
+        Value: ""
+        TexCoord: ( 2 )
     }
 }
 Shader {
@@ -2675,6 +2788,23 @@ Flavor {
     Type: "FLAT"
     Name: "flat"
 }
+# Flavor {
+#     Type: "HEIGHTMAP"
+#     Name: "heightmap"
+#     Attribute {
+#         Format: FLOAT4
+#         Tag: "aux[7]"
+#         # NOTE: can't say in which order these values should be set now (there is no any shader using this flavor now)
+#         FriendlyTag: "Heightmap (Feather size, Height range, Shape type)"
+#         Value: ( 0.01 -1.0 1.0 0.0 )
+#     }
+#     Texture {
+#         Tag: "texture[X]:texture_heightmap"
+#         FriendlyTag: "Heightmap"
+#         Value: ""
+#         TexCoord: ( 0 )
+#     }
+# }
 Flavor {
     Type: "INDENV"
     Name: "indenv"
