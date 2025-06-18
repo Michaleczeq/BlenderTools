@@ -203,11 +203,11 @@ class DifSpecWeightWeightDifSpecWeight(DifSpec):
 
     @staticmethod
     def set_aux3(node_tree, aux_property):
-        """Set secondary specular color to shader.
+        """Set second specular and second shininess for the shader.
 
         :param node_tree: node tree of current shader
         :type node_tree: bpy.types.NodeTree
-        :param aux_property: secondary specular color represented with property group
+        :param aux_property: second specular and shininess factor represented with property group
         :type aux_property: bpy.types.IDPropertyGroup
         """
 

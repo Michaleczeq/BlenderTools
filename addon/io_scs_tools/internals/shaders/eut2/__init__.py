@@ -238,6 +238,10 @@ def get_shader(effect):
 
         from io_scs_tools.internals.shaders.eut2.dif_spec_weight_mult2_weight2 import DifSpecWeightMult2Weight2 as Shader
 
+    elif effect.startswith("dif.spec.weight.mult2.mask2"):
+
+        from io_scs_tools.internals.shaders.eut2.dif_spec_weight_mult2_mask2 import DifSpecWeightMult2Mask2 as Shader
+
     elif effect.startswith("dif.spec.weight.mult2"):
 
         from io_scs_tools.internals.shaders.eut2.dif_spec_weight_mult2 import DifSpecWeightMult2 as Shader

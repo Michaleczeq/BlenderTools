@@ -116,6 +116,9 @@ def setup_nodes(material, effect, attr_dict, tex_dict, tex_settings_dict, recrea
     if effect.endswith(".flipsheet") or ".flipsheet." in effect:
         flavors["flipsheet"] = True
 
+    if effect.endswith(".nocull") or ".nocull." in effect:
+        flavors["nocull"] = True
+
     __setup_nodes__(material, effect, attr_dict, tex_dict, tex_settings_dict, {}, {}, flavors, recreate)
 
 

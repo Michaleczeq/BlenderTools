@@ -20,6 +20,7 @@
 
 from io_scs_tools.consts import Mesh as _MESH_consts
 from io_scs_tools.internals.shaders.base import BaseShader
+from io_scs_tools.internals.shaders.flavors import nocull
 from io_scs_tools.internals.shaders.flavors import alpha_test
 from io_scs_tools.internals.shaders.std_node_groups import output_shader_ng
 from io_scs_tools.utils import material as _material_utils
@@ -53,7 +54,7 @@ class Shadowonly(BaseShader):
         # node creation
         uvmap_n = node_tree.nodes.new("ShaderNodeUVMap")
         uvmap_n.name = uvmap_n.label = Shadowonly.UVMAP_NODE
-        uvmap_n.location = (start_pos_x - pos_x_shift, start_pos_y - 100)
+        uvmap_n.location = (start_pos_x - pos_x_shift, start_pos_y - 200)
         uvmap_n.uv_map = _MESH_consts.none_uv
 
         col_n = node_tree.nodes.new("ShaderNodeRGB")
@@ -68,7 +69,7 @@ class Shadowonly(BaseShader):
 
         out_mat_node = node_tree.nodes.new("ShaderNodeGroup")
         out_mat_node.name = out_mat_node.label = Shadowonly.OUT_MAT_NODE
-        out_mat_node.location = (start_pos_x + pos_x_shift, start_pos_y)
+        out_mat_node.location = (start_pos_x + pos_x_shift, start_pos_y - 100)
         out_mat_node.node_tree = output_shader_ng.get_node_group()
 
         output_n = node_tree.nodes.new("ShaderNodeOutputMaterial")
@@ -94,6 +95,9 @@ class Shadowonly(BaseShader):
 
         material.use_backface_culling = True
         material.surface_render_method = "DITHERED"
+
+        if nocull.is_set(node_tree):
+            material.use_backface_culling = False
 
         # set proper blend method and possible alpha test pass
         if alpha_test.is_set(node_tree):
@@ -121,6 +125,21 @@ class Shadowonly(BaseShader):
             alpha_test.init(node_tree)
         else:
             alpha_test.delete(node_tree)
+
+    @staticmethod
+    def set_nocull_flavor(node_tree, switch_on):
+        """Set nocull flavor to this shader.
+
+        :param node_tree: node tree of current shader
+        :type node_tree: bpy.types.NodeTree
+        :param switch_on: flag indication if it should be switched on or off
+        :type switch_on: bool
+        """
+
+        if switch_on:
+            nocull.init(node_tree)
+        else:
+            nocull.delete(node_tree)
 
     @staticmethod
     def set_base_texture(node_tree, image):
