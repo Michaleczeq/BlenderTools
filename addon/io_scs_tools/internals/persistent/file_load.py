@@ -359,9 +359,9 @@ def apply_fixes_for_un_4():
     """
     Applies fixes for unofficial 2.4.xxxxxx.4 or less:
     1. Pre-reload changes and collect data
-    2. Reload materials since some got removed/restructed attributes
         a) Replace tsnmap16 and tsnmapuv16 with tsnmap and tsnmapuv
-    3.
+    2. Reload materials since some got removed/restructed attributes
+    3. Show welcome message
     """
 
     print("INFO\t-  Applying fixes for unofficial version <= 4")
@@ -386,7 +386,7 @@ def apply_fixes_for_un_4():
     _reload_materials()
 
 
-    # Due to update from Blender 3.6, we let user know he is migrating to Blender 4.3
+    # 3. Due to update from Blender 3.6, we let user know he is migrating to Blender 4.3
     windows = bpy.data.window_managers[0].windows
     if len(windows) > 0:
         msg = (
@@ -398,3 +398,16 @@ def apply_fixes_for_un_4():
 
         with bpy.context.temp_override(window=windows[0]):
             bpy.ops.wm.scs_tools_show_3dview_report('INVOKE_DEFAULT', message="\n".join(msg))
+
+
+def apply_fixes_for_un_7():
+    """
+    Applies fixes for unofficial 2.4.xxxxxx.7 or less:
+    1. Pre-reload changes and collect data
+    2. Reload materials since some got removed/restructed attributes
+    """
+
+    print("INFO\t-  Applying fixes for unofficial version <= 7")
+
+    # 2. reload all materials
+    _reload_materials()

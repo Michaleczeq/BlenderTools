@@ -181,6 +181,14 @@ def _get_look(section):
                         lprint("W Needless truckpaint texture: 'texture_paintjob' in current material configuration inside material %r, ignoring it!",
                                (mat_alias,))
 
+            # Extra treatment for outdated env_factor in eut2.glass & eut2.truckpaint shaders
+            # This attribute is outdated and is not used anymore, but it is still present in many materials.
+            if mat_effect.startswith("eut2.glass") or mat_effect.startswith("eut2.truckpaint"):
+                # remove env_factor attribute
+                if attributes.pop("env_factor", None) is not None:
+                        lprint("W Needless attribute: 'env_factor' in current material configuration inside material %r, ignoring it!",
+                               (mat_alias,))
+
             # Extra treatment for building shaders
             #
             # If night version of it is detected, switch it to day one.

@@ -27,6 +27,7 @@ from io_scs_tools.internals.shaders.eut2.std_node_groups import add_env_ng
 from io_scs_tools.internals.shaders.eut2.std_node_groups import lighting_evaluator_ng
 from io_scs_tools.internals.shaders.eut2.std_node_groups import refl_normal_ng
 from io_scs_tools.internals.shaders.eut2.std_node_groups import vcolor_input_ng
+from io_scs_tools.internals.shaders.flavors import nmap
 from io_scs_tools.utils import convert as _convert_utils
 from io_scs_tools.utils import material as _material_utils
 
@@ -552,3 +553,64 @@ class Glass(BaseShader):
         color = _convert_utils.to_node_color(color)
 
         node_tree.nodes[Glass.TINT_COL_NODE].outputs[0].default_value = color
+
+    @staticmethod
+    def set_nmap_flavor(node_tree, switch_on):
+        """Set normal map flavor to this shader.
+
+        :param node_tree: node tree of current shader
+        :type node_tree: bpy.types.NodeTree
+        :param switch_on: flag indication if normal map should be switched on or off
+        :type switch_on: bool
+        """
+
+        if switch_on:
+
+            # find minimal y position for input nodes and position flavor beneath it
+            min_y = None
+            for node in node_tree.nodes:
+                if node.location.x <= 185 and (min_y is None or min_y > node.location.y):
+                    min_y = node.location.y
+
+            lighting_eval_n = node_tree.nodes[Glass.LIGHTING_EVAL_NODE]
+            geom_n = node_tree.nodes[Glass.GEOM_NODE]
+            location = (lighting_eval_n.location.x - 185, min_y - 400)
+
+            nmap.init(node_tree, location, lighting_eval_n.inputs['Normal Vector'], geom_n.outputs['Normal'])
+        else:
+            nmap.delete(node_tree)
+
+    @staticmethod
+    def set_nmap_texture(node_tree, image):
+        """Set normal map texture to shader.
+
+        :param node_tree: node tree of current shader
+        :type node_tree: bpy.types.NodeTree
+        :param image: texture image which should be assignet to nmap texture node
+        :type image: bpy.types.Image
+        """
+
+        nmap.set_texture(node_tree, image)
+
+    @staticmethod
+    def set_nmap_texture_settings(node_tree, settings):
+        """Set normal map texture settings to shader.
+
+        :param node_tree: node tree of current shader
+        :type node_tree: bpy.types.NodeTree
+        :param settings: binary string of TOBJ settings gotten from tobj import
+        :type settings: str
+        """
+        nmap.set_texture_settings(node_tree, settings)
+
+    @staticmethod
+    def set_nmap_uv(node_tree, uv_layer):
+        """Set UV layer to normal map texture in shader.
+
+        :param node_tree: node tree of current shader
+        :type node_tree: bpy.types.NodeTree
+        :param uv_layer: uv layer string used for nmap texture
+        :type uv_layer: str
+        """
+
+        nmap.set_uv(node_tree, uv_layer)

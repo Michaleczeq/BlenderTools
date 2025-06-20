@@ -40,17 +40,13 @@ def get_shader(effect):
 
         from io_scs_tools.internals.shaders.eut2.window.lit import WindowLit as Shader
 
-    elif effect == "interior.lit":
+    elif effect == "interior.lit" or effect == "interior.spatial.lit":
 
         from io_scs_tools.internals.shaders.eut2.interior import InteriorLit as Shader
 
     elif effect == "interior.curtain.lit":
 
         from io_scs_tools.internals.shaders.eut2.interior.curtain import InteriorCurtain as Shader
-
-    # elif effect == "interior.spatial.lit":
-    #
-    #     from io_scs_tools.internals.shaders.eut2.interior.spatial import InteriorSpatial as Shader
 
     elif effect == "reflective":
 
@@ -64,7 +60,7 @@ def get_shader(effect):
 
         from io_scs_tools.internals.shaders.eut2.grass import Grass as Shader
 
-    elif effect == "glass":
+    elif effect.startswith("glass"):
 
         from io_scs_tools.internals.shaders.eut2.glass import Glass as Shader
 

@@ -272,3 +272,15 @@ class InteriorLit(DifSpecAddEnv):
             uv_layer = _MESH_consts.none_uv
 
         node_tree.nodes[InteriorLit.PERT_UVMAP_NODE].uv_map = uv_layer
+
+    @staticmethod
+    def set_lit_flavor(node_tree, switch_on):
+        """Set lit for the shader.
+
+        :param node_tree: node tree of current shader
+        :type node_tree: bpy.types.NodeTree
+        :param switch_on: flag indication if flavor should be switched on or off
+        :type switch_on: bool
+        """
+
+        pass

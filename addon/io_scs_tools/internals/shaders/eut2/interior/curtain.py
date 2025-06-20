@@ -85,8 +85,6 @@ class InteriorCurtain(InteriorLit):
         # - column 2 -
         node_tree.links.new(base_over_mix_n.outputs['Result'], vgcol_mult_n.inputs[0])
 
-
-
     @staticmethod
     def set_over_texture(node_tree, image):
         """Set overlying texture to shader.
