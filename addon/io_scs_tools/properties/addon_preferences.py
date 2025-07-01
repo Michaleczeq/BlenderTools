@@ -140,14 +140,26 @@ class SCSInventories(bpy.types.PropertyGroup):
                 icon_str = 'MATERIAL'
             elif "glass" in preset_name:
                 icon_str = 'MOD_LATTICE'
+            elif "grass" in preset_name:
+                icon_str = 'STRANDS'
+            elif "interior" in preset_name:
+                icon_str = 'OUTLINER_OB_LATTICE'
             elif "lamp" in preset_name:
                 icon_str = 'LIGHT_SPOT'
+            elif "mlaa" in preset_name:
+                icon_str = 'GROUP_UVS'
+            elif "none" in preset_name and preset_name != "<none>":
+                icon_str = 'MESH_CIRCLE'
+            elif "particle" in preset_name:
+                icon_str = 'PARTICLE_TIP'
             elif "shadowonly" in preset_name:
                 icon_str = 'MAT_SPHERE_SKY'
             elif "truckpaint" in preset_name:
                 icon_str = 'AUTO'
-            elif "mlaa" in preset_name:
-                icon_str = 'GROUP_UVS'
+            elif "water" in preset_name:
+                icon_str = 'MOD_OCEAN'
+            elif "window" in preset_name:
+                icon_str = 'OUTLINER_OB_LATTICE'
             elif preset_name == "<none>":
                 icon_str = 'X'
             else:

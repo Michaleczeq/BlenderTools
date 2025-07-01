@@ -153,7 +153,10 @@ def _get_look(section):
                 # now strip flipflake flavor string, remove flipflake related texture & report it
                 if has_flipflake:
 
-                    mat_effect = mat_effect.replace(".flipflake", "")
+                    if mat_effect.find(".flipflakeuv") != -1:
+                        mat_effect = mat_effect.replace(".flipflakeuv", "")
+                    else:
+                        mat_effect = mat_effect.replace(".flipflake", "")
                     if textures.pop("texture_flakenoise", None):
                         sec.remove_section("Texture", "Tag", r"^[\w\[\]]+:texture_flakenoise$")
 

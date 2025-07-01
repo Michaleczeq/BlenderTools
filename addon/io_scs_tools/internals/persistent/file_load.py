@@ -58,16 +58,21 @@ def post_load(scene):
 
     for version, func in VERSIONS_LIST:
         if _info_utils.cmp_ver_str(last_load_bt_ver, version) <= 0:
-            # for, for unofficial versions
+
+            # Apply fixes ONLY if your last loaded tools version is official to prevent unnecessary code execution.
+            while len(last_load_bt_ver.split(".")) <= 3:
+
+                # try to add apply fixed function as callback, if failed execute fixes right now
+                if not AsyncPathsInit.append_callback(func):
+                    func()
+
             for version2, func2 in VERSIONS_LIST_UNOFFICIAL:
-                if _info_utils.cmp_ver_str_unofficial(last_load_bt_ver, version2) <= 0:
+                if _info_utils.cmp_ver_str_unofficial(last_load_bt_ver, version2) < 0:
+
                     # try to add apply fixed function as callback, if failed execute fixes right now
                     if not AsyncPathsInit.append_callback(func2):
                         func2()
-                else: 
-                    # try to add apply fixed function as callback, if failed execute fixes right now
-                    if not AsyncPathsInit.append_callback(func):
-                        func()
+
 
     # as last update "last load" Blender Tools version to current
     _get_scs_globals().last_load_bt_version = _info_utils.get_tools_version()

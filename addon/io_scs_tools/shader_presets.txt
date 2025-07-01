@@ -2281,8 +2281,92 @@ Shader {
     }
 }
 Shader {
+    PresetName: "leaves"
+    Effect: "eut2.leaves"
+    Flavors: ( "NMAP_TS_CALC" "SHADOW" )
+    Flags: 0
+    Attribute {
+        Format: FLOAT3
+        Tag: "diffuse"
+        Value: ( 1.0 1.0 1.0 )
+    }
+    Attribute {
+        Format: FLOAT3
+        Tag: "specular"
+        Value: ( 0.0 0.0 0.0 )
+    }
+    Attribute {
+        Format: FLOAT
+        Tag: "shininess"
+        Value: ( 4.0 )
+    }
+    Attribute {
+        Format: FLOAT
+        Tag: "add_ambient"
+        Value: ( 0.0 )
+    }
+    Attribute {
+        Format: FLOAT
+        Tag: "aux[0]"
+        FriendlyTag: "Shadow Offset"
+        Value: ( 0.0 )
+    }
+    Attribute {
+        Format: FLOAT3
+        Tag: "aux[1]"
+        FriendlyTag: "LOD Selector"
+        Value: ( 0.0 1.0 0.0 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_base"
+        Value: ""
+        TexCoord: ( 0 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_mask"
+        Value: ""
+        TexCoord: ( 0 )
+    }
+    Mapping {
+        Tag: "vertex_pos"
+        FriendlyTag: "Vertex Shift"
+        TexCoord: ( 1 )
+    }
+    Mapping {
+        Tag: "unknown"
+        TexCoord: ( 2 )
+    }
+}
+Shader {
+    PresetName: "light"
+    Effect: "eut2.light"
+    Flags: 0
+    Attribute {
+        Format: FLOAT3
+        Tag: "diffuse"
+        Value: ( 1.0 1.0 1.0 )
+    }
+    Attribute {
+        Format: FLOAT3
+        Tag: "specular"
+        Value: ( 0.0 0.0 0.0 )
+    }
+    Attribute {
+        Format: FLOAT3
+        Tag: "env_factor"
+        Value: ( 0.0 0.0 0.0 )
+    }
+    Attribute {
+        Format: FLOAT2
+        Tag: "aux[5]"
+        FriendlyTag: "Luminance Output (Day, Night) (nit)"
+        Value: ( 0.0 0.0 )
+    }
+}
+Shader {
     PresetName: "light.tex"
     Effect: "eut2.light.tex"
+    Flavors: ( "LSBOUNCE|LSDIRECT|LSLUCENT" )
     Flags: 0
     Attribute {
         Format: FLOAT3
@@ -2313,6 +2397,7 @@ Shader {
     }
     Texture {
         Tag: "texture[X]:texture_base"
+        FriendlyTag: "Mask"
         Value: ""
         TexCoord: ( 0 )
     }
@@ -2355,6 +2440,7 @@ Shader {
         TexCoord: ( 0 )
     }
 }
+# NOTE: TODO: mix00 shaders (can't recreate it cause it's not used anywhere and it's unique)
 Shader {
     PresetName: "mlaaweight"
     Effect: "eut2.mlaaweight"
@@ -2365,6 +2451,28 @@ Shader {
     PresetName: "none"
     Effect: "eut2.none"
     Flags: 0
+}
+Shader {
+    PresetName: "particle"
+    Effect: "eut2.particle"
+    Flavors: ( "BLEND_OVER|BLEND_MULT|BLEND_ADD" )
+    Flags: 0
+    Attribute {
+        Format: FLOAT3
+        Tag: "diffuse"
+        Value: ( 1.0 1.0 1.0 )
+    }
+    Attribute {
+        Format: FLOAT2
+        Tag: "aux[5]"
+        FriendlyTag: "Luminance Output (Day, Night) (nit)"
+        Value: ( 0.0 0.0 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_base"
+        Value: ""
+        TexCoord: ( 0 )
+    }
 }
 Shader {
     PresetName: "reflective"
@@ -2524,7 +2632,7 @@ Shader {
 Shader {
     PresetName: "truckpaint"
     Effect: "eut2.truckpaint"
-    Flavors: ( "NMAP_TS|NMAP_TS_UV" "SHADOW" "COLORMASK|AIRBRUSH" "FLIPFLAKE" "ALTUV" "ASAFEWA" )
+    Flavors: ( "NMAP_TS|NMAP_TS_UV" "SHADOW" "COLORMASK|AIRBRUSH" "FLIPFLAKE|FLIPFLAKEUV" "ALTUV" "ASAFEWA" )
     Flags: 0
     Attribute {
         Format: FLOAT3
@@ -2545,11 +2653,6 @@ Shader {
         Format: FLOAT
         Tag: "add_ambient"
         Value: ( 0.0 )
-    }
-    Attribute {
-        Format: FLOAT3
-        Tag: "env_factor"
-        Value: ( 1.0 1.0 1.0 )
     }
     Attribute {
         Format: FLOAT2
@@ -2592,7 +2695,7 @@ Shader {
 Shader {
     PresetName: "unlit.vcol.tex"
     Effect: "eut2.unlit.vcol.tex"
-    Flavors: ( "FADESHEET|FLIPSHEET" "PAINT" "ALPHA" "AWHITE" "DEPTH" "BLEND_OVER|BLEND_MULT|BLEND_ADD" )
+    Flavors: ( "FADESHEET|FLIPSHEET" "LSBOUNCE|LSDIRECT|LSLUCENT" "PAINT" "NOZ" "ALPHA" "AWHITE" "DEPTH" "BLEND_OVER|BLEND_MULT|BLEND_ADD" )
     Flags: 0
     Attribute {
         Format: FLOAT3
@@ -2614,6 +2717,7 @@ Shader {
 Shader {
     PresetName: "water"
     Effect: "eut2.water"
+    Flavors: ( "WATER_STREAM" "TOSTREAM|TOWATER" "MIRROR" )
     Flags: 0
     Attribute {
         Format: FLOAT3
@@ -2730,14 +2834,14 @@ Shader {
         TexCoord: ( 0 )
     }
     Texture {
-        Tag: "texture[X]:texture_reflection"
-        Value: "/material/environment/building_reflection/building_ref"
-        TexCoord: ( -1 )
-    }
-    Texture {
         Tag: "texture[X]:texture_lightmap"
         Value: "/material/special/window_interior_01"
         TexCoord: ( 1 )
+    }
+    Texture {
+        Tag: "texture[X]:texture_reflection"
+        Value: "/material/environment/building_reflection/building_ref"
+        TexCoord: ( -1 )
     }
 }
 Flavor {
@@ -3030,8 +3134,24 @@ Flavor {
     }
 }
 Flavor {
+    Type: "LSBOUNCE"
+    Name: "lsbounce"
+}
+Flavor {
+    Type: "LSDIRECT"
+    Name: "lsdirect"
+}
+Flavor {
+    Type: "LSLUCENT"
+    Name: "lslucent"
+}
+Flavor {
     Type: "LUMMULVCOL"
     Name: "lvcol"
+}
+Flavor {
+    Type: "MIRROR"
+    Name: "mirror"
 }
 Flavor {
     Type: "NMAP_DETAIL"
@@ -3288,4 +3408,16 @@ Flavor {
         FriendlyTag: "TexGen1 (ScaleX, ScaleZ, Rotation, Unk)"
         Value: ( 8.0 8.0 0.0 0.0 )
     }
+}
+Flavor {
+    Type: "TOSTREAM"
+    Name: "tostream"
+}
+Flavor {
+    Type: "TOWATER"
+    Name: "towater"
+}
+Flavor {
+    Type: "WATER_STREAM"
+    Name: "stream"
 }

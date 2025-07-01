@@ -32,7 +32,7 @@ def get_shader(effect):
 
         from io_scs_tools.internals.shaders.eut2.none import NNone as Shader
 
-    elif effect == "water":
+    elif effect.startswith("water"):
 
         from io_scs_tools.internals.shaders.eut2.water import Water as Shader
 
@@ -60,6 +60,10 @@ def get_shader(effect):
 
         from io_scs_tools.internals.shaders.eut2.grass import Grass as Shader
 
+    elif effect.startswith("leaves"):
+
+        from io_scs_tools.internals.shaders.eut2.leaves import Leaves as Shader
+
     elif effect.startswith("glass"):
 
         from io_scs_tools.internals.shaders.eut2.glass import Glass as Shader
@@ -76,6 +80,10 @@ def get_shader(effect):
 
         from io_scs_tools.internals.shaders.eut2.shadowonly import Shadowonly as Shader
 
+    elif effect.startswith("particle"):
+
+        from io_scs_tools.internals.shaders.eut2.particle import Particle as Shader
+
     elif effect.startswith("lightmap.night"):
 
         from io_scs_tools.internals.shaders.eut2.lightmap.night import LightMapNight as Shader
@@ -83,6 +91,10 @@ def get_shader(effect):
     elif effect.startswith("light.tex"):
 
         from io_scs_tools.internals.shaders.eut2.light_tex import LightTex as Shader
+
+    elif effect.startswith("light"):
+
+        from io_scs_tools.internals.shaders.eut2.light import Light as Shader
 
     elif effect.startswith("retroreflective"):
 

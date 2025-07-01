@@ -328,8 +328,8 @@ class Water(Dif, StdAddEnv):
         _LAYER0_NMAP_MAPPING_NODE = Water.LAYER0_NMAP_UID + Water.POSTFIX_MAPPING_NODE
 
         layer0_mapping_n = node_tree.nodes[_LAYER0_NMAP_MAPPING_NODE]
-        layer0_mapping_n.inputs['Scale'].default_value[0] = 1 / aux_property[2]['value']
-        layer0_mapping_n.inputs['Scale'].default_value[1] = 1 / aux_property[3]['value']
+        layer0_mapping_n.inputs['Scale'].default_value[0] = 1 / aux_property[2]['value'] if aux_property[2]['value'] != 0 else 0.1
+        layer0_mapping_n.inputs['Scale'].default_value[1] = 1 / aux_property[3]['value'] if aux_property[3]['value'] != 0 else 0.1
 
         yaw = math.radians(aux_property[0]['value'])
         water_stream_n = node_tree.nodes[Water.WATER_STREAM_NODE]
@@ -349,8 +349,8 @@ class Water(Dif, StdAddEnv):
         _LAYER1_NMAP_MAPPING_NODE = Water.LAYER1_NMAP_UID + Water.POSTFIX_MAPPING_NODE
 
         layer1_mapping_n = node_tree.nodes[_LAYER1_NMAP_MAPPING_NODE]
-        layer1_mapping_n.inputs['Scale'].default_value[0] = 1 / aux_property[2]['value']
-        layer1_mapping_n.inputs['Scale'].default_value[1] = 1 / aux_property[3]['value']
+        layer1_mapping_n.inputs['Scale'].default_value[0] = 1 / aux_property[2]['value'] if aux_property[2]['value'] != 0 else 0.1
+        layer1_mapping_n.inputs['Scale'].default_value[1] = 1 / aux_property[3]['value'] if aux_property[3]['value'] != 0 else 0.1
 
         yaw = math.radians(aux_property[0]['value'])
         water_stream_n = node_tree.nodes[Water.WATER_STREAM_NODE]
