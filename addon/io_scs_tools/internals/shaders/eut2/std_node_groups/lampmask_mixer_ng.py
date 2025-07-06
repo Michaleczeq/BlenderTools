@@ -87,7 +87,7 @@ def __create_node_group__():
     alpha_decode_n.operation = "POWER"
     alpha_decode_n.inputs[1].default_value = 2.2
 
-    tex_col_sep_n = lampmask_g.nodes.new("ShaderNodeSeparateRGB")
+    tex_col_sep_n = lampmask_g.nodes.new("ShaderNodeSeparateColor")
     tex_col_sep_n.name = tex_col_sep_n.label = _TEX_COL_SEP_NODE
     tex_col_sep_n.location = (pos_x_shift, 400)
 
@@ -105,7 +105,7 @@ def __create_node_group__():
 
     # links creation
     lampmask_g.links.new(alpha_decode_n.inputs[0], input_n.outputs['Lampmask Tex Alpha'])
-    lampmask_g.links.new(tex_col_sep_n.inputs['Image'], input_n.outputs['Lampmask Tex Color'])
+    lampmask_g.links.new(tex_col_sep_n.inputs['Color'], input_n.outputs['Lampmask Tex Color'])
     lampmask_g.links.new(uv_x_dot_n.inputs[0], input_n.outputs['UV Vector'])
     lampmask_g.links.new(uv_y_dot_n.inputs[0], input_n.outputs['UV Vector'])
 
@@ -153,9 +153,9 @@ def __create_node_group__():
 
         __init_vehicle_switch_nodes__(lampmask_g,
                                       alpha_decode_n.outputs[0],
-                                      tex_col_sep_n.outputs["R"],
-                                      tex_col_sep_n.outputs["G"],
-                                      tex_col_sep_n.outputs["B"],
+                                      tex_col_sep_n.outputs["Red"],
+                                      tex_col_sep_n.outputs["Green"],
+                                      tex_col_sep_n.outputs["Blue"],
                                       vehicle_lamp_type,
                                       pos_x_shift * 5, pos_y,
                                       nodes_for_addition)
@@ -167,8 +167,8 @@ def __create_node_group__():
 
         __init_aux_switch_nodes__(lampmask_g,
                                   alpha_decode_n.outputs[0],
-                                  tex_col_sep_n.outputs["R"],
-                                  tex_col_sep_n.outputs["G"],
+                                  tex_col_sep_n.outputs["Red"],
+                                  tex_col_sep_n.outputs["Green"],
                                   aux_lamp_type,
                                   pos_x_shift * 5, pos_y,
                                   nodes_for_addition)

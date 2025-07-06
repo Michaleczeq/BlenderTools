@@ -69,14 +69,15 @@ class DifLumSpec(DifSpec, StdLum):
         material.surface_render_method = "DITHERED"
 
         compose_lighting_n = node_tree.nodes[DifSpec.COMPOSE_LIGHTING_NODE]
+        lum_out_shader_n = node_tree.nodes[StdLum.LUM_OUT_SHADER_NODE]
 
         # set proper blend method
         if alpha_test.is_set(node_tree):
             compose_lighting_n.inputs["Alpha Type"].default_value = 0.0
+            lum_out_shader_n.inputs["Alpha Type"].default_value = 0.0
 
             # add alpha test pass if multiply blend enabled, where alphed pixels shouldn't be multiplied as they are discarded
             if blend_mult.is_set(node_tree):
-                lum_out_shader_n = node_tree.nodes[StdLum.LUM_OUT_SHADER_NODE]
 
                 # alpha test pass has to get fully opaque input, thus remove transparency linkage
                 if compose_lighting_n.inputs['Alpha'].links:
@@ -92,12 +93,15 @@ class DifLumSpec(DifSpec, StdLum):
 
         if blend_add.is_set(node_tree):
             compose_lighting_n.inputs["Alpha Type"].default_value = 1.0
+            lum_out_shader_n.inputs["Alpha Type"].default_value = 1.0
             material.surface_render_method = "BLENDED"
         if blend_mult.is_set(node_tree):
             compose_lighting_n.inputs["Alpha Type"].default_value = 1.0
+            lum_out_shader_n.inputs["Alpha Type"].default_value = 1.0
             material.surface_render_method = "BLENDED"
         if blend_over.is_set(node_tree):
             compose_lighting_n.inputs["Alpha Type"].default_value = 1.0
+            lum_out_shader_n.inputs["Alpha Type"].default_value = 1.0
             material.surface_render_method = "BLENDED"
 
         if compose_lighting_n.inputs["Alpha Type"].default_value < 0.0 and node_tree.nodes[DifSpec.COMPOSE_LIGHTING_NODE].inputs['Alpha'].links:

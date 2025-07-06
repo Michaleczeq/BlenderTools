@@ -87,7 +87,7 @@ def __create_nmap_scale_group__():
     output_n = nmap_scale_g.nodes.new("NodeGroupOutput")
     output_n.location = (185 * 7, 0)
 
-    separate_rgb_n = nmap_scale_g.nodes.new("ShaderNodeSeparateRGB")
+    separate_rgb_n = nmap_scale_g.nodes.new("ShaderNodeSeparateColor")
     separate_rgb_n.name = separate_rgb_n.label = _NMAP_TEX_SEP_NODE
     separate_rgb_n.location = (185 * 1, 400)
 
@@ -140,10 +140,10 @@ def __create_nmap_scale_group__():
     green_mix_n.blend_type = "MIX"
 
     # group links
-    nmap_scale_g.links.new(separate_rgb_n.inputs['Image'], input_n.outputs['NMap Tex Color'])
+    nmap_scale_g.links.new(separate_rgb_n.inputs['Color'], input_n.outputs['NMap Tex Color'])
 
-    nmap_scale_g.links.new(red_math_sub_n.inputs[0], separate_rgb_n.outputs['R'])
-    nmap_scale_g.links.new(green_math_sub_n.inputs[0], separate_rgb_n.outputs['G'])
+    nmap_scale_g.links.new(red_math_sub_n.inputs[0], separate_rgb_n.outputs['Red'])
+    nmap_scale_g.links.new(green_math_sub_n.inputs[0], separate_rgb_n.outputs['Green'])
 
     nmap_scale_g.links.new(red_math_mult_n.inputs[0], red_math_sub_n.outputs[0])
     nmap_scale_g.links.new(green_math_mult_n.inputs[0], green_math_sub_n.outputs[0])

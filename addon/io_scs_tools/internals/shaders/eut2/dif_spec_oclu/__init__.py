@@ -72,7 +72,7 @@ class DifSpecOclu(DifSpec):
         oclu_tex_n.location = (start_pos_x + pos_x_shift, start_pos_y + 1200)
         oclu_tex_n.width = 140
 
-        oclu_sep_rgb_n = node_tree.nodes.new("ShaderNodeSeparateRGB")
+        oclu_sep_rgb_n = node_tree.nodes.new("ShaderNodeSeparateColor")
         oclu_sep_rgb_n.name = oclu_sep_rgb_n.label = DifSpecOclu.OCLU_SEPARATE_RGB_NODE
         oclu_sep_rgb_n.location = (start_pos_x + pos_x_shift * 3, start_pos_y + 1200)
 
@@ -90,14 +90,14 @@ class DifSpecOclu(DifSpec):
         node_tree.links.new(oclu_tex_n.inputs["Vector"], sec_uvmap_n.outputs["UV"])
 
         # pass 1
-        node_tree.links.new(oclu_sep_rgb_n.inputs["Image"], oclu_tex_n.outputs["Color"])
+        node_tree.links.new(oclu_sep_rgb_n.inputs["Color"], oclu_tex_n.outputs["Color"])
 
         # pass 2
         node_tree.links.new(oclu_a_mix_n.inputs[0], base_tex_n.outputs["Alpha"])
-        node_tree.links.new(oclu_a_mix_n.inputs[1], oclu_sep_rgb_n.outputs["R"])
+        node_tree.links.new(oclu_a_mix_n.inputs[1], oclu_sep_rgb_n.outputs["Red"])
 
         node_tree.links.new(oclu_mix_n.inputs[0], base_tex_n.outputs["Color"])
-        node_tree.links.new(oclu_mix_n.inputs[1], oclu_sep_rgb_n.outputs["R"])
+        node_tree.links.new(oclu_mix_n.inputs[1], oclu_sep_rgb_n.outputs["Red"])
 
         # pass 3
         node_tree.links.new(spec_mult_n.inputs[1], oclu_a_mix_n.outputs["Value"])

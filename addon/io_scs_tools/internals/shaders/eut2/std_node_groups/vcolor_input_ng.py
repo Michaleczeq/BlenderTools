@@ -84,7 +84,7 @@ def __create_vcolor_group__():
     vcol_a_n.location = (pos_x_shift, -100)
     vcol_a_n.layer_name = _MESH_consts.default_vcol + _MESH_consts.vcol_a_suffix
 
-    vcol_separate_rgb_n = vcol_g.nodes.new("ShaderNodeSeparateRGB")
+    vcol_separate_rgb_n = vcol_g.nodes.new("ShaderNodeSeparateColor")
     vcol_separate_rgb_n.name = vcol_separate_rgb_n.label = _VCOL_SEPARATE_NODE
     vcol_separate_rgb_n.location = (pos_x_shift * 2, 200)
 
@@ -118,24 +118,24 @@ def __create_vcolor_group__():
     alpha_extend_n.operation = "MULTIPLY"
     alpha_extend_n.inputs[1].default_value = 2.0
 
-    vcol_combine_n = vcol_g.nodes.new("ShaderNodeCombineRGB")
+    vcol_combine_n = vcol_g.nodes.new("ShaderNodeCombineColor")
     vcol_combine_n.name = vcol_combine_n.label = _VCOL_COMBINE_NODE
     vcol_combine_n.location = (pos_x_shift * 4, 200)
 
     # group links
-    vcol_g.links.new(vcol_separate_rgb_n.inputs['Image'], vcol_n.outputs['Color'])
+    vcol_g.links.new(vcol_separate_rgb_n.inputs['Color'], vcol_n.outputs['Color'])
     vcol_g.links.new(alpha_to_bw_n.inputs["Color"], vcol_a_n.outputs['Color'])
 
-    vcol_g.links.new(vcol_r_lin_to_srgb_n.inputs['Value'], vcol_separate_rgb_n.outputs['R'])
-    vcol_g.links.new(vcol_g_lin_to_srgb_n.inputs['Value'], vcol_separate_rgb_n.outputs['G'])
-    vcol_g.links.new(vcol_b_lin_to_srgb_n.inputs['Value'], vcol_separate_rgb_n.outputs['B'])
+    vcol_g.links.new(vcol_r_lin_to_srgb_n.inputs['Value'], vcol_separate_rgb_n.outputs['Red'])
+    vcol_g.links.new(vcol_g_lin_to_srgb_n.inputs['Value'], vcol_separate_rgb_n.outputs['Green'])
+    vcol_g.links.new(vcol_b_lin_to_srgb_n.inputs['Value'], vcol_separate_rgb_n.outputs['Blue'])
     vcol_g.links.new(alpha_lin_to_srgb_n.inputs['Value'], alpha_to_bw_n.outputs['Val'])
 
-    vcol_g.links.new(vcol_combine_n.inputs['R'], vcol_r_lin_to_srgb_n.outputs["Value"])
-    vcol_g.links.new(vcol_combine_n.inputs['G'], vcol_g_lin_to_srgb_n.outputs["Value"])
-    vcol_g.links.new(vcol_combine_n.inputs['B'], vcol_b_lin_to_srgb_n.outputs["Value"])
+    vcol_g.links.new(vcol_combine_n.inputs['Red'], vcol_r_lin_to_srgb_n.outputs["Value"])
+    vcol_g.links.new(vcol_combine_n.inputs['Green'], vcol_g_lin_to_srgb_n.outputs["Value"])
+    vcol_g.links.new(vcol_combine_n.inputs['Blue'], vcol_b_lin_to_srgb_n.outputs["Value"])
 
     vcol_g.links.new(alpha_extend_n.inputs[0], alpha_lin_to_srgb_n.outputs['Value'])
 
-    vcol_g.links.new(output_n.inputs['Vertex Color'], vcol_combine_n.outputs['Image'])
+    vcol_g.links.new(output_n.inputs['Vertex Color'], vcol_combine_n.outputs['Color'])
     vcol_g.links.new(output_n.inputs['Vertex Color Alpha'], alpha_extend_n.outputs['Value'])

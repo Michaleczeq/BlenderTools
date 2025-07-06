@@ -75,7 +75,7 @@ def __create_node_group__():
     output_n = mult2_mix_g.nodes.new("NodeGroupOutput")
     output_n.location = (start_pos_x + pos_x_shift * 6, start_pos_y)
 
-    separate_mult_n = mult2_mix_g.nodes.new("ShaderNodeSeparateRGB")
+    separate_mult_n = mult2_mix_g.nodes.new("ShaderNodeSeparateColor")
     separate_mult_n.name = _SEPARATE_MULT_NODE
     separate_mult_n.label = _SEPARATE_MULT_NODE
     separate_mult_n.location = (start_pos_x + pos_x_shift, start_pos_y)
@@ -109,9 +109,9 @@ def __create_node_group__():
     alpha_mix_n.blend_type = "MIX"
 
     # links creation
-    mult2_mix_g.links.new(separate_mult_n.inputs["Image"], input_n.outputs["Mult Color"])
+    mult2_mix_g.links.new(separate_mult_n.inputs["Color"], input_n.outputs["Mult Color"])
 
-    mult2_mix_g.links.new(mult_green_scale_n.inputs[0], separate_mult_n.outputs["G"])
+    mult2_mix_g.links.new(mult_green_scale_n.inputs[0], separate_mult_n.outputs["Green"])
 
     mult2_mix_g.links.new(mult_green_mix_n.inputs["Factor"], input_n.outputs["Base Alpha"])
     mult2_mix_g.links.new(mult_green_mix_n.inputs["A"], mult_green_scale_n.outputs["Value"])

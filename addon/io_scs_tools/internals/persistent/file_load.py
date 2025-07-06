@@ -54,25 +54,24 @@ def post_load(scene):
 
     VERSIONS_LIST_UNOFFICIAL = (
         ("4", apply_fixes_for_un_4),
+        ("7", apply_fixes_for_un_7),
     )
 
+    v_parts = last_load_bt_ver.split(".")
     for version, func in VERSIONS_LIST:
         if _info_utils.cmp_ver_str(last_load_bt_ver, version) <= 0:
-
-            # Apply fixes ONLY if your last loaded tools version is official to prevent unnecessary code execution.
-            while len(last_load_bt_ver.split(".")) <= 3:
-
+            # OFFICIAL version: ( X.Y.ZZZZ or old unofficial X.Y.ZZZZ.U )
+            if not v_parts[2].isdigit():
                 # try to add apply fixed function as callback, if failed execute fixes right now
                 if not AsyncPathsInit.append_callback(func):
                     func()
 
+            # UNOFFICIAL version: (X.Y.U)
             for version2, func2 in VERSIONS_LIST_UNOFFICIAL:
                 if _info_utils.cmp_ver_str_unofficial(last_load_bt_ver, version2) < 0:
-
                     # try to add apply fixed function as callback, if failed execute fixes right now
                     if not AsyncPathsInit.append_callback(func2):
                         func2()
-
 
     # as last update "last load" Blender Tools version to current
     _get_scs_globals().last_load_bt_version = _info_utils.get_tools_version()
@@ -369,7 +368,7 @@ def apply_fixes_for_un_4():
     3. Show welcome message
     """
 
-    print("INFO\t-  Applying fixes for unofficial version <= 4")
+    print("INFO\t-  Applying fixes for (un)official versions < 4")
 
 
     # 1. do pre-reload changes and collect data
@@ -407,12 +406,12 @@ def apply_fixes_for_un_4():
 
 def apply_fixes_for_un_7():
     """
-    Applies fixes for unofficial 2.4.xxxxxx.7 or less:
-    1. Pre-reload changes and collect data
-    2. Reload materials since some got removed/restructed attributes
+    Applies fixes for unofficial 2.4.7 or less:
+    1. Reload materials since some got removed/restructed attributes
     """
 
-    print("INFO\t-  Applying fixes for unofficial version <= 7")
+    print("INFO\t-  Applying fixes for (un)official versions < 7")
 
-    # 2. reload all materials
+    # 1. reload all materials
+    # Some attributes got removed, in some cases attribute size changed and due to that we need to reload materials
     _reload_materials()

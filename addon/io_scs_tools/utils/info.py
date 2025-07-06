@@ -130,9 +130,9 @@ def cmp_ver_str(version_str, version_str2):
     return 1
 
 def cmp_ver_str_unofficial(version_str, version_str2):
-    """Compares two version string of format "X.X.X..." where X is number.
+    """Compares two version string of format "X.X.X" where X is number.
 
-    :param version_str: version string to check (should be in format: "X.Y)" where X and Y are version numbers)
+    :param version_str: version string to check (should be in format: "X.Y.Z" where X and Y are version numbers, Z can be hash/unofficial version)
     :type version_str: str
     :param version_str2: version string to check (should be in format: "X" where X is unofficial update number)
     :type version_str2: str
@@ -142,17 +142,17 @@ def cmp_ver_str_unofficial(version_str, version_str2):
 
     version_str = version_str.split(".")
 
-    # Fix for users migrating from official BT (without unofficial update version at BT version)
-    while len(version_str) <= 3:
-        version_str.append('0')
+    # Threat hash from official version as 0
+    if not version_str[2].isdigit():
+        version_str[2] = 0
 
-    # first version smaller than second
-    if int(version_str[3]) < int(version_str2):
+    # First version smaller than second
+    if int(version_str[2]) < int(version_str2):
         return -1
 
-    # equal versions
-    if int(version_str[3]) == int(version_str2):
+    # Equal versions
+    if int(version_str[2]) == int(version_str2):
         return 0
 
-    # otherwise we directly assume that first is greater
+    # Otherwise we directly assume that first is greater
     return 1
