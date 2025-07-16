@@ -119,21 +119,36 @@ def _draw_3dview_report(window, area, region):
         return
 
     # calculate dynamic left and top margins
+    pos_y_shift = 190
     if bpy.context.preferences.system.use_region_overlap:
         pos_x = 65
+        header_height = 0
         # try to find tools region and properly adopt position X
+        # TOOLS region
         for reg in area.regions:
             if reg.type == 'TOOLS':
                 pos_x = reg.width + 10
                 break
-        pos_y = region.height - 105
+
+        # HEADER region
+        for reg in area.regions:
+            if reg.type == 'HEADER' and reg.height > 1:
+                # Check if header is on the top (!=)
+                header_height = reg.height if region.y != reg.y else 0
+                break
+            else:
+                # Subtract size of reg.height if header is OFF
+                header_height = -38
+                break
+
+        pos_y = region.height - pos_y_shift - header_height
     else:
         pos_x = 10
-        pos_y = region.height - 80
+        pos_y = region.height - pos_y_shift + 38
 
     for space in area.spaces:
         if space.type == 'VIEW_3D' and space.overlay.show_stats:
-            pos_y = pos_y - 105
+            pos_y = pos_y - pos_y_shift - 10
             break
 
     # draw BT banner
