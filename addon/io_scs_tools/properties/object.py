@@ -891,7 +891,7 @@ class ObjectSCSTools(bpy.types.PropertyGroup):
         (_PL_consts.PSP.UNLOAD_EASY_POS, (str(_PL_consts.PSP.UNLOAD_EASY_POS), "Unload (Easy)", "")),
         (_PL_consts.PSP.UNLOAD_MEDIUM_POS, (str(_PL_consts.PSP.UNLOAD_MEDIUM_POS), "Unload (Medium)", "")),
         (_PL_consts.PSP.UNLOAD_HARD_POS, (str(_PL_consts.PSP.UNLOAD_HARD_POS), "Unload (Hard)", "")),
-        (_PL_consts.PSP.UNLOAD_RIGID_POS, (str(_PL_consts.PSP.UNLOAD_RIGID_POS), "Unload (Rigid)", "")),
+        (_PL_consts.PSP.UNLOAD_RIGID_POS, (str(_PL_consts.PSP.UNLOAD_RIGID_POS), "Unload (Rigid) (Deprecated)", "")),
         (_PL_consts.PSP.WEIGHT_POS, (str(_PL_consts.PSP.WEIGHT_POS), "Weight Station", "")),
         (_PL_consts.PSP.WEIGHT_CAT_POS, (str(_PL_consts.PSP.WEIGHT_CAT_POS), "Weight Station CAT", "")),
     ])

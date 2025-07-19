@@ -20,6 +20,7 @@
 
 import blf
 import gpu
+import struct
 from array import array
 from gpu_extras.batch import batch_for_shader
 from mathutils import Vector
@@ -113,20 +114,33 @@ class _Buffer:
         if self.__type == _Buffer.Types.TRIS and space_3d.shading.type == 'WIREFRAME':
             return
 
+        # gpu.state.point_size_set/line_width_set(size)
         self.__gpu_callback(self.__gpu_callback_param_before)
 
         # bind shader
         self.__shader.bind()
 
         # fill the uniforms to binded shader
+        clip_planes_data = None
+        num_clip_planes = 0
+
         for uniform_name, uniform_type, uniform_data, uniform_length, uniform_count in uniforms:
-            uniform_loc = self.__shader.uniform_from_name(uniform_name)
-            if uniform_type == float:
-                self.__shader.uniform_vector_float(uniform_loc, uniform_data, uniform_length, uniform_count)
-            elif uniform_type == int:
-                self.__shader.uniform_vector_int(uniform_loc, uniform_data, uniform_length, uniform_count)
-            else:
-                raise TypeError("Invalid uniform type: %s" % uniform_type)
+            if uniform_name == "clip_planes":
+                clip_planes_data = uniform_data
+            elif uniform_name == "num_clip_planes":
+                num_clip_planes = uniform_data[0]
+
+        if clip_planes_data is None:
+            raise ValueError("Missing clip_planes in uniforms")
+
+        pad_planes = b'\x00' * (24 * 4) # 96 bytes
+        padded_clip_planes = bytearray(pad_planes)
+        padded_clip_planes[:len(clip_planes_data)] = clip_planes_data
+
+        ubo_data = struct.pack("24f 4i", *struct.unpack("24f", padded_clip_planes), num_clip_planes, 0, 0, 0)
+        ubo = gpu.types.GPUUniformBuf(ubo_data)
+
+        self.__shader.uniform_block("clip_data", ubo)
 
         # create batch and dispatch draw
         batch = batch_for_shader(self.__shader, self.__draw_type, self.__data)

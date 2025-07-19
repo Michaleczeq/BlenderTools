@@ -288,11 +288,8 @@ class SCS_TOOLS_PT_Locator(_ObjectPanelBlDefs, Panel):
 
         layout.prop(obj.scs_props, 'locator_collider_type')
 
-        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
-
-        col = flow.column()
+        col = layout.column()
         col.prop(obj.scs_props, 'locator_collider_wires', text='Draw Wireframes')
-        col = flow.column()
         col.prop(obj.scs_props, 'locator_collider_faces', text='Draw Faces')
         if obj.scs_props.locator_collider_type != 'Convex':
             layout.prop(obj.scs_props, 'locator_collider_centered')
@@ -429,9 +426,7 @@ class SCS_TOOLS_PT_Locator(_ObjectPanelBlDefs, Panel):
 
         col = flow.column()
         col.prop(obj.scs_props, 'locator_prefab_np_low_probab')
-        col = flow.column()
         col.prop(obj.scs_props, 'locator_prefab_np_add_priority')
-        col = flow.column()
         col.prop(obj.scs_props, 'locator_prefab_np_limit_displace')
 
         # allowed vehicles
@@ -495,12 +490,9 @@ class SCS_TOOLS_PT_Locator(_ObjectPanelBlDefs, Panel):
 
         col = flow.column()
         col.prop(obj.scs_props, 'locator_prefab_mp_road_over')
-        col = flow.column()
         col.prop(obj.scs_props, 'locator_prefab_mp_no_outline')
-        col = flow.column()
         col.enabled = not is_polygon
         col.prop(obj.scs_props, 'locator_prefab_mp_no_arrow')
-        col = flow.column()
         col.enabled = not is_polygon
         col.prop(obj.scs_props, 'locator_prefab_mp_prefab_exit')
 
@@ -551,11 +543,8 @@ class SCS_TOOLS_PT_Locator(_ObjectPanelBlDefs, Panel):
 
         col = flow.column()
         col.prop(obj.scs_props, 'locator_prefab_tp_sphere_trigger')
-        col = flow.column()
         col.prop(obj.scs_props, 'locator_prefab_tp_partial_activ')
-        col = flow.column()
         col.prop(obj.scs_props, 'locator_prefab_tp_onetime_activ')
-        col = flow.column()
         col.prop(obj.scs_props, 'locator_prefab_tp_manual_activ')
 
         loc_set = layout.row()
