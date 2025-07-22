@@ -587,6 +587,14 @@ class SCSGlobals(bpy.types.PropertyGroup):
         self.on_display_setting_update(context)
         _config_container.update_item_in_file('GlobalColors.TrailerUnloadHard', tuple(self.trailer_unload_hard_color))
 
+    def owned_trailer_color_update(self, context):
+        self.on_display_setting_update(context)
+        _config_container.update_item_in_file('GlobalColors.OwnedTrailer', tuple(self.owned_trailer_color))
+
+    def service_station_color_update(self, context):
+        self.on_display_setting_update(context)
+        _config_container.update_item_in_file('GlobalColors.ServiceStation', tuple(self.service_station_color))
+
     def display_connections_update(self, context):
         self.on_display_setting_update(context)
         _config_container.update_item_in_file('GlobalDisplay.DisplayConnections', int(self.display_connections))
@@ -763,63 +771,89 @@ class SCSGlobals(bpy.types.PropertyGroup):
     )
     show_trailer_type: BoolProperty(
         name="Show Trailer Type",
-        description="Show trailer type shape for locators",
+        description="Show trailer type shape for custom spawn point locators",
         default=True,
         update=show_trailer_type_update
     )
     trailer_load_easy_color: FloatVectorProperty(
-        name="Trailer Load (Easy)",
-        description="Color of trailer loading zone - easy difficulty",
+        name="(Easy) Trailer Load",
+        description="Color of trailer loading zone in 3D views - easy difficulty",
         options={'HIDDEN'},
         subtype='COLOR',
+        size = 4,
         min=0, max=1,
-        default=(0.0, 1.0, 1.0),
+        default=(0.0, 1.0, 1.0, 1.0),
         update=trailer_load_easy_color_update,
     )
     trailer_load_medium_color: FloatVectorProperty(
-        name="Trailer Load (Medium)",
-        description="Color of trailer loading zone - medium difficulty",
+        name="(Medium) Trailer Load",
+        description="Color of trailer loading zone in 3D views - medium difficulty",
         options={'HIDDEN'},
         subtype='COLOR',
+        size = 4,
         min=0, max=1,
-        default=(0.0, 0.471, 1.0),
+        default=(0.0, 0.471, 1.0, 1.0),
         update=trailer_load_medium_color_update,
     )
     trailer_load_hard_color: FloatVectorProperty(
-        name="Trailer Load (Hard)",
-        description="Color of trailer loading zone - hard difficulty",
+        name="(Hard) Trailer Load",
+        description="Color of trailer loading zone in 3D views - hard difficulty",
         options={'HIDDEN'},
         subtype='COLOR',
+        size = 4,
         min=0, max=1,
-        default=(0.0, 0.0, 0.784),
+        default=(0.0, 0.0, 0.784, 1.0),
         update=trailer_load_hard_color_update,
     )
     trailer_unload_easy_color: FloatVectorProperty(
-        name="Trailer Unload (Easy)",
-        description="Color of trailer unloading zone - easy difficulty",
+        name="(Easy) Trailer Unload",
+        description="Color of trailer unloading zone in 3D views - easy difficulty",
         options={'HIDDEN'},
         subtype='COLOR',
+        size = 4,
         min=0, max=1,
-        default=(1.0, 1.0, 0.0),
+        default=(1.0, 1.0, 0.0, 1.0),
         update=trailer_unload_easy_color_update,
     )
     trailer_unload_medium_color: FloatVectorProperty(
-        name="Trailer Unload (Medium)",
-        description="Color of trailer unloading zone - medium difficulty",
+        name="(Medium) Trailer Unload",
+        description="Color of trailer unloading zone in 3D views - medium difficulty",
         options={'HIDDEN'},
         subtype='COLOR',
+        size = 4,
         min=0, max=1,
-        default=(0.706, 0.471, 0.0),
+        default=(0.706, 0.471, 0.0, 1.0),
         update=trailer_unload_medium_color_update,
     )
     trailer_unload_hard_color: FloatVectorProperty(
-        name="Trailer Unload (Hard)",
-        description="Color of trailer unloading zone - hard difficulty",
+        name="(Hard) Trailer Unload",
+        description="Color of trailer unloading zone in 3D views - hard difficulty",
         options={'HIDDEN'},
         subtype='COLOR',
+        size = 4,
         min=0, max=1,
-        default=(1.0, 0.0, 0.0),
+        default=(1.0, 0.0, 0.0, 1.0),
         update=trailer_unload_hard_color_update,
+    )
+    owned_trailer_color: FloatVectorProperty(
+        name="Owned Trailer Color",
+        description="Color for Owned Trailer zone in 3D views",
+        options={'HIDDEN'},
+        subtype='COLOR',
+        size = 4,
+        min=0, max=1,
+        default=(1.0, 0.0, 1.0, 1.0),
+        update=owned_trailer_color_update,
+    )
+    service_station_color: FloatVectorProperty(
+        name="Service Station Color",
+        description="Color for Service Station zone in 3D views",
+        options={'HIDDEN'},
+        subtype='COLOR',
+        size = 4,
+        min=0, max=1,
+        default=(0.0, 0.706, 0.0, 1.0),
+        update=service_station_color_update,
     )
     display_connections: BoolProperty(
         name="Display Connections",

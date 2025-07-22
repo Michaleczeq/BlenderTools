@@ -530,6 +530,8 @@ class GlobalColors(_ConfigSection):
             "TrailerUnloadEasy": (tuple, get_default(scs_globals, 'trailer_unload_easy_color'), 'trailer_unload_easy_color'),
             "TrailerUnloadMedium": (tuple, get_default(scs_globals, 'trailer_unload_medium_color'), 'trailer_unload_medium_color'),
             "TrailerUnloadHard": (tuple, get_default(scs_globals, 'trailer_unload_hard_color'), 'trailer_unload_hard_color'),
+            "OwnedTrailer": (tuple, get_default(scs_globals, 'owned_trailer_color'), 'owned_trailer_color'),
+            "ServiceStation": (tuple, get_default(scs_globals, 'service_station_color'), 'service_station_color'),
         }
 
 

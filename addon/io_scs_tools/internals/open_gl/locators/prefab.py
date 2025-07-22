@@ -120,41 +120,34 @@ def draw_shape_spawn_point_custom(mat, scs_globals, obj):
     # Matrix without "Locator Size"
     mat_orig = obj.matrix_world
 
-    # Load
-    if depot_type == 1:
-        match parking_diff:
-            case 1:   # Easy
-                difficulty_color = scs_globals.trailer_load_easy_color
-            case 2:   # Medium
-                difficulty_color = scs_globals.trailer_load_medium_color
-            case 3:   # Hard
-                difficulty_color = scs_globals.trailer_load_hard_color
-            case _:
-                difficulty_color = (0.0, 1.0, 1.0)
-    # Unload
-    else:
-        match parking_diff:
-            case 1:   # Easy
-                difficulty_color = scs_globals.trailer_unload_easy_color
-            case 2:   # Medium
-                difficulty_color = scs_globals.trailer_unload_medium_color
-            case 3:   # Hard
-                difficulty_color = scs_globals.trailer_unload_hard_color
-            case _:
-                difficulty_color = (1.0, 1.0, 0.0)
-
-    color = (
-        difficulty_color.r,
-        difficulty_color.g,
-        difficulty_color.b,
-        1.0
-    )
-
     # Local variables
     width = 3.4                 # Full width of depot shape
     height = 0.05               # Height above ground to prevent z-fight
     lenght = 14 + cust_lenght   # Lenght of depo shape (we assume that cust_lenght (index) corresponds to additional lenght in meters eg. 14m + (idx) 0 = 14m)
     lenght_t = 5.0/2            # Lenght of trailer type shape
+
+    # Load
+    if depot_type == 1:
+        match parking_diff:
+            case 1:   # Easy
+                color = scs_globals.trailer_load_easy_color
+            case 2:   # Medium
+                color = scs_globals.trailer_load_medium_color
+            case 3:   # Hard
+                color = scs_globals.trailer_load_hard_color
+            case _:
+                color = (0.0, 1.0, 1.0, 1.0)
+    # Unload
+    else:
+        match parking_diff:
+            case 1:   # Easy
+                color = scs_globals.trailer_unload_easy_color
+            case 2:   # Medium
+                color = scs_globals.trailer_unload_medium_color
+            case 3:   # Hard
+                color = scs_globals.trailer_unload_hard_color
+            case _:
+                color = (1.0, 1.0, 0.0, 1.0)
 
     # Set diffrent shape for "Unlimited" lenght (max size of last fixed lenght)
     if lenght == 29.0:
@@ -339,7 +332,7 @@ def draw_shape_spawn_point_trailer(mat, scs_globals, obj, color_idx):
     :param mat:
     :param scs_globals:
     :param obj:
-    :param color_idx: 0 - Load, 1 - Unload Easy, 2 - Unload Medium, 3 - Unload Hard
+    :param color_idx:
     :type color_idx: int
     :return:
     """
@@ -350,47 +343,46 @@ def draw_shape_spawn_point_trailer(mat, scs_globals, obj, color_idx):
     # Matrix without "Locator Size"
     mat_orig = obj.matrix_world
 
-    # Load colors from settings
-    match color_idx:
-        case 0:   # Load Easy
-            difficulty_color = scs_globals.trailer_load_easy_color
-        case 1:   # Unload Easy
-            difficulty_color = scs_globals.trailer_unload_easy_color
-        case 2:   # Unload Medium
-            difficulty_color = scs_globals.trailer_unload_medium_color
-        case 3:   # Unload Hard
-            difficulty_color = scs_globals.trailer_unload_hard_color
-        case _:
-            difficulty_color = (1.0, 1.0, 0.0)
-
-    color = (
-        difficulty_color.r,
-        difficulty_color.g,
-        difficulty_color.b,
-        1.0
-    )
-
     # Local variables
     width = 3.4                 # Full width of depot shape
     height = 0.05               # Height above ground to prevent z-fight
     lenght = 20                 # Lenght of depo shape (excluding "Unlimited" shape)
+    pos_0 = 0.0                 # Default "0" position of shape (required when we need to move whole shape)
+
+    # Load colors from settings
+    match color_idx:
+        case 0:   # Load Easy
+            color = scs_globals.trailer_load_easy_color
+        case 1:   # Unload Easy
+            color = scs_globals.trailer_unload_easy_color
+        case 2:   # Unload Medium
+            color = scs_globals.trailer_unload_medium_color
+        case 3:   # Unload Hard
+            color = scs_globals.trailer_unload_hard_color
+        case 4:   # Owned Trailer
+            color = scs_globals.owned_trailer_color
+        case 5:   # Service Station
+            color = scs_globals.service_station_color
+            pos_0 = -29.0   # Move shape position 29m back, because service station uses truck point, not trailer rear as position 0.
+        case _:
+            color = (1.0, 1.0, 0.0, 1.0)
 
     # Shape for "Unlimited" lenght (default for old rail system)
-    _primitive.append_line_vertex((mat_orig @ Vector((0.0, lenght + 3.0, height))), color)
-    _primitive.append_line_vertex((mat_orig @ Vector((width/2, lenght + 1.0, height))), color, is_strip=True)
-    _primitive.append_line_vertex((mat_orig @ Vector((width/2, lenght + 8.0, height))), color, is_strip=True)
-    _primitive.append_line_vertex((mat_orig @ Vector((0.0, lenght + 10.0, height))), color, is_strip=True)
-    _primitive.append_line_vertex((mat_orig @ Vector((-width/2, lenght + 8.0, height))), color, is_strip=True)
-    _primitive.append_line_vertex((mat_orig @ Vector((-width/2, lenght + 1.0, height))), color, is_strip=True)
-    _primitive.append_line_vertex((mat_orig @ Vector((0.0, lenght + 3.0, height))), color)
+    _primitive.append_line_vertex((mat_orig @ Vector((0.0, pos_0 + lenght + 3.0, height))), color)
+    _primitive.append_line_vertex((mat_orig @ Vector((width/2, pos_0 + lenght + 1.0, height))), color, is_strip=True)
+    _primitive.append_line_vertex((mat_orig @ Vector((width/2, pos_0 + lenght + 8.0, height))), color, is_strip=True)
+    _primitive.append_line_vertex((mat_orig @ Vector((0.0, pos_0 + lenght + 10.0, height))), color, is_strip=True)
+    _primitive.append_line_vertex((mat_orig @ Vector((-width/2, pos_0 + lenght + 8.0, height))), color, is_strip=True)
+    _primitive.append_line_vertex((mat_orig @ Vector((-width/2, pos_0 + lenght + 1.0, height))), color, is_strip=True)
+    _primitive.append_line_vertex((mat_orig @ Vector((0.0, pos_0 + lenght + 3.0, height))), color)
 
     # Depot
-    _primitive.append_line_vertex((mat_orig @ Vector((width/2, 0.0, height))), color)
-    _primitive.append_line_vertex((mat_orig @ Vector((-width/2, 0.0, height))), color, is_strip=True)
-    _primitive.append_line_vertex((mat_orig @ Vector((-width/2, lenght, height))), color, is_strip=True)
-    _primitive.append_line_vertex((mat_orig @ Vector((0.0, lenght + 2.0, height))), color, is_strip=True)
-    _primitive.append_line_vertex((mat_orig @ Vector((width/2, lenght, height))), color, is_strip=True)
-    _primitive.append_line_vertex((mat_orig @ Vector((width/2, 0.0, height))), color)
+    _primitive.append_line_vertex((mat_orig @ Vector((width/2, pos_0, height))), color)
+    _primitive.append_line_vertex((mat_orig @ Vector((-width/2, pos_0, height))), color, is_strip=True)
+    _primitive.append_line_vertex((mat_orig @ Vector((-width/2, pos_0 + lenght, height))), color, is_strip=True)
+    _primitive.append_line_vertex((mat_orig @ Vector((0.0, pos_0 + lenght + 2.0, height))), color, is_strip=True)
+    _primitive.append_line_vertex((mat_orig @ Vector((width/2, pos_0 + lenght, height))), color, is_strip=True)
+    _primitive.append_line_vertex((mat_orig @ Vector((width/2, pos_0, height))), color)
 
 
 def draw_shape_traffic_light(mat, scs_globals):
@@ -514,6 +506,10 @@ def draw_prefab_locator(obj, scs_globals):
                 draw_shape_spawn_point_trailer(mat, scs_globals, obj, 2)
             elif obj.scs_props.locator_prefab_spawn_type == str(_PL_consts.PSP.UNLOAD_HARD_POS):
                 draw_shape_spawn_point_trailer(mat, scs_globals, obj, 3)
+            elif obj.scs_props.locator_prefab_spawn_type == str(_PL_consts.PSP.TRAILER_SPAWN):
+                draw_shape_spawn_point_trailer(mat, scs_globals, obj, 4)
+            elif obj.scs_props.locator_prefab_spawn_type == str(_PL_consts.PSP.SERVICE_POS):
+                draw_shape_spawn_point_trailer(mat, scs_globals, obj, 5)
             else:
                 draw_shape_spawn_point(mat, scs_globals)
 

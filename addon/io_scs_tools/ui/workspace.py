@@ -222,11 +222,11 @@ class SCS_TOOLS_PT_LocatorsDisplay(_WorkspacePanelBlDefs, Panel):
         layout.prop(scs_globals, 'locator_coll_face_color')
 
 
-class SCS_TOOLS_PT_TrailerDisplay(_WorkspacePanelBlDefs, Panel):
-    """Draw trailer display panel."""
+class SCS_TOOLS_PT_SpawnPointDisplay(_WorkspacePanelBlDefs, Panel):
+    """Draw spawn point display panel."""
 
     bl_parent_id = SCS_TOOLS_PT_LocatorsDisplay.__name__
-    bl_label = "Trailer"
+    bl_label = "Spawn Points"
     bl_options = {'DEFAULT_CLOSED'}
 
     def draw(self, context):
@@ -247,6 +247,9 @@ class SCS_TOOLS_PT_TrailerDisplay(_WorkspacePanelBlDefs, Panel):
         layout.prop(scs_globals, 'trailer_unload_easy_color')
         layout.prop(scs_globals, 'trailer_unload_medium_color')
         layout.prop(scs_globals, 'trailer_unload_hard_color')
+
+        layout.prop(scs_globals, 'owned_trailer_color')
+        layout.prop(scs_globals, 'service_station_color')
 
 
 class SCS_TOOLS_PT_ConnectionsDisplay(_WorkspacePanelBlDefs, Panel):
@@ -304,7 +307,7 @@ classes = (
     SCS_TOOLS_PT_PathSettings,
     SCS_TOOLS_PT_DisplaySettings,
     SCS_TOOLS_PT_LocatorsDisplay,
-    SCS_TOOLS_PT_TrailerDisplay,
+    SCS_TOOLS_PT_SpawnPointDisplay,
     SCS_TOOLS_PT_ConnectionsDisplay,
     SCS_TOOLS_PT_OtherSetttings,
 )
