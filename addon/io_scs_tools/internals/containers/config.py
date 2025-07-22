@@ -501,6 +501,7 @@ class GlobalDisplay(_ConfigSection):
             "CurveSegments": (int, get_default(scs_globals, 'curve_segments'), 'curve_segments'),
             "DisplayTextInfo": (str, get_default(scs_globals, 'display_info'), 'display_info'),
             "IconTheme": (str, _ICONS_consts.default_icon_theme, 'icon_theme'),
+            "ShowTrailerType": (int, get_default(scs_globals, 'show_trailer_type'), 'show_trailer_type'),
         }
 
 
@@ -523,6 +524,12 @@ class GlobalColors(_ConfigSection):
             "TriggerLineBase": (tuple, get_default(scs_globals, 'tp_connection_base_color'), 'tp_connection_base_color'),
             "InfoText": (tuple, get_default(scs_globals, 'info_text_color'), 'info_text_color'),
             "BasePaint": (tuple, get_default(scs_globals, 'base_paint_color'), 'base_paint_color'),
+            "TrailerLoadEasy": (tuple, get_default(scs_globals, 'trailer_load_easy_color'), 'trailer_load_easy_color'),
+            "TrailerLoadMedium": (tuple, get_default(scs_globals, 'trailer_load_medium_color'), 'trailer_load_medium_color'),
+            "TrailerLoadHard": (tuple, get_default(scs_globals, 'trailer_load_hard_color'), 'trailer_load_hard_color'),
+            "TrailerUnloadEasy": (tuple, get_default(scs_globals, 'trailer_unload_easy_color'), 'trailer_unload_easy_color'),
+            "TrailerUnloadMedium": (tuple, get_default(scs_globals, 'trailer_unload_medium_color'), 'trailer_unload_medium_color'),
+            "TrailerUnloadHard": (tuple, get_default(scs_globals, 'trailer_unload_hard_color'), 'trailer_unload_hard_color'),
         }
 
 

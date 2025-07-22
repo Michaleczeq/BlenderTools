@@ -143,7 +143,8 @@ def cmp_ver_str_unofficial(version_str, version_str2):
     version_str = version_str.split(".")
 
     # Threat hash from official version as 0
-    if not version_str[2].isdigit():
+    # Because data from version_str string is returned as number, we comparing it with big number
+    if int(version_str[2]) > 100:
         version_str[2] = 0
 
     # First version smaller than second

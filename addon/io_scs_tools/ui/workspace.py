@@ -222,6 +222,33 @@ class SCS_TOOLS_PT_LocatorsDisplay(_WorkspacePanelBlDefs, Panel):
         layout.prop(scs_globals, 'locator_coll_face_color')
 
 
+class SCS_TOOLS_PT_TrailerDisplay(_WorkspacePanelBlDefs, Panel):
+    """Draw trailer display panel."""
+
+    bl_parent_id = SCS_TOOLS_PT_LocatorsDisplay.__name__
+    bl_label = "Trailer"
+    bl_options = {'DEFAULT_CLOSED'}
+
+    def draw(self, context):
+        layout = self.get_layout()
+        scs_globals = _get_scs_globals()
+
+        # scs tools main panel if config is being updated
+        layout.enabled = not scs_globals.config_update_lock
+
+        layout.use_property_split = True
+        layout.use_property_decorate = False
+        layout.enabled = scs_globals.display_locators and not scs_globals.config_update_lock
+
+        layout.prop(scs_globals, 'show_trailer_type')
+        layout.prop(scs_globals, 'trailer_load_easy_color')
+        layout.prop(scs_globals, 'trailer_load_medium_color')
+        layout.prop(scs_globals, 'trailer_load_hard_color')
+        layout.prop(scs_globals, 'trailer_unload_easy_color')
+        layout.prop(scs_globals, 'trailer_unload_medium_color')
+        layout.prop(scs_globals, 'trailer_unload_hard_color')
+
+
 class SCS_TOOLS_PT_ConnectionsDisplay(_WorkspacePanelBlDefs, Panel):
     """Draw connections display panel."""
 
@@ -277,6 +304,7 @@ classes = (
     SCS_TOOLS_PT_PathSettings,
     SCS_TOOLS_PT_DisplaySettings,
     SCS_TOOLS_PT_LocatorsDisplay,
+    SCS_TOOLS_PT_TrailerDisplay,
     SCS_TOOLS_PT_ConnectionsDisplay,
     SCS_TOOLS_PT_OtherSetttings,
 )

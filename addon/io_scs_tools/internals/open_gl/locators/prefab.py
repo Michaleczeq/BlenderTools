@@ -108,74 +108,289 @@ def draw_shape_spawn_point_custom(mat, scs_globals, obj):
     :return:
     """
 
-    color = (
-        scs_globals.locator_prefab_wire_color.r,
-        scs_globals.locator_prefab_wire_color.g,
-        scs_globals.locator_prefab_wire_color.b,
-        1.0
-    )
+    # Draw main Spawn Point shape
+    draw_shape_spawn_point(mat, scs_globals)
 
-    # Load
-    if (int(obj.scs_props.locator_prefab_custom_depot_type) / 4) == 1:
-        match obj.scs_props.locator_prefab_custom_parking_difficulty:
-            case "1":   # Easy
-                difficulty_color = (0.0, 1.0, 1.0, 1.0)
-            case "2":   # Medium
-                difficulty_color = (0.0, 0.471, 1.0, 1.0)
-            case "3":   # Hard
-                difficulty_color = (0.0, 0.0, 0.784, 1.0)
-            case _:
-                difficulty_color = (0.0, 1.0, 1.0, 1.0)
-    # Unload
-    else:
-        match obj.scs_props.locator_prefab_custom_parking_difficulty:
-            case "1":   # Easy
-                difficulty_color = (1.0, 1.0, 0.0, 1.0)
-            case "2":   # Medium
-                difficulty_color = (0.706, 0.471, 0.0, 1.0)
-            case "3":   # Hard
-                difficulty_color = (1.0, 0.0, 0.0, 1.0)
-            case _:
-                difficulty_color = (1.0, 1.0, 0.0, 1.0)
+    # Get locator properties
+    depot_type = int(obj.scs_props.locator_prefab_custom_depot_type) >> 2
+    cust_lenght = int(obj.scs_props.locator_prefab_custom_lenght) >> 4
+    parking_diff = int(obj.scs_props.locator_prefab_custom_parking_difficulty)
+    cust_rule = int(obj.scs_props.locator_prefab_custom_rule) >> 16
 
     # Matrix without "Locator Size"
     mat_orig = obj.matrix_world
 
-    width = 3.4
-    height = 0.05 # Height above ground to prevent z-fight
-    lenght = (int(obj.scs_props.locator_prefab_custom_lenght) / 16) + 14
+    # Load
+    if depot_type == 1:
+        match parking_diff:
+            case 1:   # Easy
+                difficulty_color = scs_globals.trailer_load_easy_color
+            case 2:   # Medium
+                difficulty_color = scs_globals.trailer_load_medium_color
+            case 3:   # Hard
+                difficulty_color = scs_globals.trailer_load_hard_color
+            case _:
+                difficulty_color = (0.0, 1.0, 1.0)
+    # Unload
+    else:
+        match parking_diff:
+            case 1:   # Easy
+                difficulty_color = scs_globals.trailer_unload_easy_color
+            case 2:   # Medium
+                difficulty_color = scs_globals.trailer_unload_medium_color
+            case 3:   # Hard
+                difficulty_color = scs_globals.trailer_unload_hard_color
+            case _:
+                difficulty_color = (1.0, 1.0, 0.0)
+
+    color = (
+        difficulty_color.r,
+        difficulty_color.g,
+        difficulty_color.b,
+        1.0
+    )
+
+    # Local variables
+    width = 3.4                 # Full width of depot shape
+    height = 0.05               # Height above ground to prevent z-fight
+    lenght = 14 + cust_lenght   # Lenght of depo shape (we assume that cust_lenght (index) corresponds to additional lenght in meters eg. 14m + (idx) 0 = 14m)
+    lenght_t = 5.0/2            # Lenght of trailer type shape
 
     # Set diffrent shape for "Unlimited" lenght (max size of last fixed lenght)
     if lenght == 29.0:
         lenght = 20.0
 
-        _primitive.append_line_vertex((mat_orig @ Vector((0.0, lenght + 3.0, height))), difficulty_color)
-        _primitive.append_line_vertex((mat_orig @ Vector((width/2, lenght + 1.0, height))), difficulty_color, is_strip=True)
-        _primitive.append_line_vertex((mat_orig @ Vector((width/2, lenght + 8.0, height))), difficulty_color, is_strip=True)
-        _primitive.append_line_vertex((mat_orig @ Vector((0.0, lenght + 10.0, height))), difficulty_color, is_strip=True)
-        _primitive.append_line_vertex((mat_orig @ Vector((-width/2, lenght + 8.0, height))), difficulty_color, is_strip=True)
-        _primitive.append_line_vertex((mat_orig @ Vector((-width/2, lenght + 1.0, height))), difficulty_color, is_strip=True)
-        _primitive.append_line_vertex((mat_orig @ Vector((0.0, lenght + 3.0, height))), difficulty_color)
+        _primitive.append_line_vertex((mat_orig @ Vector((0.0, lenght + 3.0, height))), color)
+        _primitive.append_line_vertex((mat_orig @ Vector((width/2, lenght + 1.0, height))), color, is_strip=True)
+        _primitive.append_line_vertex((mat_orig @ Vector((width/2, lenght + 8.0, height))), color, is_strip=True)
+        _primitive.append_line_vertex((mat_orig @ Vector((0.0, lenght + 10.0, height))), color, is_strip=True)
+        _primitive.append_line_vertex((mat_orig @ Vector((-width/2, lenght + 8.0, height))), color, is_strip=True)
+        _primitive.append_line_vertex((mat_orig @ Vector((-width/2, lenght + 1.0, height))), color, is_strip=True)
+        _primitive.append_line_vertex((mat_orig @ Vector((0.0, lenght + 3.0, height))), color)
+    
+    # Depot
+    _primitive.append_line_vertex((mat_orig @ Vector((width/2, 0.0, height))), color)
+    _primitive.append_line_vertex((mat_orig @ Vector((-width/2, 0.0, height))), color, is_strip=True)
+    _primitive.append_line_vertex((mat_orig @ Vector((-width/2, lenght, height))), color, is_strip=True)
+    _primitive.append_line_vertex((mat_orig @ Vector((0.0, lenght + 2.0, height))), color, is_strip=True)
+    _primitive.append_line_vertex((mat_orig @ Vector((width/2, lenght, height))), color, is_strip=True)
+    _primitive.append_line_vertex((mat_orig @ Vector((width/2, 0.0, height))), color)
 
-    # Locator
-    _primitive.append_line_vertex((mat @ Vector((0.0, 0.0, scs_globals.locator_empty_size))), color) # , color
-    _primitive.append_line_vertex((mat @ Vector((0.0, 0.0, 0.75))), color)
-    _primitive.append_line_vertex((mat @ Vector((-0.1299, 0.0, 0.525))), color)
-    _primitive.append_line_vertex((mat @ Vector((0.1299, 0.0, 0.675))), color)
-    _primitive.append_line_vertex((mat @ Vector((0.1299, 0.0, 0.525))), color)
-    _primitive.append_line_vertex((mat @ Vector((-0.1299, 0.0, 0.675))), color)
-    _primitive.append_line_vertex((mat @ Vector((0.0, -0.1299, 0.525))), color)
-    _primitive.append_line_vertex((mat @ Vector((0.0, 0.1299, 0.675))), color)
-    _primitive.append_line_vertex((mat @ Vector((0.0, 0.1299, 0.525))), color)
-    _primitive.append_line_vertex((mat @ Vector((0.0, -0.1299, 0.675))), color)
+    # Set shape for "Trailer Type"
+    height = height + 0.20   # Height override to move shape a little bit above ground
+    if (cust_rule != 0) and scs_globals.show_trailer_type:
+        match cust_rule:
+            case 1:   # Box Trailer
+                # Bottom rectangle
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 - lenght_t, height))), color)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 + lenght_t, height))), color, is_strip=True)
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.5, lenght/2 + lenght_t, height))), color, is_strip=True)
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.5, lenght/2 - lenght_t, height))), color, is_strip=True)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 - lenght_t, height))), color)
+
+                # Top rectangle
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 - lenght_t, height + 2))), color)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 + lenght_t, height + 2))), color, is_strip=True)
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.5, lenght/2 + lenght_t, height + 2))), color, is_strip=True)
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.5, lenght/2 - lenght_t, height + 2))), color, is_strip=True)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 - lenght_t, height + 2))), color)
+                
+                # Edges
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 - lenght_t, height))), color)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 - lenght_t, height + 2))), color)
+
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 + lenght_t, height))), color)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 + lenght_t, height + 2))), color)
+
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.5, lenght/2 - lenght_t, height))), color)
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.5, lenght/2 - lenght_t, height + 2))), color)
+
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.5, lenght/2 + lenght_t, height))), color)
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.5, lenght/2 + lenght_t, height + 2))), color)
+
+            case 2:   # Tank Trailer
+                # Rear hexagon
+                _primitive.append_line_vertex((mat_orig @ Vector((0.000, lenght/2 - lenght_t, height))), color)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.433, lenght/2 - lenght_t, height + 0.25))), color, is_strip=True)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.433, lenght/2 - lenght_t, height + 0.75))), color, is_strip=True)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.000, lenght/2 - lenght_t, height + 1.00))), color, is_strip=True)
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.433, lenght/2 - lenght_t, height + 0.75))), color, is_strip=True)
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.433, lenght/2 - lenght_t, height + 0.25))), color, is_strip=True)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.00, lenght/2 - lenght_t, height))), color)
+
+                # Front hexagon
+                _primitive.append_line_vertex((mat_orig @ Vector((0.000, lenght/2 + lenght_t, height))), color)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.433, lenght/2 + lenght_t, height + 0.25))), color, is_strip=True)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.433, lenght/2 + lenght_t, height + 0.75))), color, is_strip=True)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.000, lenght/2 + lenght_t, height + 1.00))), color, is_strip=True)
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.433, lenght/2 + lenght_t, height + 0.75))), color, is_strip=True)
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.433, lenght/2 + lenght_t, height + 0.25))), color, is_strip=True)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.00, lenght/2 + lenght_t, height))), color)
+
+                # Edges
+                _primitive.append_line_vertex((mat_orig @ Vector((0.000, lenght/2 - lenght_t, height))), color)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.000, lenght/2 + lenght_t, height))), color)
+
+                _primitive.append_line_vertex((mat_orig @ Vector((0.433, lenght/2 - lenght_t, height + 0.25))), color)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.433, lenght/2 + lenght_t, height + 0.25))), color)
+
+                _primitive.append_line_vertex((mat_orig @ Vector((0.433, lenght/2 - lenght_t, height + 0.75))), color)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.433, lenght/2 + lenght_t, height + 0.75))), color)
+
+                _primitive.append_line_vertex((mat_orig @ Vector((0.000, lenght/2 - lenght_t, height + 1.00))), color)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.000, lenght/2 + lenght_t, height + 1.00))), color)
+
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.433, lenght/2 - lenght_t, height + 0.75))), color)
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.433, lenght/2 + lenght_t, height + 0.75))), color)
+
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.433, lenght/2 - lenght_t, height + 0.25))), color)
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.433, lenght/2 + lenght_t, height + 0.25))), color)
+
+            case 3:   # Dump & Bulk
+                # Top rectangle
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 - lenght_t, height + 1))), color)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 + lenght_t, height + 1))), color, is_strip=True)
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.5, lenght/2 + lenght_t, height + 1))), color, is_strip=True)
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.5, lenght/2 - lenght_t, height + 1))), color, is_strip=True)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 - lenght_t, height + 1))), color)
+                
+                # Edges
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 - lenght_t, height + 1))), color)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.0, lenght/2, height))), color, is_strip=True)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 + lenght_t, height + 1))), color)
+
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.5, lenght/2 - lenght_t, height + 1))), color)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.0, lenght/2, height))), color, is_strip=True)
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.5, lenght/2 + lenght_t, height + 1))), color)
+
+            case 4:   # Platform, Log & Container
+                # Bottom rectangle
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 - lenght_t, height))), color)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 + lenght_t, height))), color, is_strip=True)
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.5, lenght/2 + lenght_t, height))), color, is_strip=True)
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.5, lenght/2 - lenght_t, height))), color, is_strip=True)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 - lenght_t, height))), color)
+
+                # Top rectangle
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 - lenght_t, height + 0.5))), color)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 + lenght_t, height + 0.5))), color, is_strip=True)
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.5, lenght/2 + lenght_t, height + 0.5))), color, is_strip=True)
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.5, lenght/2 - lenght_t, height + 0.5))), color, is_strip=True)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 - lenght_t, height + 0.5))), color)
+                
+                # Edges
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 - lenght_t, height))), color)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 - lenght_t, height + 0.5))), color)
+
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 + lenght_t, height))), color)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 + lenght_t, height + 0.5))), color)
+
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.5, lenght/2 - lenght_t, height))), color)
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.5, lenght/2 - lenght_t, height + 0.5))), color)
+
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.5, lenght/2 + lenght_t, height))), color)
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.5, lenght/2 + lenght_t, height + 0.5))), color)
+
+            case 5:   # Livestock
+                # left-right
+                _primitive.append_line_vertex((mat_orig @ Vector((-1.0, lenght/2, height + 1.0))), color)
+                _primitive.append_line_vertex((mat_orig @ Vector((1.0, lenght/2, height + 1.0))), color)
+
+                # front-back
+                _primitive.append_line_vertex((mat_orig @ Vector((0.0, lenght/2 + 1.0, height + 1.0))), color)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.0, lenght/2 - 1.0, height + 1.0))), color)
+
+                # up-down
+                _primitive.append_line_vertex((mat_orig @ Vector((0.0, lenght/2, height + 2.0))), color)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.0, lenght/2, height))), color)
+
+            case 6:   # Log Trailer
+                # Bottom rectangle
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 - lenght_t, height))), color)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 + lenght_t, height))), color, is_strip=True)
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.5, lenght/2 + lenght_t, height))), color, is_strip=True)
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.5, lenght/2 - lenght_t, height))), color, is_strip=True)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 - lenght_t, height))), color)
+
+                # Top rectangle
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 - lenght_t, height + 0.5))), color)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 + lenght_t, height + 0.5))), color, is_strip=True)
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.5, lenght/2 + lenght_t, height + 0.5))), color, is_strip=True)
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.5, lenght/2 - lenght_t, height + 0.5))), color, is_strip=True)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 - lenght_t, height + 0.5))), color)
+                
+                # Edges
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 - lenght_t, height))), color)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 - lenght_t, height + 2))), color)
+
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 + lenght_t, height))), color)
+                _primitive.append_line_vertex((mat_orig @ Vector((0.5, lenght/2 + lenght_t, height + 2))), color)
+
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.5, lenght/2 - lenght_t, height))), color)
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.5, lenght/2 - lenght_t, height + 2))), color)
+
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.5, lenght/2 + lenght_t, height))), color)
+                _primitive.append_line_vertex((mat_orig @ Vector((-0.5, lenght/2 + lenght_t, height + 2))), color)
+
+
+def draw_shape_spawn_point_trailer(mat, scs_globals, obj, color_idx):
+    """
+    Draws fixed shape for old trailer rails of "Spawn Point" type.
+    :param mat:
+    :param scs_globals:
+    :param obj:
+    :param color_idx: 0 - Load, 1 - Unload Easy, 2 - Unload Medium, 3 - Unload Hard
+    :type color_idx: int
+    :return:
+    """
+
+    # Draw main Spawn Point shape
+    draw_shape_spawn_point(mat, scs_globals)
+
+    # Matrix without "Locator Size"
+    mat_orig = obj.matrix_world
+
+    # Load colors from settings
+    match color_idx:
+        case 0:   # Load Easy
+            difficulty_color = scs_globals.trailer_load_easy_color
+        case 1:   # Unload Easy
+            difficulty_color = scs_globals.trailer_unload_easy_color
+        case 2:   # Unload Medium
+            difficulty_color = scs_globals.trailer_unload_medium_color
+        case 3:   # Unload Hard
+            difficulty_color = scs_globals.trailer_unload_hard_color
+        case _:
+            difficulty_color = (1.0, 1.0, 0.0)
+
+    color = (
+        difficulty_color.r,
+        difficulty_color.g,
+        difficulty_color.b,
+        1.0
+    )
+
+    # Local variables
+    width = 3.4                 # Full width of depot shape
+    height = 0.05               # Height above ground to prevent z-fight
+    lenght = 20                 # Lenght of depo shape (excluding "Unlimited" shape)
+
+    # Shape for "Unlimited" lenght (default for old rail system)
+    _primitive.append_line_vertex((mat_orig @ Vector((0.0, lenght + 3.0, height))), color)
+    _primitive.append_line_vertex((mat_orig @ Vector((width/2, lenght + 1.0, height))), color, is_strip=True)
+    _primitive.append_line_vertex((mat_orig @ Vector((width/2, lenght + 8.0, height))), color, is_strip=True)
+    _primitive.append_line_vertex((mat_orig @ Vector((0.0, lenght + 10.0, height))), color, is_strip=True)
+    _primitive.append_line_vertex((mat_orig @ Vector((-width/2, lenght + 8.0, height))), color, is_strip=True)
+    _primitive.append_line_vertex((mat_orig @ Vector((-width/2, lenght + 1.0, height))), color, is_strip=True)
+    _primitive.append_line_vertex((mat_orig @ Vector((0.0, lenght + 3.0, height))), color)
 
     # Depot
-    _primitive.append_line_vertex((mat_orig @ Vector((width/2, 0.0, height))), difficulty_color)
-    _primitive.append_line_vertex((mat_orig @ Vector((-width/2, 0.0, height))), difficulty_color, is_strip=True)
-    _primitive.append_line_vertex((mat_orig @ Vector((-width/2, lenght, height))), difficulty_color, is_strip=True)
-    _primitive.append_line_vertex((mat_orig @ Vector((0.0, lenght + 2.0, height))), difficulty_color, is_strip=True)
-    _primitive.append_line_vertex((mat_orig @ Vector((width/2, lenght, height))), difficulty_color, is_strip=True)
-    _primitive.append_line_vertex((mat_orig @ Vector((width/2, 0.0, height))), difficulty_color)
+    _primitive.append_line_vertex((mat_orig @ Vector((width/2, 0.0, height))), color)
+    _primitive.append_line_vertex((mat_orig @ Vector((-width/2, 0.0, height))), color, is_strip=True)
+    _primitive.append_line_vertex((mat_orig @ Vector((-width/2, lenght, height))), color, is_strip=True)
+    _primitive.append_line_vertex((mat_orig @ Vector((0.0, lenght + 2.0, height))), color, is_strip=True)
+    _primitive.append_line_vertex((mat_orig @ Vector((width/2, lenght, height))), color, is_strip=True)
+    _primitive.append_line_vertex((mat_orig @ Vector((width/2, 0.0, height))), color)
 
 
 def draw_shape_traffic_light(mat, scs_globals):
@@ -291,6 +506,14 @@ def draw_prefab_locator(obj, scs_globals):
         if not obj.scs_props.locator_preview_model_present or not scs_globals.show_preview_models:
             if obj.scs_props.locator_prefab_spawn_type == str(_PL_consts.PSP.CUSTOM):
                 draw_shape_spawn_point_custom(mat, scs_globals, obj)
+            elif obj.scs_props.locator_prefab_spawn_type == str(_PL_consts.PSP.TRAILER_POS):    # Load (Easy) OLD
+                draw_shape_spawn_point_trailer(mat, scs_globals, obj, 0)
+            elif obj.scs_props.locator_prefab_spawn_type == str(_PL_consts.PSP.UNLOAD_EASY_POS):
+                draw_shape_spawn_point_trailer(mat, scs_globals, obj, 1)
+            elif obj.scs_props.locator_prefab_spawn_type == str(_PL_consts.PSP.UNLOAD_MEDIUM_POS):
+                draw_shape_spawn_point_trailer(mat, scs_globals, obj, 2)
+            elif obj.scs_props.locator_prefab_spawn_type == str(_PL_consts.PSP.UNLOAD_HARD_POS):
+                draw_shape_spawn_point_trailer(mat, scs_globals, obj, 3)
             else:
                 draw_shape_spawn_point(mat, scs_globals)
 

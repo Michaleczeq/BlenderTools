@@ -559,6 +559,34 @@ class SCSGlobals(bpy.types.PropertyGroup):
         self.on_display_setting_update(context)
         _config_container.update_item_in_file('GlobalColors.ColliderLocatorsFace', tuple(self.locator_coll_face_color))
 
+    def show_trailer_type_update(self, context):
+        self.on_display_setting_update(context)
+        _config_container.update_item_in_file('GlobalDisplay.ShowTrailerType', int(self.show_trailer_type))
+
+    def trailer_load_easy_color_update(self, context):
+        self.on_display_setting_update(context)
+        _config_container.update_item_in_file('GlobalColors.TrailerLoadEasy', tuple(self.trailer_load_easy_color))
+    
+    def trailer_load_medium_color_update(self, context):
+        self.on_display_setting_update(context)
+        _config_container.update_item_in_file('GlobalColors.TrailerLoadMedium', tuple(self.trailer_load_medium_color))
+
+    def trailer_load_hard_color_update(self, context):
+        self.on_display_setting_update(context)
+        _config_container.update_item_in_file('GlobalColors.TrailerLoadHard', tuple(self.trailer_load_hard_color))
+
+    def trailer_unload_easy_color_update(self, context):
+        self.on_display_setting_update(context)
+        _config_container.update_item_in_file('GlobalColors.TrailerUnloadEasy', tuple(self.trailer_unload_easy_color))
+    
+    def trailer_unload_medium_color_update(self, context):
+        self.on_display_setting_update(context)
+        _config_container.update_item_in_file('GlobalColors.TrailerUnloadMedium', tuple(self.trailer_unload_medium_color))
+
+    def trailer_unload_hard_color_update(self, context):
+        self.on_display_setting_update(context)
+        _config_container.update_item_in_file('GlobalColors.TrailerUnloadHard', tuple(self.trailer_unload_hard_color))
+
     def display_connections_update(self, context):
         self.on_display_setting_update(context)
         _config_container.update_item_in_file('GlobalDisplay.DisplayConnections', int(self.display_connections))
@@ -732,6 +760,66 @@ class SCSGlobals(bpy.types.PropertyGroup):
         default=(0.15, 0.05, 0.05),
         # default=(0.065, 0.18, 0.3),
         update=locator_coll_face_color_update,
+    )
+    show_trailer_type: BoolProperty(
+        name="Show Trailer Type",
+        description="Show trailer type shape for locators",
+        default=True,
+        update=show_trailer_type_update
+    )
+    trailer_load_easy_color: FloatVectorProperty(
+        name="Trailer Load (Easy)",
+        description="Color of trailer loading zone - easy difficulty",
+        options={'HIDDEN'},
+        subtype='COLOR',
+        min=0, max=1,
+        default=(0.0, 1.0, 1.0),
+        update=trailer_load_easy_color_update,
+    )
+    trailer_load_medium_color: FloatVectorProperty(
+        name="Trailer Load (Medium)",
+        description="Color of trailer loading zone - medium difficulty",
+        options={'HIDDEN'},
+        subtype='COLOR',
+        min=0, max=1,
+        default=(0.0, 0.471, 1.0),
+        update=trailer_load_medium_color_update,
+    )
+    trailer_load_hard_color: FloatVectorProperty(
+        name="Trailer Load (Hard)",
+        description="Color of trailer loading zone - hard difficulty",
+        options={'HIDDEN'},
+        subtype='COLOR',
+        min=0, max=1,
+        default=(0.0, 0.0, 0.784),
+        update=trailer_load_hard_color_update,
+    )
+    trailer_unload_easy_color: FloatVectorProperty(
+        name="Trailer Unload (Easy)",
+        description="Color of trailer unloading zone - easy difficulty",
+        options={'HIDDEN'},
+        subtype='COLOR',
+        min=0, max=1,
+        default=(1.0, 1.0, 0.0),
+        update=trailer_unload_easy_color_update,
+    )
+    trailer_unload_medium_color: FloatVectorProperty(
+        name="Trailer Unload (Medium)",
+        description="Color of trailer unloading zone - medium difficulty",
+        options={'HIDDEN'},
+        subtype='COLOR',
+        min=0, max=1,
+        default=(0.706, 0.471, 0.0),
+        update=trailer_unload_medium_color_update,
+    )
+    trailer_unload_hard_color: FloatVectorProperty(
+        name="Trailer Unload (Hard)",
+        description="Color of trailer unloading zone - hard difficulty",
+        options={'HIDDEN'},
+        subtype='COLOR',
+        min=0, max=1,
+        default=(1.0, 0.0, 0.0),
+        update=trailer_unload_hard_color_update,
     )
     display_connections: BoolProperty(
         name="Display Connections",

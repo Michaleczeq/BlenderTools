@@ -30,6 +30,7 @@ from io_scs_tools.utils import get_scs_globals as _get_scs_globals
 from io_scs_tools.utils import get_scs_inventories as _get_scs_inventories
 from io_scs_tools.ui import shared as _shared
 
+_UI_SPLIT_PERC = 0.4
 
 class _ObjectPanelBlDefs:
     bl_space_type = "PROPERTIES"
@@ -282,17 +283,38 @@ class SCS_TOOLS_PT_Locator(_ObjectPanelBlDefs, Panel):
                 layout.prop(obj.scs_props, 'locator_model_hookup_lamp_height')
 
     @staticmethod
-    def draw_collision_locator(layout, obj):
+    def draw_collision_locator(layout, obj, split_perc):
         layout.use_property_split = True
         layout.use_property_decorate = False
 
         layout.prop(obj.scs_props, 'locator_collider_type')
 
-        col = layout.column()
-        col.prop(obj.scs_props, 'locator_collider_wires', text='Draw Wireframes')
-        col.prop(obj.scs_props, 'locator_collider_faces', text='Draw Faces')
+        # Temporary turning off to create correct split for checkbox labels
+        layout.use_property_split = False
+
+        split = layout.split(factor=split_perc)
+        col_label = split.column()
+        col_label.alignment = 'RIGHT'
+        col_label.label(text="Visibility")
+
+        col_checks = split.column()
+        check_col_wire = col_checks.row()
+        check_col_wire.prop(obj.scs_props, 'locator_collider_wires', text='Draw Wireframes')
+        check_col_face = col_checks.row()
+        check_col_face.prop(obj.scs_props, 'locator_collider_faces', text='Draw Faces')
+
         if obj.scs_props.locator_collider_type != 'Convex':
-            layout.prop(obj.scs_props, 'locator_collider_centered')
+
+            split = layout.split(factor=split_perc)
+            col_label = split.column()
+            col_label.alignment = 'RIGHT'
+            col_label.label(text="Properties")
+
+            col_checks = split.column()
+            check_convex = col_checks.row()
+            check_convex.prop(obj.scs_props, 'locator_collider_centered')
+
+        layout.use_property_split = True
 
         layout.prop(obj.scs_props, 'locator_collider_mass')
 
@@ -418,16 +440,24 @@ class SCS_TOOLS_PT_Locator(_ObjectPanelBlDefs, Panel):
         loc_set.prop(obj.scs_props, 'locator_prefab_tsem_cyc_delay')
 
     @staticmethod
-    def draw_prefab_navigation_point(layout, context, obj):
-        layout.use_property_split = True
+    def draw_prefab_navigation_point(layout, context, obj, split_perc):
+        layout.use_property_split = False
         layout.use_property_decorate = False
 
-        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+        split = layout.split(factor=split_perc)
+        col_label = split.column()
+        col_label.alignment = 'RIGHT'
+        col_label.label(text="Properties")
 
-        col = flow.column()
-        col.prop(obj.scs_props, 'locator_prefab_np_low_probab')
-        col.prop(obj.scs_props, 'locator_prefab_np_add_priority')
-        col.prop(obj.scs_props, 'locator_prefab_np_limit_displace')
+        col_checks = split.column()
+        check_low_prob = col_checks.row()
+        check_low_prob.prop(obj.scs_props, 'locator_prefab_np_low_probab')
+        check_add_prio = col_checks.row()
+        check_add_prio.prop(obj.scs_props, 'locator_prefab_np_add_priority')
+        check_limit_disp = col_checks.row()
+        check_limit_disp.prop(obj.scs_props, 'locator_prefab_np_limit_displace')
+
+        layout.use_property_split = True
 
         # allowed vehicles
         layout.prop(obj.scs_props, 'locator_prefab_np_allowed_veh')
@@ -479,22 +509,31 @@ class SCS_TOOLS_PT_Locator(_ObjectPanelBlDefs, Panel):
             loc_set.operator('object.scs_tools_connect_prefab_locators', text="Connect / Disconnect Navigation Points", icon='LINKED')
 
     @staticmethod
-    def draw_prefab_map_point(layout, context, obj):
+    def draw_prefab_map_point(layout, context, obj, split_perc):
         # box_row_box = layout
-        layout.use_property_split = True
+        layout.use_property_split = False
         layout.use_property_decorate = False
 
         is_polygon = int(obj.scs_props.locator_prefab_mp_road_size) == _PL_consts.MPVF.ROAD_SIZE_MANUAL
 
-        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+        split = layout.split(factor=split_perc)
+        col_label = split.column()
+        col_label.alignment = 'RIGHT'
+        col_label.label(text="Properties")
 
-        col = flow.column()
-        col.prop(obj.scs_props, 'locator_prefab_mp_road_over')
-        col.prop(obj.scs_props, 'locator_prefab_mp_no_outline')
-        col.enabled = not is_polygon
-        col.prop(obj.scs_props, 'locator_prefab_mp_no_arrow')
-        col.enabled = not is_polygon
-        col.prop(obj.scs_props, 'locator_prefab_mp_prefab_exit')
+        col_checks = split.column()
+        check_road_ov = col_checks.row()
+        check_road_ov.prop(obj.scs_props, 'locator_prefab_mp_road_over')
+        check_no_out = col_checks.row()
+        check_no_out.prop(obj.scs_props, 'locator_prefab_mp_no_outline')
+        check_no_arr = col_checks.row()
+        check_no_arr.enabled = not is_polygon
+        check_no_arr.prop(obj.scs_props, 'locator_prefab_mp_no_arrow')
+        check_pr_exit = col_checks.row()
+        check_pr_exit.enabled = not is_polygon
+        check_pr_exit.prop(obj.scs_props, 'locator_prefab_mp_prefab_exit')
+
+        layout.use_property_split = True
 
         layout.prop(obj.scs_props, 'locator_prefab_mp_road_size')
         row = _shared.create_row(layout, use_split=True, enabled=not is_polygon)
@@ -527,7 +566,7 @@ class SCS_TOOLS_PT_Locator(_ObjectPanelBlDefs, Panel):
             loc_set.operator('object.scs_tools_connect_prefab_locators', text="Connect / Disconnect Map Points", icon='LINKED')
 
     @staticmethod
-    def draw_prefab_trigger_point(layout, context, obj):
+    def draw_prefab_trigger_point(layout, context, obj, split_perc):
         layout.use_property_split = True
         layout.use_property_decorate = False
 
@@ -539,13 +578,25 @@ class SCS_TOOLS_PT_Locator(_ObjectPanelBlDefs, Panel):
         layout.prop(obj.scs_props, 'locator_prefab_tp_range')
         layout.prop(obj.scs_props, 'locator_prefab_tp_reset_delay')
 
-        flow = layout.grid_flow(row_major=True, columns=0, even_columns=True, even_rows=False, align=False)
+        # Temporary turning off to create correct split for checkbox labels
+        layout.use_property_split = False
 
-        col = flow.column()
-        col.prop(obj.scs_props, 'locator_prefab_tp_sphere_trigger')
-        col.prop(obj.scs_props, 'locator_prefab_tp_partial_activ')
-        col.prop(obj.scs_props, 'locator_prefab_tp_onetime_activ')
-        col.prop(obj.scs_props, 'locator_prefab_tp_manual_activ')
+        split = layout.split(factor=split_perc)
+        col_label = split.column()
+        col_label.alignment = 'RIGHT'
+        col_label.label(text="Properties")
+
+        col_checks = split.column()
+        check_sph_tr = col_checks.row()
+        check_sph_tr.prop(obj.scs_props, 'locator_prefab_tp_sphere_trigger')
+        check_part_act = col_checks.row()
+        check_part_act.prop(obj.scs_props, 'locator_prefab_tp_partial_activ')
+        check_one_tim_act = col_checks.row()
+        check_one_tim_act.prop(obj.scs_props, 'locator_prefab_tp_onetime_activ')
+        check_man_act = col_checks.row()
+        check_man_act.prop(obj.scs_props, 'locator_prefab_tp_manual_activ')
+
+        layout.use_property_split = True
 
         loc_set = layout.row()
         if len(context.selected_objects) == 2:
@@ -586,7 +637,7 @@ class SCS_TOOLS_PT_Locator(_ObjectPanelBlDefs, Panel):
 
         # COLLISION LOCATORS
         elif obj.scs_props.locator_type == 'Collision':
-            self.draw_collision_locator(layout, obj)
+            self.draw_collision_locator(layout, obj, _UI_SPLIT_PERC)
 
         # PREFAB LOCATORS
         elif obj.scs_props.locator_type == 'Prefab':
@@ -602,11 +653,11 @@ class SCS_TOOLS_PT_Locator(_ObjectPanelBlDefs, Panel):
             elif obj.scs_props.locator_prefab_type == 'Traffic Semaphore':
                 self.draw_prefab_semaphore(layout, obj)
             elif obj.scs_props.locator_prefab_type == 'Navigation Point':
-                self.draw_prefab_navigation_point(layout, context, obj)
+                self.draw_prefab_navigation_point(layout, context, obj, _UI_SPLIT_PERC)
             elif obj.scs_props.locator_prefab_type == 'Map Point':
-                self.draw_prefab_map_point(layout, context, obj)
+                self.draw_prefab_map_point(layout, context, obj, _UI_SPLIT_PERC)
             elif obj.scs_props.locator_prefab_type == 'Trigger Point':
-                self.draw_prefab_trigger_point(layout, context, obj)
+                self.draw_prefab_trigger_point(layout, context, obj, _UI_SPLIT_PERC)
 
 
 class SCS_TOOLS_PT_PreviewModel(_ObjectPanelBlDefs, Panel):
