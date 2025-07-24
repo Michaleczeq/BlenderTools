@@ -60,16 +60,15 @@ def post_load(scene):
     v_parts = last_load_bt_ver.split(".")
     for version, func in VERSIONS_LIST:
         if _info_utils.cmp_ver_str(last_load_bt_ver, version) <= 0:
-            # OFFICIAL version: ( X.Y.ZZZZ or old unofficial X.Y.ZZZZ.U )
-            if int(v_parts[2]) > 100:
+            # OFFICIAL version: ( X.Y.ZZZZ )
+            if len(v_parts) <= 3:
                 # try to add apply fixed function as callback, if failed execute fixes right now
                 if not AsyncPathsInit.append_callback(func):
                     func()
 
-            # UNOFFICIAL version: (X.Y.U) (run only if 2.4 is applied)
+            # UNOFFICIAL version: (X.Y.ZZZZ.U)
             if version == "2.4":
                 for version2, func2 in VERSIONS_LIST_UNOFFICIAL:
-                    print(_info_utils.cmp_ver_str_unofficial(last_load_bt_ver, version2))
                     if _info_utils.cmp_ver_str_unofficial(last_load_bt_ver, version2) < 0:
                         # try to add apply fixed function as callback, if failed execute fixes right now
                         if not AsyncPathsInit.append_callback(func2):
