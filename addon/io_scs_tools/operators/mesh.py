@@ -79,8 +79,10 @@ class LampTool:
                 offset_x = 2
             elif _LT_consts.VehicleSides.RearRight.name == self.vehicle_side:
                 offset_x = 3
-            elif _LT_consts.VehicleSides.Middle.name == self.vehicle_side:
+            elif _LT_consts.VehicleSides.MiddleLeft.name == self.vehicle_side:
                 offset_x = 4
+            elif _LT_consts.VehicleSides.MiddleRight.name == self.vehicle_side:
+                offset_x = 5
             elif _LT_consts.AuxiliaryLampColors.White.name == self.aux_color:  # auxiliary lights checking
                 offset_x = 0
             elif _LT_consts.AuxiliaryLampColors.Orange.name == self.aux_color:

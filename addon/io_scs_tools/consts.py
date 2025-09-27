@@ -194,7 +194,8 @@ class LampTools:
         FrontRight = 1
         RearLeft = 2
         RearRight = 3
-        Middle = 4
+        MiddleLeft = 4
+        MiddleRight = 5
 
     class VehicleLampTypes(Enum):
         """Defined lamp types for vehicles.
