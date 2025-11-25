@@ -205,9 +205,10 @@ class Glass(BaseShader):
         lighting_eval_n.location = (start_pos_x + pos_x_shift * 6, start_pos_y + 1800)
         lighting_eval_n.node_tree = lighting_evaluator_ng.get_node_group()
 
-        fakeopac_hsv_n = node_tree.nodes.new("ShaderNodeSeparateHSV")
+        fakeopac_hsv_n = node_tree.nodes.new("ShaderNodeSeparateColor")
         fakeopac_hsv_n.name = fakeopac_hsv_n.label = Glass.FAKEOPAC_HSV_NODE
         fakeopac_hsv_n.location = (start_pos_x + pos_x_shift * 6, start_pos_y + 1500)
+        fakeopac_hsv_n.mode = "HSV"
 
         # pass 6
         add_env_n = node_tree.nodes.new("ShaderNodeGroup")
@@ -325,14 +326,14 @@ class Glass(BaseShader):
         node_tree.links.new(fakeopac_spec_mix_n.inputs[0], final_spec_n.outputs[0])
         node_tree.links.new(fakeopac_spec_mix_n.inputs[1], lighting_eval_n.outputs['Specular Lighting'])
 
-        node_tree.links.new(fakeopac_add_sv_n.inputs[0], fakeopac_hsv_n.outputs['S'])
-        node_tree.links.new(fakeopac_add_sv_n.inputs[1], fakeopac_hsv_n.outputs['V'])
+        node_tree.links.new(fakeopac_add_sv_n.inputs[0], fakeopac_hsv_n.outputs[1])     # Saturation
+        node_tree.links.new(fakeopac_add_sv_n.inputs[1], fakeopac_hsv_n.outputs[2])     # Value
 
         # pass 7
         node_tree.links.new(fakeopac_sub_sv_n.inputs[0], fakeopac_add_sv_n.outputs['Value'])
-        node_tree.links.new(fakeopac_sub_sv_n.inputs[1], fakeopac_hsv_n.outputs['V'])
+        node_tree.links.new(fakeopac_sub_sv_n.inputs[1], fakeopac_hsv_n.outputs[2])     # Value
 
-        node_tree.links.new(fakeopac_v_inv_n.inputs[1], fakeopac_hsv_n.outputs['V'])
+        node_tree.links.new(fakeopac_v_inv_n.inputs[1], fakeopac_hsv_n.outputs[2])      # Value
 
         # pass 8
         node_tree.links.new(fakeopac_add_spec_mix_n.inputs[0], add_env_n.outputs['Environment Addition Color'])

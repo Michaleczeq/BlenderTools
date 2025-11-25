@@ -152,22 +152,22 @@ class SCS_TOOLS_OT_Show3DViewReport(bpy.types.Operator):
             img_name = _OP_consts.View3DReport.BT_BANNER_IMG_NAME
 
         if img_name not in bpy.data.images:
-
             img_path = os.path.join(_path_utils.get_addon_installation_paths()[0], "ui", "banners", img_name)
             img = bpy.data.images.load(img_path, check_existing=True)
             img.colorspace_settings.name = 'sRGB'
             img.alpha_mode = 'CHANNEL_PACKED'
 
         else:
-
             img = bpy.data.images[img_name]
 
-        texture = gpu.texture.from_image(img)
+        if not img.has_data:
+            img.reload()
 
-        # ensure that image is loaded in GPU memory aka has proper bindcode,
-        # we have to that each time because if operator is shown for long time blender might free it on it's own
-        if img.bindcode == 0:
-            img.gl_load()
+        try:
+            texture = gpu.texture.from_image(img)
+        except RuntimeError:
+            img.reload()
+            texture = gpu.texture.from_image(img)
 
         return texture, img.size[0], img.size[1]
 

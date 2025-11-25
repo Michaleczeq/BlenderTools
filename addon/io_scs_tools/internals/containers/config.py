@@ -261,7 +261,10 @@ class _ConfigSection:
             if not attr:
                 continue
 
-            setattr(scs_globals, attr, value)
+            # prevents the configuration from looping when starting Blender
+            current = getattr(scs_globals, attr, None)
+            if current != value:
+                setattr(scs_globals, attr, value)
 
     def fill_from_pix_section(self, section):
         """Fill config section with data from given pix section.

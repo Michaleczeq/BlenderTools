@@ -155,7 +155,7 @@ def _draw_3dview_report(window, area, region):
     (texture, width, height) = _Show3DViewReport.get_scs_banner_img_data(window)
 
     gpu.state.blend_set("ALPHA")
-    draw_texture_2d(texture, (pos_x - 5, pos_y), width, height)
+    draw_texture_2d(texture, (pos_x - 5, pos_y), width, height, is_scene_linear_with_rec709_srgb_target=True)
     gpu.state.blend_set("NONE")
 
     # draw control buttons, if controls are enabled
