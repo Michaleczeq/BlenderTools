@@ -194,6 +194,8 @@ def draw_common_settings(layout, log_level_only=False, without_box=False):
 
     if not log_level_only:
         sub_layout.prop(_get_scs_globals(), 'config_storage_place')
+        sub_layout.prop(_get_scs_globals(), 'activate_new_parts')
+        sub_layout.prop(_get_scs_globals(), 'activate_new_variant_parts')
 
 
 def draw_warning_operator(layout, title, message, text="", icon='ERROR'):

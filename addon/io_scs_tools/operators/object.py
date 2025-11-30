@@ -430,7 +430,7 @@ class Part:
 
                     variant_part = _inventory.add_item(variant.parts, part.name)
                     if variant_part:
-                        variant_part.include = True
+                        variant_part.include = True if _get_scs_globals().activate_new_parts else False
                     else:
                         lprint("W Part %r already in variant %r.", (part.name, variant.name))
 
@@ -778,7 +778,8 @@ class Variant:
                 for part in part_inventory:
 
                     variant_part = _inventory.add_item(variant.parts, part.name)
-                    variant_part.include = True
+
+                    variant_part.include = True if _get_scs_globals().activate_new_variant_parts else False
 
                 scs_root_object.scs_props.active_scs_variant = len(variant_inventory) - 1
 

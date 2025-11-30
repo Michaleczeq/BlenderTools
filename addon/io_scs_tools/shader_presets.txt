@@ -1742,15 +1742,13 @@ Shader {
         Value: ( 1.0 1.0 1.0 )
     }
     # NOTE: This shader use new secondary diffuse that is not supported in old material system by conversion tool 2.20 yet.
-    # To prevent being <IMPORTED>, I set it to previewonly and hide it. If newer version of conversion tool will support it, this should be changed.
+    # To prevent being <IMPORTED>, this attribute will be removed on import automatically. If newer version of conversion tool will support it, this should be changed.
     # This attribute will be probably named "aux[4]" in future.
-    Attribute {
-        Format: FLOAT3
-        Tag: "diffuse_secondary"
-        Value: ( 1.0 1.0 1.0 )
-        PreviewOnly: "True"
-        Hide: "True"
-    }
+    # Attribute {
+    #     Format: FLOAT3
+    #     Tag: "diffuse_secondary"
+    #     Value: ( 1.0 1.0 1.0 )
+    # }
     Attribute {
         Format: FLOAT3
         Tag: "specular"

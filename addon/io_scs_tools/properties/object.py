@@ -295,9 +295,15 @@ class ObjectSCSTools(bpy.types.PropertyGroup):
             obj.empty_display_type = "ARROWS"
             obj.show_name = True
 
-            # ensure default part
+            # ensure default part when it's needed
             part_inventory = obj.scs_object_part_inventory
-            _inventory.add_item(part_inventory, _PART_consts.default_name, conditional=True)
+            skip_default_part = obj.get("skip_default_part", False)
+            if not skip_default_part:
+                _inventory.add_item(part_inventory, _PART_consts.default_name, conditional=True)
+
+            # remove flag after use
+            if "skip_default_part" in obj:
+                del obj["skip_default_part"]
         else:
             obj.empty_display_size = 1.0
             obj.empty_display_type = "PLAIN_AXES"

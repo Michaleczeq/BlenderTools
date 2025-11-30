@@ -1340,6 +1340,14 @@ class SCSGlobals(bpy.types.PropertyGroup):
 
         return None
 
+    def activate_new_parts_update(self, context):
+        self.on_display_setting_update(context)
+        _config_container.update_item_in_file('GlobalOther.ActivateNewParts', int(self.activate_new_parts))
+
+    def activate_new_variant_parts_update(self, context):
+        self.on_display_setting_update(context)
+        _config_container.update_item_in_file('GlobalOther.ActivateNewVariantParts', int(self.activate_new_variant_parts))
+
     dump_level: EnumProperty(
         name="Printouts",
         items=(
@@ -1362,6 +1370,20 @@ class SCSGlobals(bpy.types.PropertyGroup):
         ),
         default='ConfigFile',
         update=config_storage_place_update,
+    )
+
+    activate_new_parts: BoolProperty(
+        name="Activate New Parts",
+        description="Automatically activate new parts when added to SCS Game Object.",
+        default=True,
+        update=activate_new_parts_update
+    )
+
+    activate_new_variant_parts: BoolProperty(
+        name="Activate New Variant Parts",
+        description="Automatically activate parts when new variant is created for SCS Game Object.",
+        default=True,
+        update=activate_new_variant_parts_update
     )
 
     # COMMON SETTINGS - NOT SAVED IN CONFIG
