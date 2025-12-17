@@ -224,11 +224,22 @@ def _get_look(section):
                     mat_effect = mat_effect.replace(".day", "")
                     lprint("W Day version of billboard shader detected in material %r, removing it from effect!", (mat_alias,))
 
-            # (temporary workaround for new attribute not supported in older material format used by BT)
+            # Extra temporary treatment for new attributes not supported in older material format used by BT
+            #
             # If "diffuse_secondary" attribute is detected, remove it
             if attributes.pop("diffuse_secondary", None) is not None:
-                    lprint("I Unsupported attribute: 'diffuse_secondary' in current material configuration inside material %r, ignoring it!",
-                            (mat_alias,))
+                lprint("I Unsupported attribute: 'diffuse_secondary' in current material configuration inside material %r, ignoring it!",
+                       (mat_alias,))
+
+            # If "is_dynamic_road" attribute is detected, remove it
+            if attributes.pop("is_dynamic_road", None) is not None:
+                lprint("W Unsupported attribute: 'is_dynamic_road' inside material %r, ignoring it! Material will not work as intended after export!",
+                       (mat_alias,))
+
+            # If "is_terrain_material" attribute is detected, remove it
+            if attributes.pop("is_terrain_material", None) is not None:
+                lprint("W Unsupported attribute: 'is_terrain_material' inside material %r, ignoring it! Material will not work as intended after export!",
+                       (mat_alias,))
 
             look_mat_settings[mat_alias] = (mat_effect, mat_flags, attributes, textures, sec)
 

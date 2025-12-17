@@ -3156,11 +3156,13 @@ Flavor {
     Name: "tsnmap"
     Texture {
         Tag: "texture[X]:texture_nmap"
+        FriendlyTag: "Normal map"
         Value: ""
         TexCoord: ( 0 )
     }
     Texture {
         Tag: "texture[X]:texture_nmap_detail"
+        FriendlyTag: "Normal map (detail)"
         Value: ""
         TexCoord: ( 0 )
     }
@@ -3196,6 +3198,7 @@ Flavor {
     }
     Texture {
         Tag: "texture[X]:texture_nmap_over"
+        FriendlyTag: "Normal map (over)"
         Value: ""
         TexCoord: ( 0 )
     }
@@ -3211,6 +3214,7 @@ Flavor {
     }
     Texture {
         Tag: "texture[X]:texture_nmap_over"
+        FriendlyTag: "Normal map (over)"
         Value: ""
         TexCoord: ( 1 )
     }
@@ -3236,6 +3240,7 @@ Flavor {
     }
     Texture {
         Tag: "texture[X]:texture_nmap_detail"
+        FriendlyTag: "Normal map (detail)"
         Value: ""
         TexCoord: ( 6 )
     }

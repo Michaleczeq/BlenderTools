@@ -778,12 +778,15 @@ class SCS_TOOLS_PT_Parts(_ObjectPanelBlDefs, Panel):
 
         else:  # more roots or active object is root object
 
+            # NOTE: Due to problems with showing actual active part in the list after chanes made in getters/setters, we show it temporarily by default skiping DEBUG check.
             # DEBUG
-            if int(_get_scs_globals().dump_level) > 2 and not active_object is scs_root_object:
+            # if int(_get_scs_globals().dump_level) > 2 and not active_object is scs_root_object:
+            if not active_object is scs_root_object:
 
                 row = layout.row(align=True)
                 row.enabled = False
-                row.label(text="DEBUG - active obj part:")
+                #row.label(text="DEBUG - active obj part:")
+                row.label(text="Active object part:")
                 row.prop(active_object.scs_props, 'scs_part', text="")
 
             # PART LIST

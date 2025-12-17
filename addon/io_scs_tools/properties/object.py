@@ -389,8 +389,11 @@ class ObjectSCSTools(bpy.types.PropertyGroup):
         with the index of part belonging to new active object.
 
         """
+        scs_root_object = _object_utils.get_scs_root(bpy.context.active_object)
+        active_scs_part = _inventory.get_index(scs_root_object.scs_object_part_inventory, bpy.context.active_object.scs_props.scs_part)
 
-        return self.active_scs_part_value
+        # return active_scs_part            # Fixes auto-selecting part for mesh, but breaks ability to change part
+        return self.active_scs_part_value   # Fixes ability to change part, but breaks auto-selecting part for mesh
 
     def active_scs_part_set(self, value):
         scs_root_object = _object_utils.get_scs_root(bpy.context.active_object)
