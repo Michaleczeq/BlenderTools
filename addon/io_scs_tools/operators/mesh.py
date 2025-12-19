@@ -392,7 +392,6 @@ class VertexColorTools:
 
         def execute(self, context):
             default_color = tuple(Color((0.5,) * 3).from_srgb_to_scene_linear()) + (1.0,)
-            default_factor = tuple((0.0,) * 4)
 
             layer_name = _MESH_consts.default_vcol
             layer_a_name = _MESH_consts.default_vcol + _MESH_consts.vcol_a_suffix
@@ -418,9 +417,9 @@ class VertexColorTools:
                 vfcolor = context.object.data.color_attributes.new(name=layer_factor_name, type='BYTE_COLOR', domain='CORNER')
                 vfcolor.name = layer_factor_name  # repeat naming step to make sure it's properly named
 
-                # setting neutral value (0.0) to all factors
+                # setting neutral value (0.5) to all factors
                 for vertex_fac_col_data in context.object.data.color_attributes[layer_factor_name].data:
-                    vertex_fac_col_data.color = default_factor
+                    vertex_fac_col_data.color = default_color
 
             # restore active or set to default vcol if there was none
             if old_active_col_i is None:
@@ -442,7 +441,6 @@ class VertexColorTools:
 
         def execute(self, context):
             default_color = tuple(Color((0.5,) * 3).from_srgb_to_scene_linear()) + (1.0,)
-            default_factor = tuple((0.0,) * 4)
 
             layer_name = _MESH_consts.default_vcol
             layer_a_name = _MESH_consts.default_vcol + _MESH_consts.vcol_a_suffix
@@ -487,7 +485,7 @@ class VertexColorTools:
 
                     # setting neutral value (0.0) to all factors
                     for vertex_fac_col_data in obj.data.color_attributes[layer_factor_name].data:
-                        vertex_fac_col_data.color = default_factor
+                        vertex_fac_col_data.color = default_color
 
                 # restore active or set to default vcol if there was none
                 if old_active_col_i is None:

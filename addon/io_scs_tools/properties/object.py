@@ -615,7 +615,7 @@ class ObjectSCSTools(bpy.types.PropertyGroup):
 
         for child in obj.children:
 
-            if "scs_props" in child.data and child.data.scs_props.locator_preview_model_path != "":
+            if hasattr(child.data, "scs_props") and child.data.scs_props.locator_preview_model_path != "":
 
                 child.display_type = obj.scs_props.locator_preview_model_type
 

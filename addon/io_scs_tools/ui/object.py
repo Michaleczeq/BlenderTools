@@ -778,7 +778,7 @@ class SCS_TOOLS_PT_Parts(_ObjectPanelBlDefs, Panel):
 
         else:  # more roots or active object is root object
 
-            # NOTE: Due to problems with showing actual active part in the list after chanes made in getters/setters, we show it temporarily by default skiping DEBUG check.
+            # NOTE: Due to problems with showing actual active part in the list after changes made in getters/setters, we show it temporarily by default skiping DEBUG (dump_level) check.
             # DEBUG
             # if int(_get_scs_globals().dump_level) > 2 and not active_object is scs_root_object:
             if not active_object is scs_root_object:
