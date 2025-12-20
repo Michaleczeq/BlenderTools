@@ -73,9 +73,26 @@ class SCS_TOOLS_UL_ObjectPartSlot(bpy.types.UIList):
     def draw_item(self, context, layout, data, item, icon, active_data, active_property, index):
         if self.layout_type in {'DEFAULT', 'COMPACT'}:
             if item:
-                line = layout.split(factor=0.6, align=False)
-                line.prop(item, "name", text="", emboss=False, icon_value=icon)
-                tools = line.row(align=True)
+                active_object = context.active_object
+                is_not_root = getattr(active_object.scs_props, 'empty_object_type', None) != 'SCS_Root'
+                row = layout.row(align=True)
+                if is_not_root:
+                    current_part_name = getattr(active_object.scs_props, 'scs_part', None)
+                    is_assigned = (item.name == current_part_name)
+                    icon_col = row.column()
+
+                    if is_assigned:
+                        icon_col.label(icon='RESTRICT_INSTANCED_OFF')
+                    else:
+                        op = icon_col.operator('object.scs_tools_assign_part', text="", icon='RESTRICT_INSTANCED_ON', emboss=False)
+                        op.part_index = index
+
+                    spacer_col = row.column()
+                    spacer_col.scale_x = 0.15
+                    spacer_col.label(text="")
+
+                row.prop(item, "name", text="", emboss=False, icon_value=icon)
+                tools = row.row(align=True)
                 tools.alignment = 'RIGHT'
                 self.draw_icon_part_tools(tools, index)
             else:
@@ -778,15 +795,12 @@ class SCS_TOOLS_PT_Parts(_ObjectPanelBlDefs, Panel):
 
         else:  # more roots or active object is root object
 
-            # NOTE: Due to problems with showing actual active part in the list after changes made in getters/setters, we show it temporarily by default skiping DEBUG (dump_level) check.
             # DEBUG
-            # if int(_get_scs_globals().dump_level) > 2 and not active_object is scs_root_object:
-            if not active_object is scs_root_object:
+            if int(_get_scs_globals().dump_level) > 2 and not active_object is scs_root_object:
 
                 row = layout.row(align=True)
                 row.enabled = False
-                #row.label(text="DEBUG - active obj part:")
-                row.label(text="Active object part:")
+                row.label(text="DEBUG - active obj part:")
                 row.prop(active_object.scs_props, 'scs_part', text="")
 
             # PART LIST

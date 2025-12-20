@@ -375,7 +375,6 @@ class ObjectSCSTools(bpy.types.PropertyGroup):
         # NOTE: case where this happens is if user imports SCS model,
         # duplicates prefab locator without part and then changes locator
         # type to model locator.
-
         if "active_scs_part_old_active" not in self:
             self["active_scs_part_old_active"] = ""
 
@@ -389,25 +388,14 @@ class ObjectSCSTools(bpy.types.PropertyGroup):
         with the index of part belonging to new active object.
 
         """
-        scs_root_object = _object_utils.get_scs_root(bpy.context.active_object)
-        active_scs_part = _inventory.get_index(scs_root_object.scs_object_part_inventory, bpy.context.active_object.scs_props.scs_part)
 
-        # return active_scs_part            # Fixes auto-selecting part for mesh, but breaks ability to change part
-        return self.active_scs_part_value   # Fixes ability to change part, but breaks auto-selecting part for mesh
+        return self.active_scs_part_value
 
     def active_scs_part_set(self, value):
-        scs_root_object = _object_utils.get_scs_root(bpy.context.active_object)
+        """Store the index selected by the user.
+        """
+
         self.active_scs_part_value = value
-
-        if scs_root_object and bpy.context.active_object != scs_root_object:
-            # if old active object is different than current
-            # set the value for active part index from it
-            if self.active_scs_part_old_active != bpy.context.active_object.name:
-                self.active_scs_part_value = _inventory.get_index(scs_root_object.scs_object_part_inventory,
-                                                                  bpy.context.active_object.scs_props.scs_part)
-
-        if self.active_scs_part_old_active != bpy.context.active_object.name:
-            self.active_scs_part_old_active = bpy.context.active_object.name
 
     active_scs_part: IntProperty(
         name="Active SCS Part",

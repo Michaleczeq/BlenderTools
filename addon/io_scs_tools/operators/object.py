@@ -604,6 +604,12 @@ class Part:
         bl_idname = "object.scs_tools_assign_part"
         bl_description = "Assign active SCS Part to selected objects"
 
+        part_index: IntProperty(
+            name="Part Index",
+            description="Index of the part to assign. If negative, uses active_scs_part.",
+            default=-1
+        )
+
         @classmethod
         def poll(cls, context):
             if _object_utils.get_scs_root(context.active_object):
@@ -616,7 +622,13 @@ class Part:
             active_object = context.active_object
             scs_root_object = _object_utils.get_scs_root(active_object)
             part_inventory = scs_root_object.scs_object_part_inventory
-            active_part_index = scs_root_object.scs_props.active_scs_part
+
+            # Use part_index if provided, else use active_part_index
+            if self.part_index >= 0:
+                active_part_index = self.part_index
+                self.part_index = -1  # Reset to default after use
+            else:
+                active_part_index = scs_root_object.scs_props.active_scs_part
 
             scs_roots_count = len(_object_utils.gather_scs_roots(bpy.context.selected_objects))
             if scs_roots_count == 1:
