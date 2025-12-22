@@ -295,9 +295,15 @@ class ObjectSCSTools(bpy.types.PropertyGroup):
             obj.empty_display_type = "ARROWS"
             obj.show_name = True
 
-            # ensure default part
+            # ensure default part when it's needed
             part_inventory = obj.scs_object_part_inventory
-            _inventory.add_item(part_inventory, _PART_consts.default_name, conditional=True)
+            skip_default_part = obj.get("skip_default_part", False)
+            if not skip_default_part:
+                _inventory.add_item(part_inventory, _PART_consts.default_name, conditional=True)
+
+            # remove flag after use
+            if "skip_default_part" in obj:
+                del obj["skip_default_part"]
         else:
             obj.empty_display_size = 1.0
             obj.empty_display_type = "PLAIN_AXES"
@@ -369,6 +375,9 @@ class ObjectSCSTools(bpy.types.PropertyGroup):
         # NOTE: case where this happens is if user imports SCS model,
         # duplicates prefab locator without part and then changes locator
         # type to model locator.
+        if "active_scs_part_old_active" not in self:
+            self["active_scs_part_old_active"] = ""
+
         if "active_scs_part_value" not in self:
             self["active_scs_part_value"] = 0
 
@@ -379,49 +388,14 @@ class ObjectSCSTools(bpy.types.PropertyGroup):
         with the index of part belonging to new active object.
 
         """
-        debug = False
-        lprint("D ---------- GETTER ----------") if debug else None
 
-        if "active_scs_part_old_active" not in self:
-            lprint("D ---- IF SELF 1 ENTERED ----") if debug else None
-            self["active_scs_part_old_active"] = ""
-
-        if "active_scs_part_value" not in self:
-            lprint("D ---- IF SELF 2 ENTERED ----") if debug else None
-            self["active_scs_part_value"] = 0
-
-        scs_root_object = _object_utils.get_scs_root(bpy.context.active_object)
-        if debug:
-            lprint("D --active_scs_part_old_active-- %r", (self["active_scs_part_old_active"],))
-            lprint("D --active_scs_part_value-- %r", (self["active_scs_part_value"],))
-            lprint("D --scs_root_object-- %r", (scs_root_object,))
-            lprint("D --bpy.context.active_object-- %r", (bpy.context.active_object,))
-            lprint("D --bpy.context.active_object.name-- %r", (bpy.context.active_object.name,))
-        if scs_root_object and bpy.context.active_object != scs_root_object:
-            lprint("D ---- IF 1 ENTERED ----") if debug else None
-            # if old active object is different than current
-            # set the value for active part index from it
-            if self["active_scs_part_old_active"] != bpy.context.active_object.name:
-                lprint("D ---- IF 2 ENTERED ----") if debug else None
-                self["active_scs_part_value"] = _inventory.get_index(scs_root_object.scs_object_part_inventory,
-                                                                     bpy.context.active_object.scs_props.scs_part)
-
-        # TEMP: skip unnecessary 'active_scs_part_old_active' update to decrease errors count in console (setters in getters)
-        if self["active_scs_part_old_active"] != bpy.context.active_object.name:
-            lprint("D ---- TEMP IF ENTERED ----") if debug else None
-            self["active_scs_part_old_active"] = bpy.context.active_object.name
-        print("-------------------------\n") if debug else None
-        return self["active_scs_part_value"]
+        return self.active_scs_part_value
 
     def active_scs_part_set(self, value):
-        debug = False
-        lprint("D ---------- SETTER ----------") if debug else None
-        self["active_scs_part_value"] = value
-        print("-------------------------\n") if debug else None
+        """Store the index selected by the user.
+        """
 
-    def active_scs_part_update(self, context):
-        lprint("D ---------- UPDATE ----------")
-        print("-------------------------\n")
+        self.active_scs_part_value = value
 
     active_scs_part: IntProperty(
         name="Active SCS Part",
@@ -433,7 +407,22 @@ class ObjectSCSTools(bpy.types.PropertyGroup):
         subtype='NONE',
         get=active_scs_part_get,
         set=active_scs_part_set
-        # update=active_scs_part_update
+    )
+
+    active_scs_part_old_active: bpy.props.StringProperty(
+        name="Old Active Part",
+        description="Stores previously active SCS part",
+        default=""
+    )
+
+    active_scs_part_value: IntProperty(
+        name="Active SCS Part Value",
+        description="Active SCS Part for current SCS Root Object Value",
+        default=0,
+        min=0, 
+        step=1,
+        options={'HIDDEN'},
+        subtype='NONE'
     )
 
     def get_active_scs_look(self):
@@ -614,7 +603,7 @@ class ObjectSCSTools(bpy.types.PropertyGroup):
 
         for child in obj.children:
 
-            if "scs_props" in child.data and child.data.scs_props.locator_preview_model_path != "":
+            if hasattr(child.data, "scs_props") and child.data.scs_props.locator_preview_model_path != "":
 
                 child.display_type = obj.scs_props.locator_preview_model_type
 

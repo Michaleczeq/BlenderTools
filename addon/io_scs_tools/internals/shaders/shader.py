@@ -63,7 +63,7 @@ def setup_nodes(material, effect, attr_dict, tex_dict, tex_settings_dict, recrea
         flavors["nmap"] = True
 
     if effect.endswith(".tsnmapuv2") or ".tsnmapuv2." in effect:
-        flavors["nmap"] = True
+        flavors["nmap2"] = True
 
     if effect.endswith(".tsnmap") or ".tsnmap." in effect:
         flavors["nmap"] = True

@@ -174,6 +174,7 @@ def _create_scs_root_object(name, loaded_variants, loaded_looks, mats_info, obje
     bpy.context.view_layer.active_layer_collection.collection.objects.link(scs_root_object)
     bpy.context.view_layer.objects.active = scs_root_object
     scs_root_object.scs_props.scs_root_object_export_enabled = True
+    scs_root_object["skip_default_part"] = True
     scs_root_object.scs_props.empty_object_type = 'SCS_Root'
 
     # print('LOD.pos: %s' % str(scs_root_object.location))

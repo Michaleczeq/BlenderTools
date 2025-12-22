@@ -82,12 +82,12 @@ class DynamicProps:
 
             prefs = bpy.context.preferences.addons["io_scs_tools"].preferences
 
-            if scope not in prefs:
+            if not hasattr(prefs, scope):
                 return default
 
             scoped_prefs = prefs[scope]
 
-            if property_name not in scoped_prefs:
+            if not hasattr(scoped_prefs, property_name):
                 return default
 
             return scoped_prefs[property_name]
@@ -105,10 +105,12 @@ class DynamicProps:
 
             prefs = bpy.context.preferences.addons["io_scs_tools"].preferences
 
-            if scope not in prefs:
-                prefs[scope] = {}
-
-            prefs[scope][property_name] = value
+            if not hasattr(prefs, scope):
+                setattr(prefs, scope, {})
+                
+            scope_dict = getattr(prefs, scope)
+            scope_dict[property_name] = value
+            setattr(prefs, scope, scope_dict)
 
         # check for default value type
         assert isinstance(default, property_type)

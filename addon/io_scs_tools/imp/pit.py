@@ -200,7 +200,7 @@ def _get_look(section):
                 mat_effect = mat_effect.replace(".night", ".day")
                 lprint("W Night version of building shader detected in material %r, switching it to day!", (mat_alias,))
 
-            # Extra treatment for deprecated/removed shaders and flavors
+            # Extra treatment for deprecated/removed/unsupported shaders and flavors
             #
             # If day/night version of "window" shader is detected, switch it to "lit".
             if mat_effect.startswith("eut2.window") and mat_effect.endswith((".day", ".night")):
@@ -223,6 +223,23 @@ def _get_look(section):
                 else:
                     mat_effect = mat_effect.replace(".day", "")
                     lprint("W Day version of billboard shader detected in material %r, removing it from effect!", (mat_alias,))
+
+            # Extra temporary treatment for new attributes not supported in older material format used by BT
+            #
+            # If "diffuse_secondary" attribute is detected, remove it
+            if attributes.pop("diffuse_secondary", None) is not None:
+                lprint("I Unsupported attribute: 'diffuse_secondary' in current material configuration inside material %r, ignoring it!",
+                       (mat_alias,))
+
+            # If "is_dynamic_road" attribute is detected, remove it
+            if attributes.pop("is_dynamic_road", None) is not None:
+                lprint("W Unsupported attribute: 'is_dynamic_road' inside material %r, ignoring it! Material will not work as intended after export!",
+                       (mat_alias,))
+
+            # If "is_terrain_material" attribute is detected, remove it
+            if attributes.pop("is_terrain_material", None) is not None:
+                lprint("W Unsupported attribute: 'is_terrain_material' inside material %r, ignoring it! Material will not work as intended after export!",
+                       (mat_alias,))
 
             look_mat_settings[mat_alias] = (mat_effect, mat_flags, attributes, textures, sec)
 

@@ -261,7 +261,10 @@ class _ConfigSection:
             if not attr:
                 continue
 
-            setattr(scs_globals, attr, value)
+            # prevents the configuration from looping when starting Blender
+            current = getattr(scs_globals, attr, None)
+            if current != value:
+                setattr(scs_globals, attr, value)
 
     def fill_from_pix_section(self, section):
         """Fill config section with data from given pix section.
@@ -535,6 +538,20 @@ class GlobalColors(_ConfigSection):
         }
 
 
+class GlobalOther(_ConfigSection):
+    """Class for global other settings."""
+
+    def __init__(self):
+        """Constructor."""
+        super().__init__("GlobalOther")
+
+        scs_globals = _get_scs_globals()
+        self.props = {
+            "ActivateNewParts": (int, get_default(scs_globals, 'activate_new_parts'), 'activate_new_parts'),
+            "ActivateNewVariantParts": (int, get_default(scs_globals, 'activate_new_variant_parts'), 'activate_new_variant_parts'),
+        }
+
+
 class ConfigContainer:
     """Class implementing config container handler."""
 
@@ -547,6 +564,7 @@ class ConfigContainer:
             "Export": Export(),
             "GlobalDisplay": GlobalDisplay(),
             "GlobalColors": GlobalColors(),
+            "GlobalOther": GlobalOther(),
         }
 
     def set_property(self, section_type, prop_name, value):

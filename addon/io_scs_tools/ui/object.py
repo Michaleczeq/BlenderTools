@@ -73,9 +73,26 @@ class SCS_TOOLS_UL_ObjectPartSlot(bpy.types.UIList):
     def draw_item(self, context, layout, data, item, icon, active_data, active_property, index):
         if self.layout_type in {'DEFAULT', 'COMPACT'}:
             if item:
-                line = layout.split(factor=0.6, align=False)
-                line.prop(item, "name", text="", emboss=False, icon_value=icon)
-                tools = line.row(align=True)
+                active_object = context.active_object
+                is_not_root = getattr(active_object.scs_props, 'empty_object_type', None) != 'SCS_Root'
+                row = layout.row(align=True)
+                if is_not_root:
+                    current_part_name = getattr(active_object.scs_props, 'scs_part', None)
+                    is_assigned = (item.name == current_part_name)
+                    icon_col = row.column()
+
+                    if is_assigned:
+                        icon_col.label(icon='RESTRICT_INSTANCED_OFF')
+                    else:
+                        op = icon_col.operator('object.scs_tools_assign_part', text="", icon='RESTRICT_INSTANCED_ON', emboss=False)
+                        op.part_index = index
+
+                    spacer_col = row.column()
+                    spacer_col.scale_x = 0.15
+                    spacer_col.label(text="")
+
+                row.prop(item, "name", text="", emboss=False, icon_value=icon)
+                tools = row.row(align=True)
                 tools.alignment = 'RIGHT'
                 self.draw_icon_part_tools(tools, index)
             else:

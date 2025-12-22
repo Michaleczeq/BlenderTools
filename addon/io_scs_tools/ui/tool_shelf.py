@@ -465,15 +465,18 @@ class SCS_TOOLS_PT_LampTool(_ToolShelfBlDefs, Panel):
         props.vehicle_side = _LT_consts.VehicleSides.FrontRight.name
         props.aux_color = props.traffic_light_color = ""
         body_row = body_col.row(align=True)
+        props = body_row.operator("mesh.scs_tools_set_lampmask_uv", text="Middle Left")
+        props.vehicle_side = _LT_consts.VehicleSides.MiddleLeft.name
+        props.aux_color = props.traffic_light_color = ""
+        props = body_row.operator("mesh.scs_tools_set_lampmask_uv", text="Middle Right")
+        props.vehicle_side = _LT_consts.VehicleSides.MiddleRight.name
+        props.aux_color = props.traffic_light_color = ""
+        body_row = body_col.row(align=True)
         props = body_row.operator("mesh.scs_tools_set_lampmask_uv", text="Rear Left")
         props.vehicle_side = _LT_consts.VehicleSides.RearLeft.name
         props.aux_color = props.traffic_light_color = ""
         props = body_row.operator("mesh.scs_tools_set_lampmask_uv", text="Rear Right")
         props.vehicle_side = _LT_consts.VehicleSides.RearRight.name
-        props.aux_color = props.traffic_light_color = ""
-        body_row = body_col.row(align=True)
-        props = body_row.operator("mesh.scs_tools_set_lampmask_uv", text="Middle")
-        props.vehicle_side = _LT_consts.VehicleSides.Middle.name
         props.aux_color = props.traffic_light_color = ""
 
         body_col = layout.column(align=True)

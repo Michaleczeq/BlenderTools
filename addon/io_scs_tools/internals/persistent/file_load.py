@@ -55,6 +55,7 @@ def post_load(scene):
     VERSIONS_LIST_UNOFFICIAL = (
         ("4", apply_fixes_for_un_4),
         ("7", apply_fixes_for_un_7),
+        ("8", apply_fixes_for_un_8),
     )
 
     v_parts = last_load_bt_ver.split(".")
@@ -416,3 +417,26 @@ def apply_fixes_for_un_7():
     # 1. reload all materials
     # Some attributes got removed, in some cases attribute size changed and due to that we need to reload materials
     _reload_materials()
+
+def apply_fixes_for_un_8():
+    """
+    Applies fixes for unofficial 2.4.8 or less:
+    1. Reload materials since some got restructed nodes
+    2. Show welcome message
+    """
+
+    print("INFO\t-  Applying fixes for unofficial versions < 8")
+
+    # 1. reload all materials
+    # Some shaders like nmaps got restructured nodes and due to that we need to reload materials
+    _reload_materials()
+
+    # 2. Due to update to Blender 5.0+, we let user know
+    windows = bpy.data.window_managers[0].windows
+    if len(windows) > 0:
+        msg = (
+            "\nWelcome folks. You just migrated to Blender 5.0+! Yey",
+        )
+
+        with bpy.context.temp_override(window=windows[0]):
+            bpy.ops.wm.scs_tools_show_3dview_report('INVOKE_DEFAULT', message="\n".join(msg))

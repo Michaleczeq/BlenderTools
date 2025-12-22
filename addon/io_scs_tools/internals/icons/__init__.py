@@ -91,8 +91,8 @@ def register():
         set_theme(get_theme_name(0))
         print("WARNING\t- Default icon theme doesn't exist, fallback to first available!")
 
-    # Forces icons to reload (Because of issues with Vulkan)
-    bpy.app.timers.register(reload_icons, first_interval=0.1)
+    # Forces icons to reload (Because of issues with Vulkan on faster systems)
+    bpy.app.timers.register(reload_icons, first_interval=0.5)
 
 def reload_icons():
     """Forces icons to reload after a short delay (workaround for Vulkan issues)."""

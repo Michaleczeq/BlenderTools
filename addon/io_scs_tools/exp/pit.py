@@ -235,9 +235,14 @@ def get_texture_path_from_material(material, texture_type, export_path):
                 return ""
 
     else:
-        lprint("E Texture file %r from material %r doesn't exists inside current Project Base Path.\n\t   " +
+        if texture_raw_path:
+            lprint("E Texture file %r from material %r doesn't exists inside current Project Base Path.\n\t   " +
                "TOBJ won't be exported and reference will remain empty, expect problems!",
                (texture_raw_path, material.name))
+        else:
+            lprint("E Texture type %r on material %r is missing texture.\n\t   " +
+               "TOBJ won't be exported and reference will remain empty, expect problems!",
+               (texture_type[8:], material.name))
         return ""
 
     # CREATE TOBJ FILE
