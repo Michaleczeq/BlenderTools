@@ -1209,7 +1209,7 @@ class SCS_TOOLS_PT_AnimPlayer(_ObjectPanelBlDefs, Panel):
         sub = layout_row.row(align=True)
         sub.scale_x = 10
         if not screen.is_animation_playing:
-            if scene.sync_mode == 'AUDIO_SYNC' and context.user_preferences.system.audio_device == 'JACK':
+            if scene.sync_mode == 'AUDIO_SYNC' and context.preferences.system.audio_device == 'JACK':
                 sub.operator("screen.animation_play", text="", icon='PLAY')
             else:
                 sub.operator("screen.animation_play", text="", icon='PLAY_REVERSE').reverse = True

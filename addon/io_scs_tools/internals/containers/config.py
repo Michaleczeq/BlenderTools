@@ -316,7 +316,7 @@ class Header(_ConfigSection):
             "Source": (str, get_combined_ver_str(), None),
             "Type": (str, "Configuration", None),
             "Note": (str, "User settings of SCS Blender Tools", None),
-            # "Author": (str, bpy.context.user_preferences.system.author, None),
+            # "Author": (str, bpy.context.preferences.system.author, None),
             "ConfigStoragePlace": (str, get_default(scs_globals, 'config_storage_place'), 'config_storage_place'),
             "DumpLevel": (str, get_default(scs_globals, 'dump_level'), 'dump_level')
         }
