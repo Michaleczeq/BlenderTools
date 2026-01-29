@@ -54,11 +54,13 @@ def fill_header_section(format_version, file_name, sign_export):
     section.props.append(("Source", get_combined_ver_str()))
     section.props.append(("Type", "Trait"))
     section.props.append(("Name", file_name))
+    """ "SourceFilename" and "Author" no longer supported by conversion tools, system.author removed from Blender.
     if sign_export:
         section.props.append(("SourceFilename", str(bpy.data.filepath)))
         author = bpy.context.user_preferences.system.author
         if author:
             section.props.append(("Author", str(author)))
+    """
     return section
 
 
