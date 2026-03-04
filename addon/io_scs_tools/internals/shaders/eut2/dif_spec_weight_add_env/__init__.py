@@ -17,10 +17,11 @@
 # ##### END GPL LICENSE BLOCK #####
 
 # Copyright (C) 2015-2019: SCS Software
+# Copyright (C) 2025-2026: Michaleczeq
 
-from io_scs_tools.internals.shaders.eut2.dif_spec_weight import DifSpecWeight
-from io_scs_tools.internals.shaders.eut2.std_passes.add_env import StdAddEnv
-from io_scs_tools.internals.shaders.eut2.dif_spec_weight_add_env import detail_nmap
+from . import detail_nmap
+from ..dif_spec_weight import DifSpecWeight
+from ..std_passes.add_env import StdAddEnv
 
 
 class DifSpecWeightAddEnv(DifSpecWeight, StdAddEnv):

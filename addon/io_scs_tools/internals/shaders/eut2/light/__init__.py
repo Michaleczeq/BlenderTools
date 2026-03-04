@@ -16,9 +16,9 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-# Copyright (C) 2025: SCS Software
+# Copyright (C) 2025-2026: Michaleczeq
 
-from io_scs_tools.internals.shaders.eut2.dif import Dif
+from ..dif import Dif
 
 
 class Light(Dif):

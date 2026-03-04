@@ -16,11 +16,11 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-# Copyright (C) 2015-2024: SCS Software
+# Copyright (C) 2024-2026: Michaleczeq
 
-from io_scs_tools.internals.shaders.eut2.baked import Baked
-from io_scs_tools.internals.shaders.eut2.std_node_groups import spec_texture_calc_ng
-from io_scs_tools.utils import material as _material_utils
+from . import Baked
+from ..std_node_groups import spec_texture_calc_ng
+from .....utils import material as _material_utils
 
 class BakedSpec(Baked):
     OVER_TEX_NODE = "OverTex"

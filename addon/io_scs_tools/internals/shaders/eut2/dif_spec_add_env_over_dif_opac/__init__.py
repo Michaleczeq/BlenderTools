@@ -16,12 +16,12 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-# Copyright (C) 2025: SCS Software
+# Copyright (C) 2025-2026: Michaleczeq
 
-from io_scs_tools.consts import Mesh as _MESH_consts
-from io_scs_tools.internals.shaders.eut2.dif_spec_add_env import DifSpecAddEnv
-from io_scs_tools.internals.shaders.flavors import tg1
-from io_scs_tools.utils import material as _material_utils
+from ..dif_spec_add_env import DifSpecAddEnv
+from ...flavors import tg1
+from .....utils import material as _material_utils
+from .....consts import Mesh as _MESH_consts
 
 
 class DifSpecAddEnvOverDifOpac(DifSpecAddEnv):

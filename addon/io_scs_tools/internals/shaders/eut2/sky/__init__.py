@@ -18,16 +18,16 @@
 
 # Copyright (C) 2015-2022: SCS Software
 
-from io_scs_tools.consts import Mesh as _MESH_consts
-from io_scs_tools.internals.shaders.base import BaseShader
-from io_scs_tools.internals.shaders.flavors import sky_bottom, sky_stars
-from io_scs_tools.internals.shaders.eut2.std_node_groups import vcolor_input_ng
-from io_scs_tools.internals.shaders.eut2.sky import texture_types
-from io_scs_tools.internals.shaders.eut2.sky import uv_rescale_ng
-from io_scs_tools.internals.shaders.std_node_groups import output_shader_ng
-from io_scs_tools.utils import convert as _convert_utils
-from io_scs_tools.utils import material as _material_utils
-from io_scs_tools.utils import math as _math_utils
+from . import texture_types
+from . import uv_rescale_ng
+from ..std_node_groups import vcolor_input_ng
+from ...base import BaseShader
+from ...flavors import sky_stars
+from ...std_node_groups import output_shader_ng
+from .....consts import Mesh as _MESH_consts
+from .....utils import convert as _convert_utils
+from .....utils import material as _material_utils
+from .....utils import math as _math_utils
 
 
 class Sky(BaseShader):
@@ -315,11 +315,6 @@ class Sky(BaseShader):
         material.use_backface_culling = True
         out_shader_node.inputs["Alpha Type"].default_value = 1.0
         material.surface_render_method = "BLENDED"
-
-
-        if sky_bottom.is_set(node_tree):
-            out_shader_node.inputs["Alpha Type"].default_value = 1.0
-            material.surface_render_method = "BLENDED"
 
         if sky_stars.is_set(node_tree):
             out_shader_node.inputs["Alpha Type"].default_value = -1.0
@@ -686,7 +681,7 @@ class Sky(BaseShader):
 
         for tex_type_i, tex_type in enumerate(texture_types.get()):
 
-            if (not sky_stars.is_set(node_tree)) and (not sky_bottom.is_set(node_tree)):  # enabled
+            if not sky_stars.is_set(node_tree):  # enabled
                 v_cutoff = aux_property[tex_type_i]['value']
             else:  # disabled
                 v_cutoff = float("-inf")
@@ -711,21 +706,6 @@ class Sky(BaseShader):
         else:
             rescale_enabled = 0.0
         node_tree.nodes[Sky.RESCALE_UV_GROUP_NODE].inputs['Rescale Enabled'].default_value = rescale_enabled
-
-    @staticmethod
-    def set_sky_bottom_flavor(node_tree, switch_on):
-        """Set sky bottom flavor to this shader.
-
-        :param node_tree: node tree of current shader
-        :type node_tree: bpy.types.NodeTree
-        :param switch_on: flag indication if it should be switched on or off
-        :type switch_on: bool
-        """
-
-        if switch_on:
-            sky_bottom.init(node_tree)
-        else:
-            sky_bottom.delete(node_tree)
         
     @staticmethod
     def set_sky_stars_flavor(node_tree, switch_on):

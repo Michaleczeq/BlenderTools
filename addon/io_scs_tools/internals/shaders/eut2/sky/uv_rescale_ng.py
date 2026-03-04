@@ -19,8 +19,8 @@
 # Copyright (C) 2021: SCS Software
 
 import bpy
-from io_scs_tools.consts import Material as _MAT_consts
-from io_scs_tools.internals.shaders.eut2.sky import texture_types
+from . import texture_types
+from .....consts import Material as _MAT_consts
 
 SKY_UV_RESCALE_G = _MAT_consts.node_group_prefix + "SkyUVRescale"
 

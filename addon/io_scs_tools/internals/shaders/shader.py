@@ -19,7 +19,7 @@
 # Copyright (C) 2015-2021: SCS Software
 
 import bpy
-from io_scs_tools.utils.printout import lprint
+from ...utils.printout import lprint
 
 
 def setup_nodes(material, effect, attr_dict, tex_dict, tex_settings_dict, recreate):
@@ -106,9 +106,6 @@ def setup_nodes(material, effect, attr_dict, tex_dict, tex_settings_dict, recrea
 
     if effect.endswith(".stars") and "sky" in effect:
         flavors["sky_stars"] = True
-
-    if effect.endswith(".back") and "sky" in effect:
-        flavors["sky_back"] = True
 
     if effect.endswith(".fadesheet") or ".fadesheet." in effect:
         flavors["fadesheet"] = True
@@ -333,8 +330,7 @@ def __get_shader__(effect, report_not_found, mat_name):
 
     shaderclass = None
     if effect.startswith("eut2."):
-
-        from io_scs_tools.internals.shaders import eut2
+        from . import eut2
 
         shaderclass = eut2.get_shader(effect[5:])
 
@@ -346,7 +342,7 @@ def __get_shader__(effect, report_not_found, mat_name):
                    "3D viewport shading will fallback to 'dif.spec'",
                    (effect, mat_name))
 
-        from io_scs_tools.internals.shaders.eut2.dif_spec import DifSpec
+        from .eut2.dif_spec import DifSpec
 
         return DifSpec
 
