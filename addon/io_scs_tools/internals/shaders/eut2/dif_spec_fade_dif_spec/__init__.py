@@ -18,10 +18,10 @@
 
 # Copyright (C) 2015-2019: SCS Software
 
-from io_scs_tools.internals.shaders.eut2.dif_spec import DifSpec
-from io_scs_tools.internals.shaders.eut2.dif_spec_fade_dif_spec import detail_nmap
-from io_scs_tools.internals.shaders.eut2.dif_spec_fade_dif_spec import detail_setup_ng
-from io_scs_tools.utils import material as _material_utils
+from . import detail_nmap
+from . import detail_setup_ng
+from ..dif_spec import DifSpec
+from .....utils import material as _material_utils
 
 
 class DifSpecFadeDifSpec(DifSpec):

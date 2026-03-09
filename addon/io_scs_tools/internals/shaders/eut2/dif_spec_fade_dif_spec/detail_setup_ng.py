@@ -19,7 +19,7 @@
 # Copyright (C) 2015-2019: SCS Software
 
 import bpy
-from io_scs_tools.consts import Material as _MAT_consts
+from .....consts import Material as _MAT_consts
 
 DETAIL_SETUP_G = _MAT_consts.node_group_prefix + "DetailStrengthGroup"
 

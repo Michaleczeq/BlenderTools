@@ -18,10 +18,9 @@
 
 # Copyright (C) 2025: SCS Software
 
-import bpy
-from io_scs_tools.consts import Mesh as _MESH_consts
-from io_scs_tools.utils import material as _material_utils
-from io_scs_tools.internals.shaders.flavors import nmap
+from ...flavors import nmap
+from .....utils import material as _material_utils
+from .....consts import Mesh as _MESH_consts
 
 OVER_NMAP_UVMAP_NODE = "OverNMapUVs"
 OVER_NMAP_TEX_NODE = "OverNMapTex"

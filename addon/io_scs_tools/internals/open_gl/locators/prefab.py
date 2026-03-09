@@ -17,10 +17,11 @@
 # ##### END GPL LICENSE BLOCK #####
 
 # Copyright (C) 2013-2019: SCS Software
+# Copyright (C) 2024-2026: Michaleczeq
 
-from io_scs_tools.consts import PrefabLocators as _PL_consts
-from io_scs_tools.internals.open_gl import primitive as _primitive
 from mathutils import Vector, Matrix
+from .. import primitive as _primitive
+from ....consts import PrefabLocators as _PL_consts
 
 
 def draw_shape_control_node(mat, scs_globals):
@@ -326,14 +327,14 @@ def draw_shape_spawn_point_custom(mat, scs_globals, obj):
                 _primitive.append_line_vertex((mat_orig @ Vector((-0.5, lenght/2 + lenght_t, height + 2))), color)
 
 
-def draw_shape_spawn_point_trailer(mat, scs_globals, obj, color_idx):
+def draw_shape_spawn_point_trailer(mat, scs_globals, obj, style_idx):
     """
     Draws fixed shape for old trailer rails of "Spawn Point" type.
     :param mat:
     :param scs_globals:
     :param obj:
-    :param color_idx:
-    :type color_idx: int
+    :param style_idx: Index style with custom colors, shape etc.
+    :type style_idx: int
     :return:
     """
 
@@ -343,38 +344,49 @@ def draw_shape_spawn_point_trailer(mat, scs_globals, obj, color_idx):
     # Matrix without "Locator Size"
     mat_orig = obj.matrix_world
 
-    # Local variables
+    # Local default variables
     width = 3.4                 # Full width of depot shape
     height = 0.05               # Height above ground to prevent z-fight
-    lenght = 20                 # Lenght of depo shape (excluding "Unlimited" shape)
+    lenght = 25                 # Full lenght of depo shape (including "Unlimited" shape)
     pos_0 = 0.0                 # Default "0" position of shape (required when we need to move whole shape)
+    unlimited = True            # If true, draw additional shape for "Unlimited" lenght 
 
     # Load colors from settings
-    match color_idx:
-        case 0:   # Load Easy
+    match style_idx:
+        case 0:   # Trailer
             color = scs_globals.trailer_load_easy_color
-        case 1:   # Unload Easy
+        case 1:   # Long Trailer
+            color = scs_globals.trailer_load_easy_color
+            lenght = 33
+        case 2:   # Unload (Easy)
             color = scs_globals.trailer_unload_easy_color
-        case 2:   # Unload Medium
+            lenght = 33
+        case 3:   # Unload (Medium)
             color = scs_globals.trailer_unload_medium_color
-        case 3:   # Unload Hard
+        case 4:   # Unload (Hard)
             color = scs_globals.trailer_unload_hard_color
-        case 4:   # Owned Trailer
+        case 5:   # Owned Trailer
             color = scs_globals.owned_trailer_color
-        case 5:   # Service Station
+            lenght = 33
+        case 6:   # Service Station
             color = scs_globals.service_station_color
+            lenght = 33
             pos_0 = -29.0   # Move shape position 29m back, because service station uses truck point, not trailer rear as position 0.
         case _:
             color = (1.0, 1.0, 0.0, 1.0)
 
-    # Shape for "Unlimited" lenght (default for old rail system)
-    _primitive.append_line_vertex((mat_orig @ Vector((0.0, pos_0 + lenght + 3.0, height))), color)
-    _primitive.append_line_vertex((mat_orig @ Vector((width/2, pos_0 + lenght + 1.0, height))), color, is_strip=True)
-    _primitive.append_line_vertex((mat_orig @ Vector((width/2, pos_0 + lenght + 8.0, height))), color, is_strip=True)
-    _primitive.append_line_vertex((mat_orig @ Vector((0.0, pos_0 + lenght + 10.0, height))), color, is_strip=True)
-    _primitive.append_line_vertex((mat_orig @ Vector((-width/2, pos_0 + lenght + 8.0, height))), color, is_strip=True)
-    _primitive.append_line_vertex((mat_orig @ Vector((-width/2, pos_0 + lenght + 1.0, height))), color, is_strip=True)
-    _primitive.append_line_vertex((mat_orig @ Vector((0.0, pos_0 + lenght + 3.0, height))), color)
+    if unlimited:
+        # Shrink main shape lenght to make space for "Unlimited" shape
+        lenght = lenght - 8
+
+        # Shape for "Unlimited" lenght (default for old rail system)
+        _primitive.append_line_vertex((mat_orig @ Vector((0.0, pos_0 + lenght + 3.0, height))), color)
+        _primitive.append_line_vertex((mat_orig @ Vector((width/2, pos_0 + lenght + 1.0, height))), color, is_strip=True)
+        _primitive.append_line_vertex((mat_orig @ Vector((width/2, pos_0 + lenght + 8.0, height))), color, is_strip=True)
+        _primitive.append_line_vertex((mat_orig @ Vector((0.0, pos_0 + lenght + 10.0, height))), color, is_strip=True)
+        _primitive.append_line_vertex((mat_orig @ Vector((-width/2, pos_0 + lenght + 8.0, height))), color, is_strip=True)
+        _primitive.append_line_vertex((mat_orig @ Vector((-width/2, pos_0 + lenght + 1.0, height))), color, is_strip=True)
+        _primitive.append_line_vertex((mat_orig @ Vector((0.0, pos_0 + lenght + 3.0, height))), color)
 
     # Depot
     _primitive.append_line_vertex((mat_orig @ Vector((width/2, pos_0, height))), color)
@@ -500,16 +512,18 @@ def draw_prefab_locator(obj, scs_globals):
                 draw_shape_spawn_point_custom(mat, scs_globals, obj)
             elif obj.scs_props.locator_prefab_spawn_type == str(_PL_consts.PSP.TRAILER_POS):    # Load (Easy) OLD
                 draw_shape_spawn_point_trailer(mat, scs_globals, obj, 0)
-            elif obj.scs_props.locator_prefab_spawn_type == str(_PL_consts.PSP.UNLOAD_EASY_POS):
+            elif obj.scs_props.locator_prefab_spawn_type == str(_PL_consts.PSP.LONG_TRAILER_POS):
                 draw_shape_spawn_point_trailer(mat, scs_globals, obj, 1)
-            elif obj.scs_props.locator_prefab_spawn_type == str(_PL_consts.PSP.UNLOAD_MEDIUM_POS):
+            elif obj.scs_props.locator_prefab_spawn_type == str(_PL_consts.PSP.UNLOAD_EASY_POS):
                 draw_shape_spawn_point_trailer(mat, scs_globals, obj, 2)
-            elif obj.scs_props.locator_prefab_spawn_type == str(_PL_consts.PSP.UNLOAD_HARD_POS):
+            elif obj.scs_props.locator_prefab_spawn_type == str(_PL_consts.PSP.UNLOAD_MEDIUM_POS):
                 draw_shape_spawn_point_trailer(mat, scs_globals, obj, 3)
-            elif obj.scs_props.locator_prefab_spawn_type == str(_PL_consts.PSP.TRAILER_SPAWN):
+            elif obj.scs_props.locator_prefab_spawn_type == str(_PL_consts.PSP.UNLOAD_HARD_POS):
                 draw_shape_spawn_point_trailer(mat, scs_globals, obj, 4)
-            elif obj.scs_props.locator_prefab_spawn_type == str(_PL_consts.PSP.SERVICE_POS):
+            elif obj.scs_props.locator_prefab_spawn_type == str(_PL_consts.PSP.TRAILER_SPAWN):
                 draw_shape_spawn_point_trailer(mat, scs_globals, obj, 5)
+            elif obj.scs_props.locator_prefab_spawn_type == str(_PL_consts.PSP.SERVICE_POS):
+                draw_shape_spawn_point_trailer(mat, scs_globals, obj, 6)
             else:
                 draw_shape_spawn_point(mat, scs_globals)
 
