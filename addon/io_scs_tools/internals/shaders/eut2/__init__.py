@@ -166,8 +166,8 @@ def get_shader(effect):
     elif effect.startswith("dif.spec.fade.dif.spec"):
         from .dif_spec_fade_dif_spec import DifSpecFadeDifSpec as Shader
 
-    # elif effect.startswith("dif.spec.fade.mult.dif.spec"):
-    #     from .dif_spec_fade_mult_dif_spec import DifSpecFadeMultDifSpec as Shader
+    elif effect.startswith("dif.spec.fade.mult.dif.spec"):
+        from .dif_spec_fade_mult_dif_spec import DifSpecFadeMultDifSpec as Shader
 
     elif effect.startswith("dif.spec.oclu.add.env"):
         from .dif_spec_oclu_add_env import DifSpecOcluAddEnv as Shader

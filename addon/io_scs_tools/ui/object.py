@@ -21,14 +21,14 @@
 import os
 import bpy
 from bpy.types import Panel
-from io_scs_tools.consts import Operators as _OP_consts
-from io_scs_tools.consts import PrefabLocators as _PL_consts
-from io_scs_tools.internals.connections.wrappers import collection as _connections_wrapper
-from io_scs_tools.utils import convert as _convert_utils
-from io_scs_tools.utils import object as _object_utils
-from io_scs_tools.utils import get_scs_globals as _get_scs_globals
-from io_scs_tools.utils import get_scs_inventories as _get_scs_inventories
-from io_scs_tools.ui import shared as _shared
+from . import shared as _shared
+from ..utils import object as _object_utils
+from ..utils import convert as _convert_utils
+from ..utils import get_scs_globals as _get_scs_globals
+from ..utils import get_scs_inventories as _get_scs_inventories
+from ..consts import Operators as _OP_consts
+from ..consts import PrefabLocators as _PL_consts
+from ..internals.connections.wrappers import collection as _connections_wrapper
 
 _UI_SPLIT_PERC = 0.4
 
@@ -765,8 +765,7 @@ class SCS_TOOLS_PT_Parts(_ObjectPanelBlDefs, Panel):
             active_propname="active_scs_part",
             rows=4,
             maxrows=5,
-            type='DEFAULT',
-            columns=9
+            type='DEFAULT'
         )
 
         # LIST BUTTONS
@@ -954,8 +953,7 @@ class SCS_TOOLS_PT_Variants(_ObjectPanelBlDefs, Panel):
             active_propname="active_scs_variant",
             rows=3,
             maxrows=6,
-            type='DEFAULT',
-            columns=9
+            type='DEFAULT'
         )
 
         if workspace.scs_props.variant_views == 'integrated':
@@ -1147,8 +1145,7 @@ class SCS_TOOLS_PT_Animations(_ObjectPanelBlDefs, Panel):
                 active_propname="active_scs_animation",
                 rows=4,
                 maxrows=10,
-                type='DEFAULT',
-                columns=9,
+                type='DEFAULT'
             )
 
             # LIST BUTTONS
@@ -1282,7 +1279,7 @@ def register():
     for cls in classes:
         bpy.utils.register_class(cls)
 
-    from io_scs_tools import SCS_TOOLS_MT_MainMenu
+    from .. import SCS_TOOLS_MT_MainMenu
     SCS_TOOLS_MT_MainMenu.append_props_entry("Object Properties", SCS_TOOLS_PT_Object.__name__)
 
 

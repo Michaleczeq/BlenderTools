@@ -19,10 +19,10 @@
 # Copyright (C) 2015-2019: SCS Software
 
 import bpy
-from io_scs_tools.consts import Mesh as _MESH_consts
-from io_scs_tools.internals.shaders.flavors.nmap import scale_ng
-from io_scs_tools.internals.shaders.flavors.nmap import dds16_ng
-from io_scs_tools.utils import material as _material_utils
+from . import scale_ng
+from . import dds16_ng
+from .....utils import material as _material_utils
+from .....consts import Mesh as _MESH_consts
 
 NMAP_FLAVOR_FRAME_NODE = "TSNMap Flavor"
 NMAP_UVMAP_NODE = "NormalMapUVs"

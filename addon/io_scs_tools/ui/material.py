@@ -21,15 +21,15 @@
 import bpy
 import os
 from bpy.types import Panel
-from io_scs_tools.consts import Mesh as _MESH_consts
-from io_scs_tools.internals import shader_presets as _shader_presets
-from io_scs_tools.internals import looks as _looks
-from io_scs_tools.utils import material as _material_utils
-from io_scs_tools.utils import object as _object_utils
-from io_scs_tools.utils import path as _path_utils
-from io_scs_tools.utils import get_scs_globals as _get_scs_globals
-from io_scs_tools.utils import get_scs_inventories as _get_scs_inventories
-from io_scs_tools.ui import shared as _shared
+from . import shared as _shared
+from ..utils import path as _path_utils
+from ..utils import object as _object_utils
+from ..utils import material as _material_utils
+from ..utils import get_scs_globals as _get_scs_globals
+from ..utils import get_scs_inventories as _get_scs_inventories
+from ..consts import Mesh as _MESH_consts
+from ..internals import looks as _looks
+from ..internals import shader_presets as _shader_presets
 
 _UI_SPLIT_PERC = 0.5
 
@@ -750,8 +750,7 @@ class SCS_TOOLS_PT_MaterialTextures(_MaterialPanelBlDefs, Panel):
                 active_propname="active_custom_tex_coord",
                 rows=3,
                 maxrows=5,
-                type='DEFAULT',
-                columns=9
+                type='DEFAULT'
             )
 
             col = row.column(align=True)
@@ -895,7 +894,7 @@ def register():
     for cls in classes:
         bpy.utils.register_class(cls)
 
-    from io_scs_tools import SCS_TOOLS_MT_MainMenu
+    from .. import SCS_TOOLS_MT_MainMenu
     SCS_TOOLS_MT_MainMenu.append_props_entry("Material Properties", SCS_TOOLS_PT_Material.__name__)
 
 

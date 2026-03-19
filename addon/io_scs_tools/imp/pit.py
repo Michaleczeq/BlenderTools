@@ -18,9 +18,9 @@
 
 # Copyright (C) 2013-2014: SCS Software
 
-from io_scs_tools.internals.containers import pix as _pix_container
-from io_scs_tools.utils import name as _name_utils
-from io_scs_tools.utils.printout import lprint
+from ..utils import name as _name_utils
+from ..utils.printout import lprint
+from ..internals.containers import pix as _pix_container
 
 
 def _get_header(pit_container):
@@ -200,7 +200,7 @@ def _get_look(section):
                 mat_effect = mat_effect.replace(".night", ".day")
                 lprint("W Night version of building shader detected in material %r, switching it to day!", (mat_alias,))
 
-            # Extra treatment for deprecated/removed/unsupported shaders and flavors
+            # Extra treatment for deprecated/removed/unsupported shaders/flavors/attributes
             #
             # If day/night version of "window" shader is detected, switch it to "lit".
             if mat_effect.startswith("eut2.window") and mat_effect.endswith((".day", ".night")):
@@ -223,6 +223,22 @@ def _get_look(section):
                 else:
                     mat_effect = mat_effect.replace(".day", "")
                     lprint("W Day version of billboard shader detected in material %r, removing it from effect!", (mat_alias,))
+
+
+            # Extra treatment for removed attributes not supported anymore
+            #
+            # If "diffuse" attribute in "eut2.decalshadow" shader is detected, remove it
+            if mat_effect.startswith("eut2.decalshadow"):
+                if attributes.pop("diffuse", None) is not None:
+                    lprint("I Deprecated attribute: 'diffuse' in current material configuration inside material %r, ignoring it!",
+                           (mat_alias,))
+
+            # If "shininess" attribute in "eut2.light.tex" or "eut2.lightmap" shaders is detected, remove it
+            if mat_effect.startswith("eut2.light.tex") or mat_effect.startswith("eut2.lightmap"):
+                if attributes.pop("shininess", None) is not None:
+                    lprint("I Deprecated attribute: 'shininess' in current material configuration inside material %r, ignoring it!",
+                           (mat_alias,))
+
 
             # Extra temporary treatment for new attributes not supported in older material format used by BT
             #

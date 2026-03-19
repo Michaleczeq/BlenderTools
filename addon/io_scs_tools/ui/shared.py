@@ -19,10 +19,10 @@
 # Copyright (C) 2013-2019: SCS Software
 
 import bpy
-from io_scs_tools.consts import Icons as _ICONS_consts
-from io_scs_tools.utils import object as _object_utils
-from io_scs_tools.utils import get_scs_globals as _get_scs_globals
-from io_scs_tools.internals.icons import get_icon
+from ..consts import Icons as _ICONS_consts
+from ..utils import object as _object_utils
+from ..utils import get_scs_globals as _get_scs_globals
+from ..internals.icons import get_icon
 
 _ICON_TYPES = _ICONS_consts.Types
 
@@ -95,8 +95,7 @@ def draw_scs_looks_panel(layout, active_object, scs_root_object, without_box=Fal
             active_propname="active_scs_look",
             rows=3,
             maxrows=5,
-            type='DEFAULT',
-            columns=9
+            type='DEFAULT'
         )
 
         # LIST BUTTONS
