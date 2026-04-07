@@ -26,18 +26,18 @@ from bpy.props import (StringProperty,
                        CollectionProperty,
                        EnumProperty,
                        FloatVectorProperty)
-from io_scs_tools.consts import ConvHlpr as _CONV_HLPR_consts
-from io_scs_tools.consts import SCSLigthing as _LIGHTING_consts
-from io_scs_tools.internals import icons as _icons
-from io_scs_tools.internals import preview_models as _preview_models
-from io_scs_tools.internals import shader_presets as _shader_presets
-from io_scs_tools.internals.callbacks import lighting_east_lock as _lighting_east_lock_callback
-from io_scs_tools.internals.containers import config as _config_container
-from io_scs_tools.properties.dynamic import DynamicProps as _DynamicProps
-from io_scs_tools.utils import material as _material_utils
-from io_scs_tools.utils import path as _path_utils
-from io_scs_tools.utils import view3d as _view3d_utils
-from io_scs_tools.utils import get_scs_inventories as _get_scs_inventories
+from .dynamic import DynamicProps as _DynamicProps
+from ..utils import path as _path_utils
+from ..utils import view3d as _view3d_utils
+from ..utils import material as _material_utils
+from ..utils import get_scs_inventories as _get_scs_inventories
+from ..consts import ConvHlpr as _CONV_HLPR_consts
+from ..consts import SCSLigthing as _LIGHTING_consts
+from ..internals import icons as _icons
+from ..internals import preview_models as _preview_models
+from ..internals import shader_presets as _shader_presets
+from ..internals.callbacks import lighting_east_lock as _lighting_east_lock_callback
+from ..internals.containers import config as _config_container
 
 
 class SCSInventories(bpy.types.PropertyGroup):
@@ -628,7 +628,7 @@ class SCSGlobals(bpy.types.PropertyGroup):
         return None
 
     def drawing_mode_update(self, context):
-        from io_scs_tools.internals.callbacks import open_gl as _open_gl_callback
+        from ..internals.callbacks import open_gl as _open_gl_callback
 
         _open_gl_callback.enable(self.drawing_mode)
 
@@ -639,7 +639,7 @@ class SCSGlobals(bpy.types.PropertyGroup):
             _preview_models.update()
 
     def base_paint_color_update(self, context):
-        from io_scs_tools.internals.shaders import set_base_paint_color
+        from ..internals.shaders import set_base_paint_color
 
         for mat in bpy.data.materials:
 
@@ -1428,7 +1428,7 @@ class SCSGlobals(bpy.types.PropertyGroup):
 
             # if relative path detected convert it to absolute
             if self.path.startswith("//") or self.path.startswith("\\"):
-                from io_scs_tools.utils.path import repair_path
+                from ..utils.path import repair_path
                 self.path = repair_path(self.path)
 
         path: StringProperty(subtype='DIR_PATH')

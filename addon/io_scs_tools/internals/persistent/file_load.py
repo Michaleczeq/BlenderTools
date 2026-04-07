@@ -20,20 +20,20 @@
 
 import bpy
 from bpy.app.handlers import persistent
-from io_scs_tools.consts import SCSLigthing as _LIGHTING_consts
-from io_scs_tools.internals import looks as _looks
-from io_scs_tools.internals import preview_models as _preview_models
-from io_scs_tools.internals import shader_presets as _shader_presets
-from io_scs_tools.utils import material as _material_utils
-from io_scs_tools.utils import object as _object_utils
-from io_scs_tools.utils import info as _info_utils
-from io_scs_tools.utils import property as _property_utils
-from io_scs_tools.utils import get_scs_globals as _get_scs_globals
+from .. import looks as _looks
+from .. import preview_models as _preview_models
+from .. import shader_presets as _shader_presets
+from ...utils import info as _info_utils
+from ...utils import object as _object_utils
+from ...utils import material as _material_utils
+from ...utils import property as _property_utils
+from ...utils import get_scs_globals as _get_scs_globals
+from ...consts import SCSLigthing as _LIGHTING_consts
 
 
 @persistent
 def post_load(scene):
-    from io_scs_tools.internals.containers.config import AsyncPathsInit
+    from ..containers.config import AsyncPathsInit
 
     # get Blender Tools version from last blend file load
     last_load_bt_ver = _get_scs_globals().last_load_bt_version
@@ -56,6 +56,7 @@ def post_load(scene):
         ("4", apply_fixes_for_un_4),
         ("7", apply_fixes_for_un_7),
         ("8", apply_fixes_for_un_8),
+        ("9", apply_fixes_for_un_9),
     )
 
     v_parts = last_load_bt_ver.split(".")
@@ -236,7 +237,7 @@ def apply_fixes_for_1_12():
 
     print("INFO\t-  Applying fixes for version <= 1.12")
 
-    from io_scs_tools.utils import __get_world__
+    from ...utils import __get_world__
     world = __get_world__()
 
     # 1. remove legacy scs_shader_presets_inventory from world
@@ -408,7 +409,7 @@ def apply_fixes_for_un_4():
 
 def apply_fixes_for_un_7():
     """
-    Applies fixes for unofficial 2.4.7 or less:
+    Applies fixes for unofficial 2.4.xxxxxx.7 or less:
     1. Reload materials since some got removed/restructed attributes
     """
 
@@ -420,7 +421,7 @@ def apply_fixes_for_un_7():
 
 def apply_fixes_for_un_8():
     """
-    Applies fixes for unofficial 2.4.8 or less:
+    Applies fixes for unofficial 2.4.xxxxxx.8 or less:
     1. Reload materials since some got restructed nodes
     2. Show welcome message
     """
@@ -440,3 +441,15 @@ def apply_fixes_for_un_8():
 
         with bpy.context.temp_override(window=windows[0]):
             bpy.ops.wm.scs_tools_show_3dview_report('INVOKE_DEFAULT', message="\n".join(msg))
+
+def apply_fixes_for_un_9():
+    """
+    Applies fixes for unofficial 2.4.xxxxxx.9 or less:
+    1. Reload materials since some got removed/restructed attributes
+    """
+
+    print("INFO\t-  Applying fixes for unofficial versions < 9")
+
+    # 1. reload all materials
+    # Some attributes got removed and due to that we need to reload materials
+    _reload_materials()
