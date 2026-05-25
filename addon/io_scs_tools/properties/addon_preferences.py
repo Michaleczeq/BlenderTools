@@ -1282,7 +1282,8 @@ class SCSGlobals(bpy.types.PropertyGroup):
     export_output_type: EnumProperty(
         name="Output Format",
         items=(
-            ('5', "Game Data Format, ver. 5", "Export PIM (version 5) file formats for SCS Game Engine"),
+            ('5_AM', "Game Data Format, ver. 5 (AutoMat)", "Export PIM (version 5) file formats for SCS Game Engine, with \"AutoMat\" look type"),
+            ('5', "Game Data Format, ver. 5 (Material)", "Export PIM (version 5) file formats for SCS Game Engine, with legacy \"Material\" look type"),
             ('EF', "Exchange Format, ver. 1",
              "Export 'Exchange Formats' (version 1) file formats designed for data exchange between different modeling tools"),
         ),

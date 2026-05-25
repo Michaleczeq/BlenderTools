@@ -25,6 +25,7 @@ from . import pia as _pia
 from . import pic as _pic
 from . import pis as _pis
 from . import pit as _pit
+from . import pit_am as _pit_am
 from . import pit_ef as _pit_ef
 from .pim import exporter as _pim_exporter
 from .pim_ef import exporter as _pim_ef_exporter
@@ -166,7 +167,7 @@ def export(dirpath, name_suffix, root_object, game_object_list):
         in_args = (dirpath, name_suffix, root_object, armature_object, skeleton_filepath, mesh_objects, model_locators)
         trans_structs_args = (parts, materials, bones, terrain_points)
 
-        if scs_globals.export_output_type in ("5", "5AM"):
+        if scs_globals.export_output_type in ("5", "5_AM"):
             export_success = _pim_exporter.execute(*(in_args + trans_structs_args))
         elif scs_globals.export_output_type == "EF":
             export_success = _pim_ef_exporter.execute(*(in_args + trans_structs_args))
@@ -193,7 +194,9 @@ def export(dirpath, name_suffix, root_object, game_object_list):
         in_args = (root_object, dirpath + os.sep + root_object.name, name_suffix)
         trans_structs_args = (parts, materials)
 
-        if scs_globals.export_output_type == "5":
+        if scs_globals.export_output_type == "5_AM":
+            export_success = _pit_am.export(*(in_args + trans_structs_args))
+        elif scs_globals.export_output_type == "5":
             export_success = _pit.export(*(in_args + trans_structs_args))
         elif scs_globals.export_output_type == "EF":
             export_success = _pit_ef.export(*(in_args + trans_structs_args))
