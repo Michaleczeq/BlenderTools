@@ -20,8 +20,8 @@
 
 import bpy
 
-from io_scs_tools.properties.dynamic import scene
-from io_scs_tools.properties.dynamic import object
+from . import scene
+from . import object
 
 
 class DynamicProps:
@@ -32,6 +32,7 @@ class DynamicProps:
         SCS_GLOBALS = __prefix + "scs_globals"
 
     __registered_props = {}
+    __runtime_storage = {}
 
     @staticmethod
     def __register_property__(scope, property_name):
@@ -80,17 +81,12 @@ class DynamicProps:
             """
             assert self
 
-            prefs = bpy.context.preferences.addons["io_scs_tools"].preferences
+            scope_dict = DynamicProps.__runtime_storage.get(scope)
 
-            if not hasattr(prefs, scope):
+            if scope_dict is None:
                 return default
 
-            scoped_prefs = prefs[scope]
-
-            if not hasattr(scoped_prefs, property_name):
-                return default
-
-            return scoped_prefs[property_name]
+            return scope_dict.get(property_name, default)
 
         def setter(self, value):
             """Sets value to the property.
@@ -103,14 +99,10 @@ class DynamicProps:
             assert self
             assert isinstance(value, property_type)
 
-            prefs = bpy.context.preferences.addons["io_scs_tools"].preferences
+            if scope not in DynamicProps.__runtime_storage:
+                DynamicProps.__runtime_storage[scope] = {}
 
-            if not hasattr(prefs, scope):
-                setattr(prefs, scope, {})
-                
-            scope_dict = getattr(prefs, scope)
-            scope_dict[property_name] = value
-            setattr(prefs, scope, scope_dict)
+            DynamicProps.__runtime_storage[scope][property_name] = value
 
         # check for default value type
         assert isinstance(default, property_type)

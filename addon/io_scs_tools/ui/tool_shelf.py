@@ -20,14 +20,14 @@
 
 import bpy
 from bpy.types import Panel
-from io_scs_tools.consts import Icons as _ICONS_consts
-from io_scs_tools.consts import LampTools as _LT_consts
-from io_scs_tools.consts import InteriorWindowTools as _IWT_consts
-from io_scs_tools.consts import Operators as _OP_consts
-from io_scs_tools.consts import VertexColorTools as _VCT_consts
-from io_scs_tools.internals.icons import get_icon
-from io_scs_tools.ui import shared as _shared
-from io_scs_tools.utils import object as _object_utils
+from . import shared as _shared
+from ..utils import object as _object_utils
+from ..consts import Icons as _ICONS_consts
+from ..consts import LampTools as _LT_consts
+from ..consts import Operators as _OP_consts
+from ..consts import VertexColorTools as _VCT_consts
+from ..consts import InteriorWindowTools as _IWT_consts
+from ..internals.icons import get_icon
 
 _ICON_TYPES = _ICONS_consts.Types
 
@@ -361,7 +361,7 @@ class SCS_TOOLS_PT_LampSwitcher(_ToolShelfBlDefs, Panel):
         :rtype: str
         """
 
-        from io_scs_tools.internals.shaders.eut2.std_node_groups.lampmask_mixer_ng import LAMPMASK_MIX_G
+        from ..internals.shaders.eut2.std_node_groups.lampmask_mixer_ng import LAMPMASK_MIX_G
 
         lamp_type_enabled = False
 
@@ -634,7 +634,7 @@ def register():
     for cls in classes:
         bpy.utils.register_class(cls)
 
-    from io_scs_tools import SCS_TOOLS_MT_MainMenu
+    from .. import SCS_TOOLS_MT_MainMenu
     SCS_TOOLS_MT_MainMenu.append_sidebar_entry("Sidebar - Tool Shelf", SCS_TOOLS_PT_ToolShelf.__name__)
     SCS_TOOLS_MT_MainMenu.append_sidebar_entry("Sidebar - Convex", SCS_TOOLS_PT_ConvexBlDefs.__name__)
     SCS_TOOLS_MT_MainMenu.append_sidebar_entry("Sidebar - Visibility Tools", SCS_TOOLS_PT_Visibility.__name__)

@@ -16,13 +16,14 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-# Copyright (C) 2025: SCS Software
+# Copyright (C) 2025-2026: Michaleczeq
 
-from io_scs_tools.consts import Mesh as _MESH_consts
-from io_scs_tools.internals.shaders.eut2.dif_spec_weight_mult2 import DifSpecWeightMult2
-from io_scs_tools.internals.shaders.eut2.std_node_groups import mult2_mix_ng
-from io_scs_tools.internals.shaders.flavors import tg1
-from io_scs_tools.utils import material as _material_utils
+from ..dif_spec_weight_mult2 import DifSpecWeightMult2
+from ..std_node_groups import mult2_mix_ng
+from ...flavors import tg1
+from .....utils import material as _material_utils
+from .....consts import Mesh as _MESH_consts
+
 
 class DifSpecWeightMult2Mask2(DifSpecWeightMult2):
     SEC_UVMAP_NODE = "SecondUVMap"
@@ -352,12 +353,6 @@ class DifSpecWeightMult2Mask2(DifSpecWeightMult2):
             uv_layer = _MESH_consts.none_uv
 
         node_tree.nodes[DifSpecWeightMult2Mask2.THIRD_UVMAP_NODE].uv_map = uv_layer
-
-
-
-
-
-
 
     @staticmethod
     def set_tg1_flavor(node_tree, switch_on):

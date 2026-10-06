@@ -16,10 +16,10 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-# Copyright (C) 2025: SCS Software
+# Copyright (C) 2025-2026: Michaleczeq
 
-from io_scs_tools.internals.shaders.eut2.dif_spec_over_dif_opac import DifSpecOverDifOpac
-from io_scs_tools.internals.shaders.eut2.std_passes.add_env import StdAddEnv
+from ..dif_spec_over_dif_opac import DifSpecOverDifOpac
+from ..std_passes.add_env import StdAddEnv
 
 
 class DifSpecOverDifOpacAddEnv(DifSpecOverDifOpac, StdAddEnv):

@@ -16,15 +16,15 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-# Copyright (C) 2015-2024: SCS Software
+# Copyright (C) 2024-2026: Michaleczeq
 
-from io_scs_tools.internals.shaders.eut2.baked.spec import BakedSpec
-from io_scs_tools.internals.shaders.eut2.parameters import get_fresnel_truckpaint
-from io_scs_tools.internals.shaders.eut2.std_node_groups import linear_to_srgb_ng
-from io_scs_tools.internals.shaders.eut2.std_passes.add_env import StdAddEnv
-from io_scs_tools.utils import convert as _convert_utils
-from io_scs_tools.utils import material as _material_utils
-from io_scs_tools.utils import get_scs_globals as _get_scs_globals
+from .spec import BakedSpec
+from ..parameters import get_fresnel_truckpaint
+# from ..std_node_groups import linear_to_srgb_ng
+from ..std_passes.add_env import StdAddEnv
+from .....utils import convert as _convert_utils
+from .....utils import material as _material_utils
+from .....utils import get_scs_globals as _get_scs_globals
 
 class BakedSpecAddEnv(BakedSpec, StdAddEnv):
     MASK_TEX_NODE = "MaskTex"

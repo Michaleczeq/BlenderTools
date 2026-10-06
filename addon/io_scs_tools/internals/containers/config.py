@@ -17,6 +17,7 @@
 # ##### END GPL LICENSE BLOCK #####
 
 # Copyright (C) 2013-2022: SCS Software
+# Copyright (C) 2026: Michaleczeq
 
 import bpy
 import os
@@ -24,20 +25,20 @@ import pickle
 import tempfile
 from hashlib import sha256
 from time import time
-from io_scs_tools.consts import Icons as _ICONS_consts
-from io_scs_tools.consts import Cache as _CACHE_consts
-from io_scs_tools.utils.printout import lprint
-from io_scs_tools.utils import path as _path_utils
-from io_scs_tools.utils import view3d as _view3d_utils
-from io_scs_tools.utils import get_scs_globals as _get_scs_globals
-from io_scs_tools.utils import get_scs_inventories as _get_scs_inventories
-from io_scs_tools.utils import load_scs_globals_from_blend as _load_scs_globals_from_blend
-from io_scs_tools.utils.info import get_combined_ver_str
-from io_scs_tools.utils.property import get_default
-from io_scs_tools.internals import shader_presets as _shader_presets
-from io_scs_tools.internals.containers import pix as _pix
-from io_scs_tools.internals.containers import sii as _sii
-from io_scs_tools.internals.structure import SectionData as _SectionData
+from . import pix as _pix
+from . import sii as _sii
+from .. import shader_presets as _shader_presets
+from ..structure import SectionData as _SectionData
+from ...consts import Icons as _ICONS_consts
+from ...consts import Cache as _CACHE_consts
+from ...utils import path as _path_utils
+from ...utils import view3d as _view3d_utils
+from ...utils import get_scs_globals as _get_scs_globals
+from ...utils import get_scs_inventories as _get_scs_inventories
+from ...utils import load_scs_globals_from_blend as _load_scs_globals_from_blend
+from ...utils.info import get_combined_ver_str
+from ...utils.property import get_default
+from ...utils.printout import lprint
 
 
 class _PathsCache:
@@ -966,8 +967,11 @@ def update_shader_presets_path(shader_presets_filepath, reload_only=False):
             # sort sections to shaders and flavors
             shaders = []
             flavors = {}
+            format_version = 1.0
             for section in presets_container:
-                if section.type == "Shader":
+                if section.type == "Header":
+                     format_version = section.get_prop_value("FormatVersion")
+                elif section.type == "Shader":
                     shaders.append(section)
                 elif section.type == "Flavor":
                     flavors[section.get_prop_value("Type")] = section
@@ -980,16 +984,21 @@ def update_shader_presets_path(shader_presets_filepath, reload_only=False):
                 shader_preset_name = shader.get_prop_value("PresetName")
                 shader_preset_effect = shader.get_prop_value("Effect")
                 unique_names.append("")
+
+                # Before I will add default shader, I should check if RequiredFlavors is available in default section,
+                # in case someone adds flavor requirement to shader preset without flavors.
                 _shader_presets.add_section(shader_preset_effect, shader_preset_name, "", shader)
 
                 if shader_flavors:
 
+                    used_flavor_types = {}
                     for j, flavor_types in enumerate(shader_flavors):
 
                         # create new flavor item
                         _shader_presets.add_flavor(shader_preset_name)
 
                         new_unique_names = []
+                        new_unique_flavors = []
                         for i, flavor_type in enumerate(flavor_types.split("|")):
 
                             if flavor_type not in flavors:
@@ -1006,6 +1015,10 @@ def update_shader_presets_path(shader_presets_filepath, reload_only=False):
                                 new_unique_str = unique_name + "." + flavor_variant_name
                                 new_full_effect_name = shader_preset_effect + new_unique_str
 
+                                new_unique_flavors = used_flavor_types.get(unique_name, []).copy()
+                                used_flavor_types[new_unique_str] = new_unique_flavors
+                                used_flavor_types[new_unique_str].append(flavor_type)
+
                                 # check if this shader-flavor combination can exists, if not skip it
                                 if supported_effects_dict and new_full_effect_name not in supported_effects_dict:
                                     lprint("S Marking none existing effect as dirty: %r", (new_full_effect_name,))
@@ -1013,30 +1026,74 @@ def update_shader_presets_path(shader_presets_filepath, reload_only=False):
                                 else:
                                     is_dirty = False
 
-                                section = _shader_presets.get_section(shader_preset_name, unique_name)
+                                if format_version == 1:
+                                    section = _shader_presets.get_section(shader_preset_name, unique_name)
 
-                                for flavor_section in flavors[flavor_type].sections:
+                                    for flavor_section in flavors[flavor_type].sections:
 
-                                    flavor_section_tag = flavor_section.get_prop_value("Tag")
-                                    # check if current flavor section already exists in section,
-                                    # then override props and sections directly otherwise add flavor section
-                                    for subsection in section.sections:
+                                        flavor_section_tag = flavor_section.get_prop_value("Tag")
+                                        # check if current flavor section already exists in section,
+                                        # then override props and sections directly otherwise add flavor section
+                                        for subsection in section.sections:
 
-                                        subsection_tag = subsection.get_prop_value("Tag")
-                                        if subsection_tag and subsection_tag == flavor_section_tag:
+                                            subsection_tag = subsection.get_prop_value("Tag")
+                                            if subsection_tag and subsection_tag == flavor_section_tag:
 
-                                            subsection.props = flavor_section.props
-                                            subsection.sections = flavor_section.sections
-                                            break
+                                                subsection.props = flavor_section.props
+                                                subsection.sections = flavor_section.sections
+                                                break
 
-                                    else:
-                                        section.sections.append(flavor_section)
+                                        else:
+                                            section.sections.append(flavor_section)
+
+                                elif format_version >= 1.1:
+                                    section = _shader_presets.get_section(shader_preset_name)
+                                    remove_sections = set()
+
+                                    for idx, shader_subsection in enumerate(section.sections):
+
+                                        # Get RequiredFlavors and ForbiddenFlavors for current shader section if exist, otherwise None
+                                        required_flavors = shader_subsection.get_prop_value("RequiredFlavors")
+                                        forbidden_flavors = shader_subsection.get_prop_value("ForbiddenFlavors")
+
+                                        # Marking section as to be removed if not all required flavors are present.
+                                        if required_flavors and not set(required_flavors).issubset(set(used_flavor_types[new_unique_str])):
+                                            remove_sections.add(idx)
+
+                                        # Marking section as to be removed if at least one forbidden flavor is present.
+                                        if forbidden_flavors and set(forbidden_flavors) & set(used_flavor_types[new_unique_str]):
+                                            remove_sections.add(idx)
+
+                                    # Remove additional shader sections unused for current flavor combination.
+                                    for index in sorted(remove_sections, reverse=True):
+                                        del section.sections[index]
 
                                 new_unique_names.append(new_unique_str)
                                 assert section.set_prop_value("Effect", shader_preset_effect + new_unique_str)
                                 _shader_presets.add_section(shader_preset_effect, shader_preset_name, new_unique_str, section, is_dirty=is_dirty)
 
                         unique_names.extend(new_unique_names)
+                
+                if format_version >= 1.1:
+
+                    # Mark sections used by flavors to be remove from default non-flavor shader preset
+                    # Get section again (because previous 'section' is overwritten by flavors if used or not exist)
+                    section = _shader_presets.get_section(shader_preset_name)
+                    remove_sections = set()
+                    for idx, shader_subsection in enumerate(section.sections):
+
+                        # Get RequiredFlavors for current shader section if exist, otherwise None
+                        required_flavors = shader_subsection.get_prop_value("RequiredFlavors")
+
+                        if required_flavors:
+                            remove_sections.add(idx)
+
+                    # Remove additional unused by non-flavor shader sections.
+                    for index in sorted(remove_sections, reverse=True):
+                        del section.sections[index]
+
+                    # Update default non-flavor shader with preset without additional flavor only sections. 
+                    _shader_presets.update_section(shader_preset_name, "", section)
 
             # now as we built library it's time to clean it up of dirty items (eg. none existing effect combinations) and
             # set path from which this library was initialized

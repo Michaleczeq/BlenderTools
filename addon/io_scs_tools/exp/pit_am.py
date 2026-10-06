@@ -21,32 +21,35 @@
 import bpy
 import os
 import shutil
-from io_scs_tools.consts import Variant as _VARIANT_consts
-from io_scs_tools.exp import tobj as _tobj
-from io_scs_tools.internals import looks as _looks
-from io_scs_tools.internals import shader_presets as _shader_presets
-from io_scs_tools.internals.structure import SectionData as _SectionData
-from io_scs_tools.internals.containers import pix as _pix_container
-from io_scs_tools.utils import path as _path_utils
-from io_scs_tools.utils import get_scs_globals as _get_scs_globals
-from io_scs_tools.utils.info import get_combined_ver_str
-from io_scs_tools.utils.printout import lprint
+from . import tobj as _tobj
+from ..consts import Variant as _VARIANT_consts
+from ..utils import path as _path_utils
+from ..utils import get_scs_globals as _get_scs_globals
+from ..utils.info import get_combined_ver_str
+from ..utils.printout import lprint
+from ..internals import looks as _looks
+from ..internals import shader_presets as _shader_presets
+from ..internals.structure import UnitData as _UnitData
+from ..internals.structure import SectionData as _SectionData
+from ..internals.containers import pix as _pix_container
+from ..internals.containers.writers import sii as _sii_writer
+from ..internals.containers.parsers.mat_convert import AttributeConverter
 
-
+# OK
 def fill_comment_header_section(look_list, variant_list):
     """Fills up comment section (before Header)."""
     section = _SectionData("#comment")
     section.props.append(("#", "# Look Names:"))
     for look in look_list:
-        section.props.append(("#", "#\t" + look['name']))
+        section.props.append(("#", "#    " + look['name']))
     section.props.append(("#", "#"))
     section.props.append(("#", "# Variant Names:"))
     for variant in variant_list:
-        section.props.append(("#", "#\t" + variant[0]))
+        section.props.append(("#", "#    " + variant[0]))
     section.props.append(("#", "#"))
     return section
 
-
+# OK
 def fill_header_section(format_version, file_name, sign_export):
     """Fills up "Header" section."""
     section = _SectionData("Header")
@@ -54,16 +57,9 @@ def fill_header_section(format_version, file_name, sign_export):
     section.props.append(("Source", get_combined_ver_str()))
     section.props.append(("Type", "Trait"))
     section.props.append(("Name", file_name))
-    """ "SourceFilename" and "Author" no longer supported by conversion tools, system.author removed from Blender.
-    if sign_export:
-        section.props.append(("SourceFilename", str(bpy.data.filepath)))
-        author = bpy.context.user_preferences.system.author
-        if author:
-            section.props.append(("Author", str(author)))
-    """
     return section
 
-
+# OK
 def fill_global_section(looks, variants, parts, materials):
     """Fills up "Global" section."""
     section = _SectionData("Global")
@@ -73,59 +69,140 @@ def fill_global_section(looks, variants, parts, materials):
     section.props.append(("MaterialCount", materials))
     return section
 
+# OK
+def _fill_content_sections(input_data, sampler_data, effect_name):
+    """Builds SII content for "AutoMat" sections.
 
-def fill_material_sections(materials, material_dict):
-    """Fills up "Material" sections."""
+    :param input_data: list of tuples (type, name, value, [is_locked], [palette_only], [palette_ufs_paths]) for input properties
+    :type input_data: list[tuple[str, str, str, bool]]
+    :param sampler_data: list of tuples (name, value, [is_locked]) for sampler properties
+    :type sampler_data: list[tuple[str, str, bool]]
+    :param effect_name: name of material effect
+    :type effect_name: str
+    :return: SII content
+    :rtype: str
+    """
+
+    lprint("D Building SII AutoMat content (effect: %r)", (effect_name))
+
+    units = []
+
+    # Create HEADER
+    header = _UnitData("xmat_auto_header", ".header")
+    header.props["effect"] = effect_name
+    header.props["ref_umat_ufs_path"] = ""
+    header.props["ref_umat_ufs_path_secondary"] = ""
+    units.append(header)
+    # lprint("D ---- Added xmat_auto_header unit")
+
+
+    # Create INPUTS
+    for idx, entry in enumerate(input_data):
+        typ, name, value = entry[:3]
+        is_locked = entry[3] if len(entry) > 3 else False
+        palette_only = entry[4] if len(entry) > 4 else False
+        palette_ufs_paths = entry[5] if len(entry) > 5 else 0
+
+        type_map = {
+            "FLOAT":    "xmat_input_f",
+            "FLOAT2":   "xmat_input_f2",
+            "FLOAT3":   "xmat_input_f3",
+            "FLOAT4":   "xmat_input_f4",
+            "INT":      "xmat_input_int",
+            "STRING":   "xmat_input_str"
+        }
+
+        unit_type = type_map.get(typ, "xmat_input_str")
+        unit = _UnitData(unit_type, f".record{idx}")
+
+        unit.props["name"] = name
+        unit.props["value"] = value
+
+        # Additional attributes
+        if typ in ("FLOAT3", "FLOAT4"):
+            unit.props["palette_only"] = palette_only
+            unit.props["palette_ufs_paths"] = palette_ufs_paths
+
+        unit.props["is_locked"] = is_locked
+
+        units.append(unit)
+        # lprint("D ---- Added input unit: %r (type: %r, val: %r, locked: %r)", (name, typ, value, is_locked))
+
+
+    # Create SAMPLERS
+    for idx, entry in enumerate(sampler_data):
+        name, value = entry[:2]
+        is_locked = entry[2] if len(entry) > 2 else False
+
+        # Ensure that sampler path ends with .tobj
+        if isinstance(value, str) and value.strip():
+            if not value.endswith(".tobj"):
+                value = value + ".tobj"
+
+        unit = _UnitData("xmat_sampler", f".record{len(input_data) + idx}")
+        unit.props["name"] = name
+        unit.props["value"] = value
+        unit.props["is_locked"] = is_locked
+        units.append(unit)
+        # lprint("D ---- Added sampler unit: %r (locked: %r)", (name, is_locked))
+
+    # Finalize content
+    content = _sii_writer.write_data_to_string(units, '    ')
+
+    # Visual formatting for better readability by adding 2x tab
+    lines = content.splitlines()
+    if len(lines) > 1:
+        lines = [lines[0]] + ['            ' + line if line.strip() else line for line in lines[1:]]
+    content = '\n'.join(lines)
+
+    # Add multi-line quotes around content (only 2x " because by default content is already in single quotes)
+    content = f'""{content}""'
+
+    return content
+
+# OK
+def fill_automat_sections(automats, automat_dict):
+    """Fills up "AutoMat" sections."""
     sections = []
-    for material in materials:
-        if isinstance(material, str):
-            sections.append(material_dict[material])
+    for automat in automats:
+        if isinstance(automat, str):
+            sections.append(automat_dict[automat])
         else:
-            if material.name in material_dict:
-                material_section = material_dict[material.name]
+            if automat.name in automat_dict:
+                automat_section = automat_dict[automat.name]
             else:
-                material_section = material_dict[str("_" + material.name + "_-_default_settings_")]
-            sections.append(material_section)
+                automat_section = automat_dict[str("_" + automat.name + "_-_default_settings_")]
+            sections.append(automat_section)
     return sections
 
+# OK
+def default_automat(alias):
+    """Return 'default automat' data section."""
 
-def default_material(alias):
-    """Return 'default material' data section."""
+    input_data = [
+        ('FLOAT3',  "diffuse",      (1.0, 1.0, 1.0)),
+        ('FLOAT3',  "specular",     (0.0, 0.0, 0.0)),
+        ('FLOAT',   "shininess",    (5.0,)),
+        ('FLOAT',   "add_ambient",  (0.0,)),
+        ('FLOAT',   "reflection",   (0.0,)),
+    ]
+
+    sampler_data = [
+        ('texture_base', "", False),
+    ]
+
+    effect_name = "eut2.dif"
+    content = _fill_content_sections(input_data, sampler_data, effect_name)
 
     # DEFAULT PROPERTIES
-    material_export_data = _SectionData("Material")
-    material_export_data.props.append(("Alias", alias))
-    # material_export_data.props.append(("Effect", "eut2.none"))
-    material_export_data.props.append(("Effect", "eut2.dif"))
-    material_export_data.props.append(("Flags", 0))
-    attribute_data = [
-        ('FLOAT3', "diffuse", (1.0, 1.0, 1.0)),
-        ('FLOAT3', "specular", (0.0, 0.0, 0.0)),
-        ('FLOAT', "shininess", (5.0,)),
-        ('FLOAT', "add_ambient", (0.0,)),
-        ('FLOAT', "reflection", (0.0,)),
-    ]
-    texture_data = [
-        ('texture[0]:texture_base', ""),
-    ]
-    material_export_data.props.append(("AttributeCount", len(attribute_data)))
-    material_export_data.props.append(("TextureCount", len(texture_data)))
+    automat_export_data = _SectionData("AutoMat")
+    automat_export_data.props.append(("Alias", alias))
+    automat_export_data.props.append(("Index", 0))
+    automat_export_data.props.append(("Content", content))
 
-    # DEFAULT ATTRIBUTES AND TEXTURE
-    for attribute in attribute_data:
-        attribute_section = _SectionData("Attribute")
-        attribute_section.props.append(("Format", attribute[0]))
-        attribute_section.props.append(("Tag", attribute[1]))
-        attribute_section.props.append(("Value", ["i", attribute[2]]))
-        material_export_data.sections.append(attribute_section)
-    for texture in texture_data:
-        texture_section = _SectionData("Texture")
-        texture_section.props.append(("Tag", texture[0]))
-        texture_section.props.append(("Value", texture[1]))
-        material_export_data.sections.append(texture_section)
-    return material_export_data
+    return automat_export_data
 
-
+# OK
 def get_texture_path_from_material(material, texture_type, export_path):
     """Get's relative path for Texture section of tobj from given texture_type.
     If tobj is not yet created it also creates tobj for it.
@@ -263,19 +340,19 @@ def get_texture_path_from_material(material, texture_type, export_path):
 
     return tobj_rel_filepath
 
-
+# OK
 def fill_look_sections(data_list):
     """Fills up "Look" sections."""
     sections = []
     for item_i, item in enumerate(data_list):
         section = _SectionData("Look")
         section.props.append(("Name", item['name']))
-        for material_section in item['material_sections']:
-            section.sections.append(material_section)
+        for automat_section in item['automat_sections']:
+            section.sections.append(automat_section)
         sections.append(section)
     return sections
 
-
+# OK (still used in "Part")
 def _fill_atr_section(atr):
     """Creates "Attribute" section."""
     section = _SectionData("Attribute")
@@ -284,7 +361,7 @@ def _fill_atr_section(atr):
     section.props.append(("Value", ["&&", (atr[2],)]))
     return section
 
-
+# OK
 def _fill_part_section(part):
     """Creates "Part" section."""
     section = _SectionData("Part")
@@ -295,7 +372,7 @@ def _fill_part_section(part):
         section.sections.append(atr_section)
     return section
 
-
+# OK
 def fill_variant_sections(data_list):
     """Fills up "Variant" sections."""
     sections = []
@@ -308,7 +385,7 @@ def fill_variant_sections(data_list):
         sections.append(section)
     return sections
 
-
+# OK
 def fill_part_list(parts, used_parts_names, all_parts=False):
     """Fills up "Part" sections in "Varian" section
 
@@ -396,6 +473,7 @@ def export(root_object, filepath, name_suffix, used_parts, used_materials):
         else:  # if no looks create default
             curr_look_name = "default"
 
+        automat_idx = 0
         material_dict = {}
         material_list = []
         # get materials data
@@ -404,7 +482,7 @@ def export(root_object, filepath, name_suffix, used_parts, used_materials):
                 material_name = str("_default_material_-_default_settings_")
 
                 # DEFAULT MATERIAL
-                material_export_data = default_material(material_name)
+                automat_export_data = default_automat(material_name)
                 material_list.append(material_name)
 
             else:
@@ -415,23 +493,15 @@ def export(root_object, filepath, name_suffix, used_parts, used_materials):
                 effect_name = material.scs_props.mat_effect_name
 
                 # PRESET SHADERS
-                flags = 0
-                attribute_cnt = texture_cnt = 0
-                attribute_sections = []
-                texture_sections = []
+                input_sections = []     # (FORMAT, tag, value)
+                sampler_sections = []
                 active_shader_preset_name = material.scs_props.active_shader_preset_name
 
                 # SUBSTANCE
                 substance_value = material.scs_props.substance
                 # only write substance to material if it's assigned
                 if substance_value != "None" and substance_value != "":
-
-                    substance_data = _SectionData("Attribute")
-                    substance_data.props.append(("Format", "STRING"))
-                    substance_data.props.append(("Tag", "substance"))
-                    substance_data.props.append(("Value", ["i", (substance_value,)]))
-                    attribute_sections.append(substance_data)
-                    attribute_cnt += 1
+                    input_sections.append(("STRING", "substance", substance_value))
 
                 if _shader_presets.has_preset(active_shader_preset_name) and active_shader_preset_name != "<none>":
 
@@ -439,23 +509,8 @@ def export(root_object, filepath, name_suffix, used_parts, used_materials):
                     flavors_str = effect_name[len(preset.effect):]
                     section = _shader_presets.get_section(active_shader_preset_name, flavors_str)
 
-                    # FLAGS
-                    for prop in section.props:
-
-                        if prop[0] == "Flags":
-                            flags = int(not material.scs_props.enable_aliasing)
-                            break
-
                     # COLLECT ATTRIBUTES AND TEXTURES
                     for item in section.sections:
-
-                        # if attribute is hidden in shader preset ignore it on export
-                        # this is useful for flavor hiding some attributes from original material
-                        # eg: airbrush on "truckpaint" hides R G B aux attributes which are not present
-                        # when using airbrush flavor
-                        hidden = item.get_prop_value("Hide")
-                        if hidden and hidden == "True":
-                            continue
 
                         preview_only = item.get_prop_value("PreviewOnly")
                         if preview_only and preview_only == "True":
@@ -465,152 +520,213 @@ def export(root_object, filepath, name_suffix, used_parts, used_materials):
                         if item.type == "Attribute":
                             # print('     Attribute:')
 
-                            attribute_data = _SectionData("Attribute")
-                            for rec in item.props:
-                                # print('       rec: %r' % str(rec))
-                                if rec[0] == "Format":
-                                    attribute_data.props.append((rec[0], rec[1]))
-                                elif rec[0] == "Tag":
-                                    # tag_prop = rec[1].replace("[", "").replace("]", "")
-                                    # attribute_data.props.append((rec[0], tag_prop))
-                                    attribute_data.props.append((rec[0], rec[1]))
-                                elif rec[0] == "Value":
-                                    format_prop = item.get_prop("Format")[1]
-                                    tag_prop = item.get_prop("Tag")[1]
-                                    tag_prop = tag_prop.replace("[", "").replace("]", "")
-                                    # print('         format_prop: %r' % str(format_prop))
-                                    # print('         tag_prop: %r' % str(tag_prop))
-                                    if "aux" in tag_prop:
-                                        aux_props = getattr(material.scs_props, "shader_attribute_" + tag_prop)
-                                        value = []
-                                        for aux_prop in aux_props:
-                                            value.append(aux_prop.value)
+                            format_prop = item.get_prop("Format")[1]
+                            tag_prop = item.get_prop("Tag")[1]
+                            tag_prop_aux = tag_prop.replace("[", "").replace("]", "")
 
-                                        # extract list if there is only one value inside and tagged as FLOAT
-                                        # otherwise it gets saved as: "Value: ( [0.0] )" instead of: "Value: ( 0.0 )"
-                                        if len(value) == 1 and format_prop == "FLOAT":
-                                            value = value[0]
+                            # print('         format_prop: %r' % str(format_prop))
+                            # print('         tag_prop: %r' % str(tag_prop))
 
-                                    else:
-                                        value = getattr(material.scs_props, "shader_attribute_" + tag_prop, "NO TAG")
-                                    # print('         value: %s' % str(value))
-                                    if format_prop == 'FLOAT':
-                                        attribute_data.props.append((rec[0], ["&&", (value,)]))
-                                    elif format_prop == 'INT':
-                                        attribute_data.props.append((rec[0], ["ii", (value,)]))
-                                    else:
-                                        attribute_data.props.append((rec[0], ["i", tuple(value)]))
-                            attribute_sections.append(attribute_data)
-                            attribute_cnt += 1
+                            # NOTE: There is no "aux" attributes in new format so technically we should not check it, but for safety we do it anyway.
+                            if "aux" in tag_prop:
+                                aux_props = getattr(material.scs_props, "shader_attribute_" + tag_prop_aux)
+                                value = []
+                                for aux_prop in aux_props:
+                                    value.append(aux_prop.value)
+
+                                # extract list if there is only one value inside and tagged as FLOAT
+                                # otherwise it gets saved as: "Value: ( [0.0] )" instead of: "Value: ( 0.0 )"
+                                if len(value) == 1 and format_prop == "FLOAT":
+                                    value = value[0]
+
+                            else:
+                                value = getattr(material.scs_props, "shader_attribute_" + tag_prop, "NO TAG")
+
+                            if format_prop not in ("FLOAT", "INT", "INT2", "STRING"):
+                                value = tuple(value)
+
+                            # print('         > FINAL: %r - %r - %r' % (format_prop, tag_prop, value))
+
+                            input_sections.append((format_prop, tag_prop, value))
 
                         # TEXTURES
                         elif item.type == "Texture":
                             # print('     Texture:')
 
-                            texture_data = _SectionData("Texture")
-                            for rec in item.props:
-                                # print('       rec: %r' % str(rec))
-                                if rec[0] == "Tag":
-                                    tag_prop = rec[1].split(":")[1]
-                                    tag = str("texture[" + str(texture_cnt) + "]:" + tag_prop)
-                                    texture_data.props.append((rec[0], tag))
-                                elif rec[0] == "Value":
-                                    tag_prop = item.get_prop("Tag")[1].split(":")[1]
-                                    # print('         tag_prop: %r' % str(tag_prop))
+                            tag_prop = item.get_prop("Tag")[1].split(":")[1]
+                            tobj_rel_path = get_texture_path_from_material(material, tag_prop, os.path.dirname(filepath))
+                            # print('         tag_prop: %r' % str(tag_prop))
+                            # print('         tobj_rel_path: %r' % str(tobj_rel_path))
 
-                                    # create and get path to tobj
-                                    tobj_rel_path = get_texture_path_from_material(material, tag_prop,
-                                                                                   os.path.dirname(filepath))
+                            sampler_sections.append((tag_prop, tobj_rel_path))
 
-                                    texture_data.props.append((rec[0], tobj_rel_path))
+                    #######################################
+                    ##### TEMPORARY CONVERSION STARTS #####
+                    #######################################
+                    # NOTE: Temporary conversion from old format (Material) to new one (effect/AutoMat).
+                    # In future, new format will be defalut, and converter will be used in #pit.py (not here) instead, to convert from new to old.
 
-                            texture_sections.append(texture_data)
-                            texture_cnt += 1
+                    # Building material_data (for converting attributes and values) and attribute_format (to assign correct formats for not converted data) dicts from input_sections
+                    material_data = {attr: val for fmt, attr, val in input_sections}
+                    attribute_format = {attr: fmt for fmt, attr, val in input_sections}
 
-                    material_export_data = _SectionData("Material")
-                    material_export_data.props.append(("Alias", material.name))
-                    material_export_data.props.append(("Effect", effect_name))
-                    material_export_data.props.append(("Flags", flags))
-                    material_export_data.props.append(("AttributeCount", attribute_cnt))
-                    material_export_data.props.append(("TextureCount", texture_cnt))
-                    for attribute in attribute_sections:
-                        material_export_data.sections.append(attribute)
-                    for texture in texture_sections:
-                        material_export_data.sections.append(texture)
+                    # Convert attributes and values from material_data to new effect format
+                    converter = AttributeConverter()
+                    effect_data = converter.material_to_effect(effect_name, material_data)
+
+                    # Building new_input_sections with converted data and correct format of attributes.
+                    new_input_sections = []
+                    if isinstance(effect_data, dict):
+                        for attr, val in effect_data.items():
+                            # Checking if attribute was copied 1:1 from old format (not converted - fmt should be preserved)
+                            if attr in attribute_format:
+                                fmt = attribute_format[attr]
+                                val_out = val
+
+                            # If attribute was converted, we need to "guess" correct one from value (there is no 100% certainty)
+                            else:
+                                if isinstance(val, (tuple, list)):
+                                    l = len(val)
+                                    if l == 1:
+                                        fmt = "FLOAT"
+                                        val_out = val[0]
+                                    else:
+                                        fmt = f"FLOAT{l}"
+                                        val_out = tuple(val)
+
+                                elif isinstance(val, int):
+                                    fmt = "INT"
+                                    val_out = val
+
+                                elif isinstance(val, str):
+                                    fmt = "STRING"
+                                    val_out = val
+
+                                else:
+                                    fmt = "FLOAT"
+                                    val_out = val
+
+                            new_input_sections.append((fmt, attr, val_out))
+                    elif isinstance(effect_data, tuple) and len(effect_data) == 2:
+                        attr, val = effect_data
+                         # Checking if attribute was copied 1:1 from old format (not converted - fmt should be preserved)
+                        if attr in attribute_format:
+                            fmt = attribute_format[attr]
+                            val_out = val
+
+                        # If attribute was converted, we need to "guess" correct one from value (there is no 100% certainty)
+                        else:
+                            if isinstance(val, (tuple, list)):
+                                l = len(val)
+                                if l == 1:
+                                    fmt = "FLOAT"
+                                    val_out = val[0]
+                                else:
+                                    fmt = f"FLOAT{l}"
+                                    val_out = tuple(val)
+
+                            elif isinstance(val, int):
+                                fmt = "INT"
+                                val_out = val
+
+                            elif isinstance(val, str):
+                                fmt = "STRING"
+                                val_out = val
+
+                            else:
+                                fmt = "FLOAT"
+                                val_out = val
+
+                        new_input_sections.append((fmt, attr, val_out))
+
+                    # Replace old input_sections with new one (converted to effect)
+                    input_sections = new_input_sections
+
+                    #######################################
+                    #####  TEMPORARY CONVERSION ENDS  #####
+                    #######################################
+
+                    automat_export_data = _SectionData("AutoMat")
+                    automat_export_data.props.append(("Alias", material.name))
+                    automat_export_data.props.append(("Index", automat_idx))
+                    content = _fill_content_sections(input_sections, sampler_sections, effect_name)
+                    automat_export_data.props.append(("Content", content))
+
 
                 elif active_shader_preset_name == "<imported>":
 
-                    material_attributes = material['scs_shader_attributes']['attributes'].to_dict().values()
-                    material_textures = material['scs_shader_attributes']['textures'].to_dict().values()
+                    # Change it in newer format to imputs and samplers?
+                    material_inputs = material['scs_shader_attributes']['attributes'].to_dict().values()
+                    material_samplers = material['scs_shader_attributes']['textures'].to_dict().values()
 
-                    material_export_data = _SectionData("Material")
-                    material_export_data.props.append(("Alias", material.name))
-                    material_export_data.props.append(("Effect", effect_name))
-                    material_export_data.props.append(("Flags", int(not material.scs_props.enable_aliasing)))
-                    material_export_data.props.append(("AttributeCount", len(material_attributes)))
-                    material_export_data.props.append(("TextureCount", len(material_textures)))
+                    # Same as 'for item in section.sections' + 'if item.type == "Attribute"' from above IF.
+                    # (because <imported> not use data from preset, we get if from 'scs_shader_attributes' directly)
+                    for attribute_dict in material_inputs:
+                        # print('     Attribute:')
 
-                    for attribute_dict in material_attributes:
-                        attribute_section = _SectionData("Attribute")
-
-                        format_value = ""
+                        format_prop = ""
                         for attr_prop in sorted(attribute_dict.keys()):
 
                             # get the format of current attribute (we assume that "Format" attribute is before "Value" attribute in this for loop)
                             if attr_prop == "Format":
-                                format_value = attribute_dict[attr_prop]
+                                format_prop = attribute_dict[attr_prop]
+                                # print('         format_prop: %r' % str(format_prop))
 
-                            if attr_prop == "Value" and ("FLOAT" in format_value or "STRING" in format_value or "INT" in format_value):
+                            if attr_prop == "Value" and ("FLOAT" in format_prop or "STRING" in format_prop or "INT" in format_prop):
+                                tag_prop = attribute_dict["Tag"]
+                                # print('         tag_prop: %r' % str(tag_prop))
 
-                                tag_prop = attribute_dict["Tag"].replace("[", "").replace("]", "")
+                                # Aux is not used in new format, but for safety we must do it anyway
                                 if "aux" in tag_prop:
                                     aux_props = getattr(material.scs_props, "shader_attribute_" + tag_prop)
                                     value = []
+                                    tag_prop = "aux[" + tag_prop[3:] + "]"
                                     for aux_prop in aux_props:
                                         value.append(aux_prop.value)
                                 else:
                                     value = getattr(material.scs_props, "shader_attribute_" + tag_prop, None)
-                                    if isinstance(value, float):
-                                        value = [value]
 
-                                if value is None:
-                                    attribute_section.props.append((attr_prop, ["i", tuple(attribute_dict[attr_prop])]))
-                                else:
-                                    attribute_section.props.append((attr_prop, ["i", tuple(value)]))
+                                # print('         value: %r' % str(value))
 
-                            elif attr_prop == "Tag" and "aux" in attribute_dict[attr_prop]:
-                                attribute_section.props.append((attr_prop, "aux[" + attribute_dict[attr_prop][3:] + "]"))
-                            elif attr_prop == "FriendlyTag":
+                            elif attr_prop in ("FriendlyTag", "RequiredFlavors", "ForbiddenFlavors"):
                                 continue
-                            else:
-                                attribute_section.props.append((attr_prop, attribute_dict[attr_prop]))
 
-                        material_export_data.sections.append(attribute_section)
+                        if format_prop not in ("FLOAT", "INT", "INT2", "STRING"):
+                            value = tuple(value)
 
-                    for texture_dict in material_textures:
-                        texture_section = _SectionData("Texture")
+                        # print('         > FINAL: %r - %r - %r' % (format_prop, tag_prop, value))
+                        input_sections.append((format_prop, tag_prop, value))
 
-                        tag_id_string = ""
+                    for texture_dict in material_samplers:
+                        # print('     Texture:')
+
+                        tag_prop = ""
                         for tex_prop in sorted(texture_dict.keys()):
 
                             if tex_prop == "Tag":
-                                tag_id_string = texture_dict[tex_prop].split(':')[1]
-                                texture_section.props.append((tex_prop, texture_dict[tex_prop]))
+                                tag_prop = texture_dict[tex_prop].split(':')[1]
+                                # print('         tag_prop: %r' % str(tag_prop))
 
                             elif tex_prop == "Value":
-                                if tag_id_string[8:] in material.scs_props.get_texture_types():
-                                    tobj_rel_path = get_texture_path_from_material(material, tag_id_string, os.path.dirname(filepath))
-                                    texture_section.props.append((tex_prop, tobj_rel_path))
-                                else:
-                                    texture_section.props.append((tex_prop, texture_dict[tex_prop]))
-                                    if looks_count > 1:
-                                        lprint("W Texture of type %r on material %r with imported shader is not supported in Blender, "
-                                               "thus imported texture path from first look will be used on all of them!",
-                                               (tag_id_string, material_name))
-                            else:
-                                texture_section.props.append((tex_prop, texture_dict[tex_prop]))
+                                tobj_rel_path = get_texture_path_from_material(material, tag_prop, os.path.dirname(filepath))
+                                # print('         tobj_rel_path: %r' % str(tobj_rel_path))
 
-                        material_export_data.sections.append(texture_section)
+                                if tag_prop[8:] not in material.scs_props.get_texture_types():
+                                    # Did we need to check this and replace like in pit.py? Idea of <imported> is to export whatever is set for possible backward/upward compatibility.
+                                    # For now we will just print warning.
+                                    if looks_count > 1:
+                                        lprint("W Texture of type %r on material %r with imported shader is not supported in Blender!",
+                                               (tag_prop, material_name))
+
+                        # print('         > FINAL: %r - %r' % (tag_prop, tobj_rel_path))
+                        sampler_sections.append((tag_prop, tobj_rel_path))
+
+
+                    automat_export_data = _SectionData("AutoMat")
+                    automat_export_data.props.append(("Alias", material.name))
+                    automat_export_data.props.append(("Index", automat_idx))
+                    content = _fill_content_sections(input_sections, sampler_sections, effect_name)
+                    automat_export_data.props.append(("Content", content))
 
                 else:  # when user made material presets were there, but there is no preset library at export for some reason
 
@@ -619,15 +735,16 @@ def export(root_object, filepath, name_suffix, used_parts, used_materials):
                            (material_name,))
 
                     material_name = str("_" + material_name + "_-_default_settings_")
-                    material_export_data = default_material(material_name)
+                    automat_export_data = default_automat(material_name)
 
-            material_dict[material_name] = material_export_data
+            material_dict[material_name] = automat_export_data
+            automat_idx += 1
 
-        # create materials sections for looks
-        material_sections = fill_material_sections(material_list, material_dict)
+        # create automat sections for looks
+        automat_sections = fill_automat_sections(material_list, material_dict)
         look_data = {
             "name": curr_look_name,
-            "material_sections": material_sections
+            "automat_sections": automat_sections
         }
         look_list.append(look_data)
 

@@ -16,11 +16,11 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-# Copyright (C) 2015-2024: SCS Software
+# Copyright (C) 2024-2026: Michaleczeq
 
-from io_scs_tools.consts import Mesh as _MESH_consts
-from io_scs_tools.internals.shaders.eut2.interior import InteriorLit
-from io_scs_tools.utils import material as _material_utils
+from . import InteriorLit
+from .....consts import Mesh as _MESH_consts
+from .....utils import material as _material_utils
 
 class InteriorCurtain(InteriorLit):
     SEC_UVMAP_NODE = "SecondUVMap"

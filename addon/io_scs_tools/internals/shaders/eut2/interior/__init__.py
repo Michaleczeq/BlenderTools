@@ -16,12 +16,12 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-# Copyright (C) 2015-2024: SCS Software
+# Copyright (C) 2024-2026: Michaleczeq
 
-from io_scs_tools.consts import Mesh as _MESH_consts
-from io_scs_tools.internals.shaders.eut2.parameters import get_fresnel_window
-from io_scs_tools.internals.shaders.eut2.dif_spec_add_env import DifSpecAddEnv
-from io_scs_tools.utils import material as _material_utils
+from ..parameters import get_fresnel_window
+from ..dif_spec_add_env import DifSpecAddEnv
+from .....consts import Mesh as _MESH_consts
+from .....utils import material as _material_utils
 
 class InteriorLit(DifSpecAddEnv):
     VGCOLOR_MULT_NODE = "VertexGlassColorMultiplier"

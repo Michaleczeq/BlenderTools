@@ -16,12 +16,13 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-# Copyright (C) 2025: SCS Software
+# Copyright (C) 2025-2026: Michaleczeq
 
 import bpy
-from io_scs_tools.consts import Mesh as _MESH_consts
-from io_scs_tools.utils import material as _material_utils
-from io_scs_tools.internals.shaders.flavors import nmap
+from ...flavors import nmap
+from .....utils import material as _material_utils
+from .....consts import Mesh as _MESH_consts
+
 
 DET_NMAP_UVMAP_NODE = "DetailNMapUVs"
 DET_NMAP_TEX_NODE = "DetailNMapTex"

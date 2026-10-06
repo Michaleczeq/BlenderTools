@@ -16,7 +16,7 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-# Copyright (C) 2015-2019: SCS Software
+# Copyright (C) 2026: Michaleczeq
 
 import bpy
 from .....consts import Material as _MAT_consts

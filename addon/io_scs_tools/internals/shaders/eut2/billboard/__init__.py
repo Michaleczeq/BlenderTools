@@ -16,18 +16,18 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-# Copyright (C) 2025: SCS Software
+# Copyright (C) 2025-2026: Michaleczeq
 
-from io_scs_tools.consts import Mesh as _MESH_consts
-from io_scs_tools.internals.shaders.base import BaseShader
-from io_scs_tools.internals.shaders.eut2.std_node_groups import alpha_remap_ng
-from io_scs_tools.internals.shaders.eut2.std_node_groups import compose_lighting_ng
-from io_scs_tools.internals.shaders.eut2.std_node_groups import lighting_evaluator_ng
-from io_scs_tools.internals.shaders.eut2.std_node_groups import vcolor_input_ng
-from io_scs_tools.internals.shaders.flavors import nmap
-from io_scs_tools.utils import convert as _convert_utils
-from io_scs_tools.utils import material as _material_utils
-from io_scs_tools.internals.shaders.flavors import asafew
+from ..std_node_groups import alpha_remap_ng
+from ..std_node_groups import vcolor_input_ng
+from ..std_node_groups import compose_lighting_ng
+from ..std_node_groups import lighting_evaluator_ng
+from ...base import BaseShader
+from ...flavors import nmap
+from ...flavors import asafew
+from .....utils import convert as _convert_utils
+from .....utils import material as _material_utils
+from .....consts import Mesh as _MESH_consts
 
 
 class Billboard(BaseShader):

@@ -18,12 +18,12 @@
 
 # Copyright (C) 2015-2022: SCS Software
 
-from io_scs_tools.internals.shaders.eut2.dif_spec import DifSpec
-from io_scs_tools.internals.shaders.eut2.std_passes.lum import StdLum
-from io_scs_tools.internals.shaders.flavors import alpha_test
-from io_scs_tools.internals.shaders.flavors import blend_over
-from io_scs_tools.internals.shaders.flavors import blend_add
-from io_scs_tools.internals.shaders.flavors import blend_mult
+from ..dif_spec import DifSpec
+from ..std_passes.lum import StdLum
+from ...flavors import blend_add
+from ...flavors import alpha_test
+from ...flavors import blend_over
+from ...flavors import blend_mult
 
 
 class DifLumSpec(DifSpec, StdLum):

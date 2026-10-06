@@ -16,13 +16,16 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-# Copyright (C) 2015-2019: SCS Software
+# Copyright (C) 2026: Michaleczeq
 
+import bpy
 from ...flavors import nmap
 from .....utils import material as _material_utils
+from .....consts import Mesh as _MESH_consts
 
 DET_NMAP_NODE = "DetailNormalMapMat"
 DET_NMAP_TEX_NODE = "DetailNMapTex"
+DET_NMAP_UVMAP_NODE = "DetailNormalMapUVs"
 DET_NMAP_SCALE_GNODE = "DetailNMapScaleGroup"
 DET_NMAP_UV_SCALE_NODE = "DetailNMapUVScale"
 DET_NMAP_STRENGTH_NODE = "DetailNMapStrength"
@@ -48,6 +51,12 @@ def __create_nodes__(node_tree, location, uv_scale_from, det_nmap_strength_from,
     nmap_uvmap_n.location.y -= 300
 
     # nodes creation
+    det_nmap_uvs_n = node_tree.nodes.new("ShaderNodeUVMap")
+    det_nmap_uvs_n.parent = frame
+    det_nmap_uvs_n.name = det_nmap_uvs_n.label = DET_NMAP_UVMAP_NODE
+    det_nmap_uvs_n.location = (location[0] - 185 * 4, location[1] - 500)
+    det_nmap_uvs_n.uv_map = _MESH_consts.none_uv
+
     det_nmap_uv_scale_n = node_tree.nodes.new("ShaderNodeVectorMath")
     det_nmap_uv_scale_n.parent = frame
     det_nmap_uv_scale_n.name = det_nmap_uv_scale_n.label = DET_NMAP_UV_SCALE_NODE
@@ -108,7 +117,7 @@ def __create_nodes__(node_tree, location, uv_scale_from, det_nmap_strength_from,
 
     # links creation
     # pass 1
-    node_tree.links.new(det_nmap_uv_scale_n.inputs[0], nmap_uvmap_n.outputs['UV'])
+    node_tree.links.new(det_nmap_uv_scale_n.inputs[0], det_nmap_uvs_n.outputs['UV'])
     node_tree.links.new(det_nmap_uv_scale_n.inputs[1], uv_scale_from)
 
     # pass 2
@@ -238,7 +247,6 @@ def set_uv(node_tree, uv_layer):
     :type uv_layer: str
     """
     nmap.set_uv(node_tree, uv_layer)
-    node_tree.nodes[DET_NMAP_NODE].uv_map = uv_layer
 
 
 def set_detail_uv(node_tree, uv_layer):
@@ -250,7 +258,12 @@ def set_detail_uv(node_tree, uv_layer):
     :type uv_layer: str
     """
 
-    nmap.set_uv(node_tree, uv_layer)  # NOTE : no support for extra uv on detail texture in shaders
+    if uv_layer is None or uv_layer == "":
+        uv_layer = _MESH_consts.none_uv
+
+    # set uv layer to texture node and normal map node
+    node_tree.nodes[DET_NMAP_UVMAP_NODE].uv_map = uv_layer
+    node_tree.nodes[DET_NMAP_NODE].uv_map = uv_layer
 
 
 def delete(node_tree, preserve_node=False):
@@ -266,6 +279,7 @@ def delete(node_tree, preserve_node=False):
         node_tree.nodes.remove(node_tree.nodes[DET_NMAP_UV_SCALE_NODE])
         node_tree.nodes.remove(node_tree.nodes[DET_NMAP_TEX_NODE])
         node_tree.nodes.remove(node_tree.nodes[DET_NMAP_NODE])
+        node_tree.nodes.remove(node_tree.nodes[DET_NMAP_UVMAP_NODE])
         node_tree.nodes.remove(node_tree.nodes[DET_NMAP_SCALE_GNODE])
         node_tree.nodes.remove(node_tree.nodes[DET_NMAP_STRENGTH_NODE])
         node_tree.nodes.remove(node_tree.nodes[DET_NMAP_MIX_NODE])

@@ -16,9 +16,9 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-# Copyright (C) 2025: SCS Software
+# Copyright (C) 2025-2026: Michaleczeq
 
-from io_scs_tools.internals.shaders.eut2.dif_spec_weight_add_env import DifSpecWeightAddEnv
+from . import DifSpecWeightAddEnv
 
 
 class DifSpecWeightAddEnvNoFresnel(DifSpecWeightAddEnv):

@@ -18,13 +18,13 @@
 
 # Copyright (C) 2015-2021: SCS Software
 
-from io_scs_tools.consts import Mesh as _MESH_consts
-from io_scs_tools.internals.shaders.eut2.dif import Dif
-from io_scs_tools.internals.shaders.eut2.dif_anim import anim_blend_factor_ng
-from io_scs_tools.internals.shaders.eut2.dif_anim import over_nmap
-from io_scs_tools.internals.shaders.flavors import fadesheet
-from io_scs_tools.internals.shaders.flavors import flipsheet
-from io_scs_tools.utils import material as _material_utils
+from . import over_nmap
+from . import anim_blend_factor_ng
+from ..dif import Dif
+from ...flavors import fadesheet
+from ...flavors import flipsheet
+from .....utils import material as _material_utils
+from .....consts import Mesh as _MESH_consts
 
 
 class DifAnim(Dif):

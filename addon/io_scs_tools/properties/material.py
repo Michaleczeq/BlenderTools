@@ -28,15 +28,15 @@ from bpy.props import (BoolProperty,
                        IntProperty)
 import os
 import re
-from io_scs_tools.consts import Material as _MAT_consts
-from io_scs_tools.exp import tobj as _tobj_exp
-from io_scs_tools.internals import looks as _looks
-from io_scs_tools.internals import inventory as _inventory
-from io_scs_tools.internals.shaders import shader as _shader
-from io_scs_tools.utils import material as _material_utils
-from io_scs_tools.utils import object as _object_utils
-from io_scs_tools.utils import path as _path_utils
-from io_scs_tools.utils.printout import lprint
+from ..exp import tobj as _tobj_exp
+from ..utils import path as _path_utils
+from ..utils import object as _object_utils
+from ..utils import material as _material_utils
+from ..utils.printout import lprint
+from ..consts import Material as _MAT_consts
+from ..internals import looks as _looks
+from ..internals import inventory as _inventory
+from ..internals.shaders import shader as _shader
 
 
 def __get_texture_settings__():
@@ -289,7 +289,7 @@ class MaterialSCSTools(bpy.types.PropertyGroup):
 
                     custom_maps = material.scs_props.custom_tex_coord_maps
                     # force prescribed pattern for name ("tex_coord_X" where X is unsigned integer) and avoid duplicates
-                    if not re.match("\Atex_coord_\d+\Z", self.name) or len(_inventory.get_indices(custom_maps, self.name)) == 2:
+                    if not re.match(r"\Atex_coord_\d+\Z", self.name) or len(_inventory.get_indices(custom_maps, self.name)) == 2:
                         i = 0
                         new_name = "tex_coord_" + str(i)
                         while _inventory.get_index(custom_maps, new_name) != -1:

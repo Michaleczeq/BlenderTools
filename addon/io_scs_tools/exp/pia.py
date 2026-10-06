@@ -270,11 +270,13 @@ def _fill_header_section(anim_name, sign_export):
     section.props.append(("Source", get_combined_ver_str()))
     section.props.append(("Type", "Animation"))
     section.props.append(("Name", anim_name))
+    """ "SourceFilename" and "Author" no longer supported by conversion tools, system.author removed from Blender.
     if sign_export:
         section.props.append(("SourceFilename", str(bpy.data.filepath)))
         author = bpy.context.user_preferences.system.author
         if author:
             section.props.append(("Author", str(author)))
+    """
     return section
 
 

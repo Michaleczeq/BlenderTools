@@ -16,11 +16,10 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-# Copyright (C) 2015: SCS Software
+# Copyright (C) 2024-2026: Michaleczeq
 
-from multiprocessing.spawn import import_main_path
 import bpy
-from io_scs_tools.consts import Material as _MAT_consts
+from .....consts import Material as _MAT_consts
 
 DECAL_BLEND_FACTOR_G = _MAT_consts.node_group_prefix + "DecalBlendFactor"
 

@@ -21,9 +21,9 @@
 import os
 import bpy
 from bpy.utils import previews
-from io_scs_tools.consts import Icons as _ICON_consts
-from io_scs_tools.utils import path as _path
-from io_scs_tools.utils.printout import lprint
+from ...consts import Icons as _ICON_consts
+from ...utils import path as _path
+from ...utils.printout import lprint
 
 PCOLLS = "custom_icons"
 PCOLLS_IDX_MAP = PCOLLS + "_index_map"
@@ -92,7 +92,7 @@ def register():
         print("WARNING\t- Default icon theme doesn't exist, fallback to first available!")
 
     # Forces icons to reload (Because of issues with Vulkan on faster systems)
-    bpy.app.timers.register(reload_icons, first_interval=0.5)
+    bpy.app.timers.register(reload_icons, first_interval=0.75)
 
 def reload_icons():
     """Forces icons to reload after a short delay (workaround for Vulkan issues)."""
