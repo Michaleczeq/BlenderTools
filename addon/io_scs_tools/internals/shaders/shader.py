@@ -59,11 +59,11 @@ def setup_nodes(material, effect, attr_dict, tex_dict, tex_settings_dict, recrea
     if (effect.endswith(".add") or ".add." in effect) and effect.rfind(".add.env") != effect.rfind(".add"):
         flavors["blend_add"] = True
 
-    if effect.endswith(".tsnmapuv") or ".tsnmapuv." in effect:
-        flavors["nmap"] = True
-
     if effect.endswith(".tsnmapuv2") or ".tsnmapuv2." in effect:
         flavors["nmap2"] = True
+
+    if effect.endswith(".tsnmapuv") or ".tsnmapuv." in effect:
+        flavors["nmap"] = True
 
     if effect.endswith(".tsnmap") or ".tsnmap." in effect:
         flavors["nmap"] = True

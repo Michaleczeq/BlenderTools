@@ -220,15 +220,15 @@ def get_shader(effect):
     elif effect.startswith("billboard"):
         from .billboard import Billboard as Shader
 
-    elif effect.startswith("baked.spec"):
+    elif effect.startswith("baked"):
         if ".add.env" in effect:
             from .baked.add_env import BakedSpecAddEnv as Shader
 
-        else:
+        elif ".spec" in effect:
             from .baked.spec import BakedSpec as Shader
 
-    elif effect.startswith("baked"):
-        from .baked import Baked as Shader
+        else:
+            from .baked import Baked as Shader
 
     else:
         return None

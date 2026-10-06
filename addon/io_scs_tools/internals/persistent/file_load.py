@@ -445,11 +445,47 @@ def apply_fixes_for_un_8():
 def apply_fixes_for_un_9():
     """
     Applies fixes for unofficial 2.4.xxxxxx.9 or less:
-    1. Reload materials since some got removed/restructed attributes
+    1. Tries to fix active shader preset name for materials, because of new flavor system
+    2. Reload all materials because of changes
     """
 
     print("INFO\t-  Applying fixes for unofficial versions < 9")
 
-    # 1. reload all materials
-    # Some attributes got removed and due to that we need to reload materials
+    scs_roots = None
+
+    for material in bpy.data.materials:
+
+        # ignore materials not related to blender tools
+        if material.scs_props.mat_effect_name == "":
+            continue
+
+        # ignore already properly set materials
+        if _shader_presets.has_preset(material.scs_props.active_shader_preset_name):
+            continue
+
+        # 1. try to recover new "active_shader_preset_name" for replaced shaders presets
+        material_textures = {}
+        if "scs_shader_attributes" in material and "textures" in material["scs_shader_attributes"]:
+            for texture in material["scs_shader_attributes"]["textures"].values():
+                tex_id = texture["Tag"].split(":")[1]
+                tex_value = texture["Value"]
+                material_textures[tex_id] = tex_value
+
+        (preset_name, preset_section) = _material_utils.find_preset(material.scs_props.mat_effect_name, material_textures)
+        if preset_name:
+            material.scs_props.active_shader_preset_name = preset_name
+
+            # acquire roots on demand only once
+            scs_roots = _object_utils.gather_scs_roots(bpy.data.objects) if not scs_roots else scs_roots
+
+            # make sure to fix active preset shader name in all looks
+            # NOTE: Printouts like:
+            # "Look with ID: X doesn't have entry for material 'X' in SCS Root 'X',
+            #  property 'active_shader_preset_name' won't be updated!"
+            # are expected here, because we don't use any safety check,
+            # if material is used on the mesh objects inside scs root
+            for scs_root in scs_roots:
+                _looks.write_through(scs_root, material, "active_shader_preset_name")
+
+    # 2. reload all materials once all corrections to materials has been done
     _reload_materials()
