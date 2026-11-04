@@ -4664,7 +4664,7 @@ Shader {
         Tag: "aux[1]"
         FriendlyTag: "Sheet frame (width, height)"
         Value: ( 0.0 0.0 )
-        RequiredFlavors: ( "FLIPSHEET" )
+        RequiredFlavors: ( "FADESHEET" )
     }
     Attribute {
         Format: FLOAT2
