@@ -17,19 +17,20 @@
 # ##### END GPL LICENSE BLOCK #####
 
 # Copyright (C) 2013-2019: SCS Software
+# Copyright (C) 2024-2026: Michaleczeq
 
 import bmesh
 import bpy
 import os
 import tempfile
 from math import pi
-from io_scs_tools.consts import Material as _MAT_consts
-from io_scs_tools.imp import tobj as _tobj_imp
-from io_scs_tools.internals import inventory as _invetory
-from io_scs_tools.internals import shader_presets as _shader_presets
-from io_scs_tools.internals.shaders import shader as _shader
-from io_scs_tools.utils import path as _path
-from io_scs_tools.utils.printout import lprint
+from . import path as _path
+from .printout import lprint
+from ..imp import tobj as _tobj_imp
+from ..consts import Material as _MAT_consts
+from ..internals import inventory as _invetory
+from ..internals import shader_presets as _shader_presets
+from ..internals.shaders import shader as _shader
 
 
 def get_texture_image(texture_path, texture_type, report_invalid=False):
@@ -896,16 +897,16 @@ def set_texture_settings_to_node(tex_node, settings):
 
     # linear colorspace
     if settings[0] == "1":
-        image.colorspace_settings.name = "Linear Rec.709"
+        image.colorspace_settings.interop_id = "lin_rec709_display"
     else:
-        image.colorspace_settings.name = "sRGB"
+        image.colorspace_settings.interop_id = "srgb_rec709_display"
 
     # tsnormal option
     if settings[1] == "1":
         if image.filepath[-4:] in (".tga", ".dds"):
-            image.colorspace_settings.name = "Non-Color"
+            image.colorspace_settings.interop_id = "data"
         elif image.filepath[-4:] == ".png" and image.is_float:
-            image.colorspace_settings.name = "Linear Rec.709"
+            image.colorspace_settings.interop_id = "lin_rec709_display"
 
 
 def has_valid_color_management(scene):

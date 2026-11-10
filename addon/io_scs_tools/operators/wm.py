@@ -17,15 +17,16 @@
 # ##### END GPL LICENSE BLOCK #####
 
 # Copyright (C) 2013-2022: SCS Software
+# Copyright (C) 2026: Michaleczeq
 
 
 import gpu
 import bpy
 import os
 from bpy.props import StringProperty, BoolProperty, IntProperty
-from io_scs_tools.consts import Operators as _OP_consts
-from io_scs_tools.utils import view3d as _view3d_utils
-from io_scs_tools.utils import path as _path_utils
+from ..consts import Operators as _OP_consts
+from ..utils import view3d as _view3d_utils
+from ..utils import path as _path_utils
 
 
 class SCS_TOOLS_OT_ShowMessageInPopup(bpy.types.Operator):
@@ -154,7 +155,7 @@ class SCS_TOOLS_OT_Show3DViewReport(bpy.types.Operator):
         if img_name not in bpy.data.images:
             img_path = os.path.join(_path_utils.get_addon_installation_paths()[0], "ui", "banners", img_name)
             img = bpy.data.images.load(img_path, check_existing=True)
-            img.colorspace_settings.name = 'sRGB'
+            img.colorspace_settings.interop_id = 'srgb_rec709_display' #sRGB
             img.alpha_mode = 'CHANNEL_PACKED'
 
         else:
@@ -465,7 +466,7 @@ class SCS_TOOLS_OT_ShowDeveloperErrors(bpy.types.Operator):
     bl_idname = "wm.scs_tools_show_developer_errors"
 
     def execute(self, context):
-        from io_scs_tools.utils.printout import dev_lprint
+        from ..utils.printout import dev_lprint
 
         dev_lprint()
 

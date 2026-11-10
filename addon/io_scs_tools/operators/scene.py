@@ -17,6 +17,7 @@
 # ##### END GPL LICENSE BLOCK #####
 
 # Copyright (C) 2013-2022: SCS Software
+# Copyright (C) 2026: Michaleczeq
 
 import bpy
 import bmesh
@@ -29,24 +30,24 @@ from sys import platform
 from time import time
 from bpy.props import StringProperty, CollectionProperty, EnumProperty, IntProperty, BoolProperty, FloatProperty, FloatVectorProperty
 from bl_operators.presets import AddPresetBase
-from io_scs_tools.consts import ConvHlpr as _CONV_HLPR_consts
-from io_scs_tools.consts import Operators as _OP_consts
-from io_scs_tools.consts import PaintjobTools as _PT_consts
-from io_scs_tools.imp import pix as _pix_import
-from io_scs_tools.internals.structure import UnitData as _UnitData
-from io_scs_tools.internals.containers import pix as _pix_container
-from io_scs_tools.internals.containers import sii as _sii_container
-from io_scs_tools.internals.containers.tobj import TobjContainer as _TobjContainer
-from io_scs_tools.operators.bases.export import SCSExportHelper as _SCSExportHelper
-from io_scs_tools.utils import name as _name_utils
-from io_scs_tools.utils import object as _object_utils
-from io_scs_tools.utils import path as _path_utils
-from io_scs_tools.utils import get_scs_globals as _get_scs_globals
-from io_scs_tools.utils.printout import lprint
-from io_scs_tools.utils.property import get_default as _get_default
-from io_scs_tools.utils.property import get_filebrowser_display_type
-from io_scs_tools import exp as _export
-from io_scs_tools import imp as _import
+from .bases.export import SCSExportHelper as _SCSExportHelper
+from ..consts import ConvHlpr as _CONV_HLPR_consts
+from ..consts import Operators as _OP_consts
+from ..consts import PaintjobTools as _PT_consts
+from ..imp import pix as _pix_import
+from ..internals.structure import UnitData as _UnitData
+from ..internals.containers import pix as _pix_container
+from ..internals.containers import sii as _sii_container
+from ..internals.containers.tobj import TobjContainer as _TobjContainer
+from ..utils import name as _name_utils
+from ..utils import object as _object_utils
+from ..utils import path as _path_utils
+from ..utils import get_scs_globals as _get_scs_globals
+from ..utils.printout import lprint
+from ..utils.property import get_default as _get_default
+from ..utils.property import get_filebrowser_display_type
+from .. import exp as _export
+from .. import imp as _import
 
 
 class Import:
@@ -1335,7 +1336,7 @@ class Log:
         bl_description = "Copies whole Blender Tools log to clipboard (log was captured since Blender startup)."
 
         def execute(self, context):
-            from io_scs_tools.utils.printout import get_log
+            from ..utils.printout import get_log
 
             context.window_manager.clipboard = get_log()
 
@@ -2562,7 +2563,7 @@ class PaintjobTools:
 
                 # create image data block
                 img = bpy.data.images.new("tmp_img", common_texture_size[0], common_texture_size[1], alpha=True)
-                img.colorspace_settings.name = "sRGB"  # make sure we use sRGB color-profile
+                img.colorspace_settings.interop_id = "srgb_rec709_display"  # make sure we use sRGB color-profile
                 img.alpha_mode = 'CHANNEL_PACKED'
                 img.pixels[:] = img_pixels.reshape((common_texture_size[1] * common_texture_size[0] * 4,))
 
@@ -2975,7 +2976,7 @@ class PaintjobTools:
                         bpy.data.images.new(_SINGLE_COLOR_IMAGE_NAME, 4, 4, alpha=True)
 
                     img = bpy.data.images[_SINGLE_COLOR_IMAGE_NAME]
-                    img.colorspace_settings.name = "sRGB"  # make sure we use sRGB color-profile
+                    img.colorspace_settings.interop_id = "srgb_rec709_display"  # make sure we use sRGB color-profile
                     img.alpha_mode = 'STRAIGHT'
                     img.pixels[:] = comparing_pixel * 16
 
@@ -3368,7 +3369,7 @@ class PaintjobTools:
             ##################################
 
             common_tex_img = bpy.data.images.load(self.common_texture_path, check_existing=False)
-            common_tex_img.colorspace_settings.name = "sRGB"
+            common_tex_img.colorspace_settings.interop_id = "srgb_rec709_display"
             common_tex_img.alpha_mode = 'STRAIGHT' if self.export_alpha else 'NONE'
 
             self.initialize_nodes(context, common_tex_img)
